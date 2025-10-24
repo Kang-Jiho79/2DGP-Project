@@ -38,9 +38,9 @@ class Player:
         self.frame = 0
         self.face_dir = 1
         self.dir = 0
-        self.idle_image = load_image('resource/charater/Charater_idle.png')
-        self.death_image = load_image('resource/charater/Charater_death.png')
-        self.hit_image = load_image('resource/charater/Charater_hit.png')
-        self.parring_image = load_image('resource/charater/Charater_parring.png')
-        self.roll_image = load_image('resource/charater/Charater_roll.png')
-        self.walk_image = load_image('resource/charater/Charater_walk.png')
+        self.idle_image = load_image('resource/player/player_idle.png')
+        self.death_image = load_image('resource/player/player_death.png')
+        self.hit_image = load_image('resource/player/player_hit.png')
+        self.parring_image = load_image('resource/player/player_parring.png')
+        self.roll_image = load_image('resource/player/player_roll.png')
+        self.walk_image = load_image('resource/player/player_walk.png')
