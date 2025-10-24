@@ -1,6 +1,10 @@
 from pico2d import *
-from pico2d import close_canvas
+
+running = True
 
 open_canvas()
+
+while running:
+
 
 close_canvas()
