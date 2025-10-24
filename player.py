@@ -33,4 +33,14 @@ player_walk_animation = (
 )
 
 class Player:
-    pass
+    def __init__(self):
+        self.x, self.y = 400, 300
+        self.frame = 0
+        self.face_dir = 1
+        self.dir = 0
+        self.idle_image = load_image('resource/charater/Charater_idle.png')
+        self.death_image = load_image('resource/charater/Charater_death.png')
+        self.hit_image = load_image('resource/charater/Charater_hit.png')
+        self.parring_image = load_image('resource/charater/Charater_parring.png')
+        self.roll_image = load_image('resource/charater/Charater_roll.png')
+        self.walk_image = load_image('resource/charater/Charater_walk.png')
