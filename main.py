@@ -21,7 +21,8 @@ def update_world():
 
 
 def render_world():
-    pass
+    for object in world:
+        object.draw()
 
 
 running = True
