@@ -44,3 +44,12 @@ class Player:
         self.parring_image = load_image('resource/player/player_parring.png')
         self.roll_image = load_image('resource/player/player_roll.png')
         self.walk_image = load_image('resource/player/player_walk.png')
+
+    def update(self):
+        pass
+
+    def handle_events(self):
+        pass
+
+    def draw(self):
+        pass
