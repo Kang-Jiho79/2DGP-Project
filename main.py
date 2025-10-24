@@ -1,7 +1,8 @@
 from pico2d import *
 
 def reset_world():
-    pass
+    global world
+    world = []
 
 def handle_events():
     global running
