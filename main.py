@@ -16,7 +16,8 @@ def handle_events():
 
 
 def update_world():
-    pass
+    for object in world:
+        object.update()
 
 
 def render_world():
