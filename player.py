@@ -32,6 +32,31 @@ player_walk_animation = (
     ((0, 0, 17, 16), (17, 0, 17, 16), (34, 0, 17, 16), (51, 0, 17, 16), (68, 0, 17, 16), (85, 0, 17, 16))
 )
 
+
+class Idle:
+    pass
+
+
+class Death:
+    pass
+
+
+class Hit:
+    pass
+
+
+class Parrying:
+    pass
+
+
+class Roll:
+    pass
+
+
+class Walk:
+    pass
+
+
 class Player:
     def __init__(self):
         self.x, self.y = 400, 300
@@ -44,6 +69,13 @@ class Player:
         self.parring_image = load_image('resource/player/player_parring.png')
         self.roll_image = load_image('resource/player/player_roll.png')
         self.walk_image = load_image('resource/player/player_walk.png')
+        
+        self.IDLE = Idle(self)
+        self.DEATH = Death(self)
+        self.HIT = Hit(self)
+        self.PARRING = Parrying(self)
+        self.ROLL = Roll(self)
+        self.WALK = Walk(self)
 
     def update(self):
         pass
