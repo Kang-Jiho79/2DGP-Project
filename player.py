@@ -37,6 +37,12 @@ class Idle:
     def __init__(self, player):
         self.player = player
 
+    def enter(self, event):
+        self.player.dir = 0
+
+    def exit(self, event):
+        pass
+
 
 class Death:
     pass
