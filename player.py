@@ -34,7 +34,8 @@ player_walk_animation = (
 
 
 class Idle:
-    pass
+    def __init__(self, player):
+        self.player = player
 
 
 class Death:
