@@ -35,6 +35,10 @@ player_walk_animation = (
     ((0, 58, 15, 25), (14, 58, 15, 25), (31, 58, 15, 25), (49, 58, 15, 25), (63, 58, 15, 25), (79, 58, 15, 25))
 )
 
+def up_key_down(state_event):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_UP
+def up_key_up(state_event):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_UP
 
 class Idle:
     def __init__(self, player):
@@ -135,7 +139,7 @@ class Player:
         self.state_machine.update()
 
     def handle_events(self):
-        pass
+        self.state_machine.handle_state_event(("INPUT", event))
 
     def draw(self):
         self.state_machine.draw()
