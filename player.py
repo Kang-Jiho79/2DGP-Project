@@ -51,8 +51,14 @@ def right_key_down(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_RIGHT
 def right_key_up(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_RIGHT
-def stop_event(state_event):
-    return state_event[0] == "STOP"
+def space_key_down(state_event):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_SPACE
+
+def Toidle_event(state_event):
+    return state_event[0] == "TOIDLE"
+def Towalk_event(state_event):
+    return state_event[0] == "TOWALK"
+
 
 class Idle:
     def __init__(self, player):
@@ -99,15 +105,33 @@ class Roll:
         self.player = player
 
     def enter(self, event):
-        self.player.xdir = 0
-        self.player.ydir = 0
+        if self.player.face_dir == 0:
+            self.player.xdir = 0
+            self.player.ydir = -1
+        elif self.player.face_dir == 1:
+            self.player.xdir = 1
+            self.player.ydir = 0
+        elif self.player.face_dir == 2:
+            self.player.xdir = 0
+            self.player.ydir = 1
+        elif self.player.face_dir == 3:
+            self.player.xdir = -1
+            self.player.ydir = 0
         self.player.frame = 0
 
     def exit(self, event):
         pass
 
     def do(self):
-        self.player.frame = (self.player.frame + 1) % len(player_roll_animation[self.player.face_dir])
+        speed = 10
+        self.player.x += self.player.xdir * speed
+        self.player.y += self.player.ydir * speed
+        self.player.frame = (self.player.frame + 1)
+        if self.player.frame >= len(player_roll_animation[self.player.face_dir]):
+            if not any(self.player.keys_pressed.values()):
+                self.player.state_machine.handle_state_event(("TOIDLE", None))
+            else:
+                self.player.state_machine.handle_state_event(("TOWALK", None))
 
     def draw(self):
         frame_data = player_roll_animation[self.player.face_dir][self.player.frame]
@@ -162,7 +186,7 @@ class Walk:
 
         # 아무 키도 누르지 않으면 IDLE로 전환
         if not any(self.player.keys_pressed.values()):
-            self.player.state_machine.handle_state_event(("STOP", None))
+            self.player.state_machine.handle_state_event(("TOIDLE", None))
     def draw(self):
         frame_data = player_walk_animation[self.player.face_dir][self.player.frame]
         if self.player.face_dir == 3:  # left
@@ -205,9 +229,10 @@ class Player:
             self.ROLL,
         {
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
-                        left_key_down: self.WALK, right_key_down: self.WALK},
-            self.WALK: {stop_event: self.IDLE},
-            self.ROLL: {stop_event: self.IDLE},
+                        left_key_down: self.WALK, right_key_down: self.WALK,
+                        space_key_down: self.ROLL},
+            self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL},
+            self.ROLL: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             }
         )
 
