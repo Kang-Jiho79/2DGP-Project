@@ -1,6 +1,10 @@
 from pico2d import *
 from player import Player
 
+world = []
+player = None
+running = True
+
 def reset_world():
     global world  # 이 줄 추가
     global player
@@ -31,9 +35,6 @@ def render_world():
     for object in world:
         object.draw()
     update_canvas()
-
-
-running = True
 
 open_canvas()
 

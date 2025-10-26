@@ -1,4 +1,5 @@
 from pico2d import *
+
 from state_machine import StateMachine
 
 player_idle_animation = (
@@ -19,7 +20,7 @@ player_hit_animation = (
     ((0,27,13,21),(15,27,13,21),(30,27,16,21),(48,27,16,21),(66,27,16,21))
 )
 player_parring_animation = (
-    (0,102,54,102), (54,102,54,102), (108,102,54,102), (162,102,54,102), (216,102,54,102),
+    (0,52,54,102), (54,52,54,102), (108,52,54,102), (162,52,54,102), (216,52,54,102),
     (0,0,54,102), (54,0,54,102), (108,0,54,102), (162,0,54,102)
 )
 player_roll_animation = (
@@ -53,6 +54,10 @@ def right_key_up(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_RIGHT
 def space_key_down(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_SPACE
+def s_key_down(state_event):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_s
+
+
 
 def Toidle_event(state_event):
     return state_event[0] == "TOIDLE"
@@ -99,6 +104,34 @@ class Parrying:
     def __init__(self, player):
         self.player = player
 
+    def enter(self, event):
+        self.player.xdir = 0
+        self.player.ydir = 0
+        self.player.frame = 0
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        self.player.frame = (self.player.frame + 1)
+        if self.player.frame >= len(player_parring_animation):
+            if not any(self.player.keys_pressed.values()):
+                self.player.state_machine.handle_state_event(("TOIDLE", None))
+            else:
+                self.player.state_machine.handle_state_event(("TOWALK", None))
+
+    def draw(self):
+        character_frame_data = player_idle_animation[self.player.face_dir][0]
+        frame_data = player_parring_animation[self.player.frame]
+        if self.player.face_dir == 3:  # left
+            self.player.idle_image.clip_composite_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3], 0,
+                                                       'h',
+                                                       self.player.x, self.player.y, character_frame_data[2] * 4,
+                                                       character_frame_data[3] * 4)
+        else:
+            self.player.idle_image.clip_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3],
+                                             self.player.x, self.player.y, character_frame_data[2] * 4, character_frame_data[3] * 4)
+        self.player.parring_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],self.player.x, self.player.y, character_frame_data[2] * 6, character_frame_data[3] * 6)
 
 class Roll:
     def __init__(self, player):
@@ -226,13 +259,14 @@ class Player:
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
         self.state_machine = StateMachine(
-            self.ROLL,
+            self.PARRING,
         {
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
                         left_key_down: self.WALK, right_key_down: self.WALK,
-                        space_key_down: self.ROLL},
-            self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL},
+                        space_key_down: self.ROLL, s_key_down: self.PARRING},
+            self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL, s_key_down: self.PARRING},
             self.ROLL: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
+            self.PARRING: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             }
         )
 
