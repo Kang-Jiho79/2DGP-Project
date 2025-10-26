@@ -23,10 +23,10 @@ player_parring_animation = (
     (0,0,54,102), (54,0,54,102), (108,0,54,102), (162,0,54,102)
 )
 player_roll_animation = (
-    ((0, 63, 17, 21), (17, 63, 17, 21), (34, 63, 17, 21), (51, 63, 17, 21), (68, 63, 17, 21), (85, 63, 17, 21), (102, 63, 17, 21), (119, 63, 17, 21), (136, 63, 17, 21)),
-    ((0, 42, 17, 21), (17, 42, 17, 21), (34, 42, 17, 21), (51, 42, 17, 21), (68, 42, 17, 21), (85, 42, 17, 21), (102, 42, 17, 21), (119, 42, 17, 21), (136, 42, 17, 21), (153, 42, 17, 21), (170, 42, 17, 21)),
-    ((0, 21, 17, 21), (17, 21, 17, 21), (34, 21, 17, 21), (51, 21, 17, 21), (68, 21, 17, 21), (85, 21, 17, 21), (102, 21, 17, 21), (119, 21, 17, 21), (136, 21, 17, 21)),
-    ((0, 42, 17, 21), (17, 42, 17, 21), (34, 42, 17, 21), (51, 42, 17, 21), (68, 42, 17, 21), (85, 42, 17, 21), (102, 42, 17, 21), (119, 42, 17, 21), (136, 42, 17, 21), (153, 42, 17, 21), (170, 42, 17, 21))
+    ((0, 86, 15, 21), (14, 86, 15, 21), (29, 86, 15, 21), (44, 86, 15, 21), (59, 86, 15, 21), (74, 86, 15, 21), (90, 86, 15, 21), (108, 86, 15, 21), (123, 86, 15, 21)),
+    ((0, 57, 20, 24), (20, 57, 22, 24), (43, 57, 20, 24), (67, 57, 18, 24), (87, 57, 18, 24), (105, 57, 16, 24), (121, 57, 16, 24), (138, 57, 16, 24), (155, 57, 18, 24)),
+    ((0, 27, 15, 21), (14, 27, 15, 21), (29, 27, 15, 21), (44, 27, 15, 21), (59, 27, 15, 21), (74, 27, 15, 21), (90, 27, 14, 21), (103, 27, 14, 21), (118, 27, 14, 21)),
+    ((0, 57, 20, 24), (20, 57, 22, 24), (43, 57, 20, 24), (67, 57, 18, 24), (87, 57, 18, 24), (105, 57, 16, 24), (121, 57, 16, 24), (138, 57, 16, 24), (155, 57, 18, 24))
 )
 player_walk_animation = (
     ((0, 87, 15, 25), (17, 87, 15, 25), (35, 87, 15, 25), (56, 87, 15, 25), (74, 87, 15, 25), (95, 87, 15, 25)),
@@ -98,6 +98,28 @@ class Roll:
     def __init__(self, player):
         self.player = player
 
+    def enter(self, event):
+        self.player.xdir = 0
+        self.player.ydir = 0
+        self.player.frame = 0
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        self.player.frame = (self.player.frame + 1) % len(player_roll_animation[self.player.face_dir])
+
+    def draw(self):
+        frame_data = player_roll_animation[self.player.face_dir][self.player.frame]
+        if self.player.face_dir == 3:  # left
+            self.player.roll_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0,
+                                                       'h',
+                                                       self.player.x, self.player.y, frame_data[2] * 4,
+                                                       frame_data[3] * 4)
+        else:
+            self.player.roll_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                             self.player.x, self.player.y, frame_data[2] * 4, frame_data[3] * 4)
+
 
 class Walk:
     def __init__(self, player):
@@ -157,7 +179,7 @@ class Player:
     def __init__(self):
         self.x, self.y = 400, 300
         self.frame = 0
-        self.face_dir = 1   # down:0, right:1, up:2, left:3
+        self.face_dir = 3   # down:0, right:1, up:2, left:3
         self.xdir = 0
         self.ydir = 0
         self.keys_pressed = {
@@ -180,11 +202,12 @@ class Player:
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
         self.state_machine = StateMachine(
-            self.IDLE,
+            self.ROLL,
         {
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
                         left_key_down: self.WALK, right_key_down: self.WALK},
-            self.WALK: {stop_event: self.IDLE}
+            self.WALK: {stop_event: self.IDLE},
+            self.ROLL: {stop_event: self.IDLE},
             }
         )
 
@@ -193,17 +216,12 @@ class Player:
 
     def handle_events(self, event):
         if event.type == SDL_KEYDOWN:
-            print(f"Key down: {event.key}")  # 디버깅용
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = True
         elif event.type == SDL_KEYUP:
-            print(f"Key up: {event.key}")  # 디버깅용
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = False
-
-        print(f"Current state: {self.state_machine.cur_state}")  # 현재 상태 확인
         self.state_machine.handle_state_event(("INPUT", event))
-        print(f"After event state: {self.state_machine.cur_state}")  # 상태 변화 확인
 
     def draw(self):
         self.state_machine.draw()
