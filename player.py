@@ -43,7 +43,10 @@ def down_key_down(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_DOWN
 def down_key_up(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_DOWN
-
+def left_key_down(state_event):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_LEFT
+def left_key_up(state_event):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_LEFT
 
 
 class Idle:
