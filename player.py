@@ -1,7 +1,6 @@
 from pico2d import *
 from state_machine import StateMachine
 
-
 player_idle_animation = (
     ((0, 80, 15, 21), (17, 80, 15, 21), (34, 80, 15, 20), (51, 80, 15, 21), (68, 80, 15, 21), (85, 80, 15, 21)),
     ((0, 54, 15, 20), (17, 54, 15, 20), (33, 54, 15, 20), (49, 54, 15, 20)),
@@ -30,10 +29,10 @@ player_roll_animation = (
     ((0, 42, 17, 21), (17, 42, 17, 21), (34, 42, 17, 21), (51, 42, 17, 21), (68, 42, 17, 21), (85, 42, 17, 21), (102, 42, 17, 21), (119, 42, 17, 21), (136, 42, 17, 21), (153, 42, 17, 21), (170, 42, 17, 21))
 )
 player_walk_animation = (
-    ((0, 48, 17, 16), (17, 48, 17, 16), (34, 48, 17, 16), (51, 48, 17, 16), (68, 48, 17, 16), (85, 48, 17, 16)),
-    ((0, 32, 17, 16), (17, 32, 17, 16), (34, 32, 17, 16), (51, 32, 17, 16), (68, 32, 17, 16), (85, 32, 17, 16)),
-    ((0, 16, 17, 16), (17, 16, 17, 16), (34, 16, 17, 16), (51, 16, 17, 16), (68, 16, 17, 16), (85, 16, 17, 16)),
-    ((0, 32, 17, 16), (17, 32, 17, 16), (34, 32, 17, 16), (51, 32, 17, 16), (68, 32, 17, 16), (85, 32, 17, 16))
+    ((0, 87, 15, 25), (17, 87, 15, 25), (35, 87, 15, 25), (56, 87, 15, 25), (74, 87, 15, 25), (95, 87, 15, 25)),
+    ((0, 58, 15, 25), (14, 58, 15, 25), (31, 58, 15, 25), (49, 58, 15, 25), (63, 58, 15, 25), (79, 58, 15, 25)),
+    ((0, 30, 17, 25), (17, 30, 17, 25), (35, 30, 17, 25), (51, 30, 17, 25), (71, 30, 17, 25), (87, 30, 17, 25)),
+    ((0, 58, 15, 25), (14, 58, 15, 25), (31, 58, 15, 25), (49, 58, 15, 25), (63, 58, 15, 25), (79, 58, 15, 25))
 )
 
 
@@ -53,7 +52,7 @@ class Idle:
 
     def draw(self):
         frame_data = player_idle_animation[self.player.face_dir][self.player.frame]
-        if (self.player.face_dir == 3):  # left
+        if self.player.face_dir == 3:  # left
             self.player.idle_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0, 'h',
                                                        self.player.x, self.player.y, frame_data[2] * 4 , frame_data[3] * 4)
         else:
@@ -85,12 +84,33 @@ class Walk:
     def __init__(self, player):
         self.player = player
 
+    def enter(self, event):
+        self.player.dir = 0
+        self.player.frame = 0
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        self.player.frame = (self.player.frame + 1) % len(player_walk_animation[self.player.face_dir])
+
+    def draw(self):
+        frame_data = player_walk_animation[self.player.face_dir][self.player.frame]
+        if self.player.face_dir == 3:  # left
+            self.player.walk_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0,
+                                                       'h',
+                                                       self.player.x, self.player.y, frame_data[2] * 4,
+                                                       frame_data[3] * 4)
+        else:
+            self.player.walk_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                             self.player.x, self.player.y, frame_data[2] * 4, frame_data[3] * 4)
+
 
 class Player:
     def __init__(self):
         self.x, self.y = 400, 300
         self.frame = 0
-        self.face_dir = 3   # up:0, right:1, down:2, left:3
+        self.face_dir = 2   # up:0, right:1, down:2, left:3
         self.dir = 0
         self.idle_image = load_image('resource/player/player_idle.png')
         self.death_image = load_image('resource/player/player_death.png')
@@ -106,7 +126,7 @@ class Player:
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
         self.state_machine = StateMachine(
-            self.IDLE,
+            self.WALK,
         {
             }
         )
