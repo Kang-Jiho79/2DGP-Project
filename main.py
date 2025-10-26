@@ -1,8 +1,11 @@
 from pico2d import *
+from player import Player
 
 def reset_world():
     global world
     world = []
+    player = Player()
+    world.append(player)
 
 def handle_events():
     global running
@@ -21,8 +24,10 @@ def update_world():
 
 
 def render_world():
+    clear_canvas()
     for object in world:
         object.draw()
+    update_canvas()
 
 
 running = True
@@ -36,7 +41,7 @@ while running:
     handle_events()
     update_world()
     render_world()
-    delay(0.01)
+    delay(0.1)
 
 
 close_canvas()

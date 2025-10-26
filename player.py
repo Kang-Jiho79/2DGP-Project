@@ -1,9 +1,12 @@
 from pico2d import *
+from state_machine import StateMachine
+
 
 player_idle_animation = (
-    ((0, 87, 15, 21), (17, 87, 15, 21), (34, 87, 15, 20), (51, 87, 15, 21), (68, 87, 15, 21), (85, 87, 15, 21)),
-    ((0, 71, 15, 21), (17, 71, 15, 21), (33, 71, 15, 21), (49, 71, 15, 21)),
-    ((0, 55, 15, 21), (17, 55, 15, 21), (34, 55, 15, 21), (51, 55, 15, 21), (68, 55, 15, 21), (85, 55, 15, 21))
+    ((0, 80, 15, 21), (17, 80, 15, 21), (34, 80, 15, 20), (51, 80, 15, 21), (68, 80, 15, 21), (85, 80, 15, 21)),
+    ((0, 54, 15, 20), (17, 54, 15, 20), (33, 54, 15, 20), (49, 54, 15, 20)),
+    ((0, 27, 15, 21), (17, 27, 15, 21), (34, 27, 15, 21), (51, 27, 15, 21), (68, 27, 15, 21), (85, 27, 15, 21)),
+    ((0, 54, 15, 20), (17, 54, 15, 20), (33, 54, 15, 20), (49, 54, 15, 20))
 )
 player_death_animation = (
     (0, 31, 17, 21), (19, 31, 18, 21), (39, 31, 16, 21), (57, 31, 16, 21),
@@ -13,7 +16,8 @@ player_death_animation = (
 player_hit_animation = (
     ((0,53,17,21),(19,53,17,21),(36,53,17,21),(55,53,17,21),(74,53,17,21),(93,53,17,21)),
     ((0,27,13,21),(15,27,13,21),(30,27,16,21),(48,27,16,21),(66,27,16,21)),
-    ((0,0,17,21),(17,0,17,21),(34,0,17,21),(51,0,17,21),(72,0,17,21),(93,0,17,21),(114,0,17,21))
+    ((0,0,17,21),(17,0,17,21),(34,0,17,21),(51,0,17,21),(72,0,17,21),(93,0,17,21),(114,0,17,21)),
+    ((0,27,13,21),(15,27,13,21),(30,27,16,21),(48,27,16,21),(66,27,16,21))
 )
 player_parring_animation = (
     (0,102,54,102), (54,102,54,102), (108,102,54,102), (162,102,54,102), (216,102,54,102),
@@ -23,13 +27,13 @@ player_roll_animation = (
     ((0, 63, 17, 21), (17, 63, 17, 21), (34, 63, 17, 21), (51, 63, 17, 21), (68, 63, 17, 21), (85, 63, 17, 21), (102, 63, 17, 21), (119, 63, 17, 21), (136, 63, 17, 21)),
     ((0, 42, 17, 21), (17, 42, 17, 21), (34, 42, 17, 21), (51, 42, 17, 21), (68, 42, 17, 21), (85, 42, 17, 21), (102, 42, 17, 21), (119, 42, 17, 21), (136, 42, 17, 21), (153, 42, 17, 21), (170, 42, 17, 21)),
     ((0, 21, 17, 21), (17, 21, 17, 21), (34, 21, 17, 21), (51, 21, 17, 21), (68, 21, 17, 21), (85, 21, 17, 21), (102, 21, 17, 21), (119, 21, 17, 21), (136, 21, 17, 21)),
-    ((0, 0, 17, 21), (17, 0, 17, 21), (34, 0, 17, 21), (51, 0, 17, 21), (68, 0, 17, 21), (85, 0, 17, 21), (102, 0, 17, 21), (119, 0, 17, 21), (136, 0, 17, 21), (153, 0, 17, 21))
+    ((0, 42, 17, 21), (17, 42, 17, 21), (34, 42, 17, 21), (51, 42, 17, 21), (68, 42, 17, 21), (85, 42, 17, 21), (102, 42, 17, 21), (119, 42, 17, 21), (136, 42, 17, 21), (153, 42, 17, 21), (170, 42, 17, 21))
 )
 player_walk_animation = (
     ((0, 48, 17, 16), (17, 48, 17, 16), (34, 48, 17, 16), (51, 48, 17, 16), (68, 48, 17, 16), (85, 48, 17, 16)),
     ((0, 32, 17, 16), (17, 32, 17, 16), (34, 32, 17, 16), (51, 32, 17, 16), (68, 32, 17, 16), (85, 32, 17, 16)),
     ((0, 16, 17, 16), (17, 16, 17, 16), (34, 16, 17, 16), (51, 16, 17, 16), (68, 16, 17, 16), (85, 16, 17, 16)),
-    ((0, 0, 17, 16), (17, 0, 17, 16), (34, 0, 17, 16), (51, 0, 17, 16), (68, 0, 17, 16), (85, 0, 17, 16))
+    ((0, 32, 17, 16), (17, 32, 17, 16), (34, 32, 17, 16), (51, 32, 17, 16), (68, 32, 17, 16), (85, 32, 17, 16))
 )
 
 
@@ -39,36 +43,54 @@ class Idle:
 
     def enter(self, event):
         self.player.dir = 0
+        self.player.frame = 0
 
     def exit(self, event):
         pass
 
+    def do(self):
+        self.player.frame = (self.player.frame + 1) % len(player_idle_animation[self.player.face_dir])
+
+    def draw(self):
+        frame_data = player_idle_animation[self.player.face_dir][self.player.frame]
+        if (self.player.face_dir == 3):  # left
+            self.player.idle_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0, 'h',
+                                                       self.player.x, self.player.y, frame_data[2] * 4 , frame_data[3] * 4)
+        else:
+            self.player.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                         self.player.x, self.player.y, frame_data[2] * 4 , frame_data[3] * 4)
+
 
 class Death:
-    pass
+    def __init__(self, player):
+        self.player = player
 
 
 class Hit:
-    pass
+    def __init__(self, player):
+        self.player = player
 
 
 class Parrying:
-    pass
+    def __init__(self, player):
+        self.player = player
 
 
 class Roll:
-    pass
+    def __init__(self, player):
+        self.player = player
 
 
 class Walk:
-    pass
+    def __init__(self, player):
+        self.player = player
 
 
 class Player:
     def __init__(self):
         self.x, self.y = 400, 300
         self.frame = 0
-        self.face_dir = 1
+        self.face_dir = 3   # up:0, right:1, down:2, left:3
         self.dir = 0
         self.idle_image = load_image('resource/player/player_idle.png')
         self.death_image = load_image('resource/player/player_death.png')
@@ -83,12 +105,17 @@ class Player:
         self.PARRING = Parrying(self)
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
+        self.state_machine = StateMachine(
+            self.IDLE,
+        {
+            }
+        )
 
     def update(self):
-        pass
+        self.state_machine.update()
 
     def handle_events(self):
         pass
 
     def draw(self):
-        pass
+        self.state_machine.draw()
