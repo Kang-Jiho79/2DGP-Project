@@ -51,14 +51,16 @@ def right_key_down(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_RIGHT
 def right_key_up(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_RIGHT
-
+def stop_event(state_event):
+    return state_event[0] == "STOP"
 
 class Idle:
     def __init__(self, player):
         self.player = player
 
     def enter(self, event):
-        self.player.dir = 0
+        self.player.xdir = 0
+        self.player.ydir = 0
         self.player.frame = 0
 
     def exit(self, event):
@@ -102,15 +104,43 @@ class Walk:
         self.player = player
 
     def enter(self, event):
-        self.player.dir = 0
         self.player.frame = 0
 
     def exit(self, event):
         pass
 
     def do(self):
+        # 애니메이션 업데이트
         self.player.frame = (self.player.frame + 1) % len(player_walk_animation[self.player.face_dir])
 
+        # 키 상태에 따른 이동 처리
+        speed = 5
+
+        # 현재 누르고 있는 키들을 확인하여 이동
+
+        self.player.xdir = 0
+        self.player.ydir = 0
+
+        if self.player.keys_pressed[SDLK_RIGHT]:
+            self.player.xdir += 1
+            self.player.face_dir = 1
+        if self.player.keys_pressed[SDLK_LEFT]:
+            self.player.xdir -= 1
+            self.player.face_dir = 3
+        if self.player.keys_pressed[SDLK_UP]:
+            self.player.ydir += 1
+            self.player.face_dir = 2
+        if self.player.keys_pressed[SDLK_DOWN]:
+            self.player.ydir -= 1
+            self.player.face_dir = 0
+
+        # 실제 이동
+        self.player.x += self.player.xdir * speed
+        self.player.y += self.player.ydir * speed
+
+        # 아무 키도 누르지 않으면 IDLE로 전환
+        if not any(self.player.keys_pressed.values()):
+            self.player.state_machine.handle_state_event(("STOP", None))
     def draw(self):
         frame_data = player_walk_animation[self.player.face_dir][self.player.frame]
         if self.player.face_dir == 3:  # left
@@ -127,8 +157,15 @@ class Player:
     def __init__(self):
         self.x, self.y = 400, 300
         self.frame = 0
-        self.face_dir = 2   # up:0, right:1, down:2, left:3
-        self.dir = 0
+        self.face_dir = 1   # down:0, right:1, up:2, left:3
+        self.xdir = 0
+        self.ydir = 0
+        self.keys_pressed = {
+            SDLK_UP: False,
+            SDLK_DOWN: False,
+            SDLK_LEFT: False,
+            SDLK_RIGHT: False
+        }
         self.idle_image = load_image('resource/player/player_idle.png')
         self.death_image = load_image('resource/player/player_death.png')
         self.hit_image = load_image('resource/player/player_hit.png')
@@ -143,16 +180,30 @@ class Player:
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
         self.state_machine = StateMachine(
-            self.WALK,
+            self.IDLE,
         {
+            self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
+                        left_key_down: self.WALK, right_key_down: self.WALK},
+            self.WALK: {stop_event: self.IDLE}
             }
         )
 
     def update(self):
         self.state_machine.update()
 
-    def handle_events(self):
+    def handle_events(self, event):
+        if event.type == SDL_KEYDOWN:
+            print(f"Key down: {event.key}")  # 디버깅용
+            if event.key in self.keys_pressed:
+                self.keys_pressed[event.key] = True
+        elif event.type == SDL_KEYUP:
+            print(f"Key up: {event.key}")  # 디버깅용
+            if event.key in self.keys_pressed:
+                self.keys_pressed[event.key] = False
+
+        print(f"Current state: {self.state_machine.cur_state}")  # 현재 상태 확인
         self.state_machine.handle_state_event(("INPUT", event))
+        print(f"After event state: {self.state_machine.cur_state}")  # 상태 변화 확인
 
     def draw(self):
         self.state_machine.draw()
