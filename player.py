@@ -177,7 +177,6 @@ class Roll:
             self.player.roll_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                              self.player.x, self.player.y, frame_data[2] * 4, frame_data[3] * 4)
 
-
 class Walk:
     def __init__(self, player):
         self.player = player
@@ -231,7 +230,6 @@ class Walk:
             self.player.walk_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                              self.player.x, self.player.y, frame_data[2] * 4, frame_data[3] * 4)
 
-
 class Player:
     def __init__(self):
         self.x, self.y = 400, 300
@@ -259,7 +257,7 @@ class Player:
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
         self.state_machine = StateMachine(
-            self.PARRING,
+            self.IDLE,
         {
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
                         left_key_down: self.WALK, right_key_down: self.WALK,
