@@ -23,3 +23,7 @@ def pop_mode():
         stack.pop()
     if (len(stack) > 0):
         stack[-1].resume()
+
+def quit():
+    global running
+    running = False
