@@ -25,7 +25,7 @@ def handle_events():
             player.handle_events(event)  # handle_event -> handle_events로 수정
 
 
-def update_world():
+def update():
     for object in world:
         object.update()
 
