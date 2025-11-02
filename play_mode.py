@@ -5,7 +5,7 @@ world = []
 player = None
 running = True
 
-def reset_world():
+def init():
     global world  # 이 줄 추가
     global player
     world = []
