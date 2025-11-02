@@ -30,4 +30,5 @@ def draw():
     game_world.render()
     update_canvas()
 
-
+def finish():
+    game_world.clear()
