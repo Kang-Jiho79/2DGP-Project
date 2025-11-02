@@ -35,7 +35,9 @@ player_walk_animation = (
     ((0, 30, 17, 25), (17, 30, 17, 25), (35, 30, 17, 25), (51, 30, 17, 25), (71, 30, 17, 25), (87, 30, 17, 25)),
     ((0, 58, 15, 25), (14, 58, 15, 25), (31, 58, 15, 25), (49, 58, 15, 25), (63, 58, 15, 25), (79, 58, 15, 25))
 )
-
+player_slash_animation = (
+    (0,0,42,33), (42,0,40,33), (82,0,40,33), (122,0,40,33)
+)
 def up_key_down(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_UP
 def up_key_up(state_event):
