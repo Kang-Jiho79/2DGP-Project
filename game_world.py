@@ -24,3 +24,7 @@ def render():
     for layer in world:
         for o in layer:
             o.draw()
+
+def clear():
+    for layer in world:
+        layer.clear()
