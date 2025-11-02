@@ -30,7 +30,7 @@ def update():
         object.update()
 
 
-def render_world():
+def draw():
     clear_canvas()
     for object in world:
         object.draw()
