@@ -35,7 +35,7 @@ player_walk_animation = (
     ((0, 30, 17, 25), (17, 30, 17, 25), (35, 30, 17, 25), (51, 30, 17, 25), (71, 30, 17, 25), (87, 30, 17, 25)),
     ((0, 58, 15, 25), (14, 58, 15, 25), (31, 58, 15, 25), (49, 58, 15, 25), (63, 58, 15, 25), (79, 58, 15, 25))
 )
-player_slash_animation = (
+player_attack_animation = (
     (0,0,42,33), (42,0,40,33), (82,0,40,33), (122,0,40,33)
 )
 def up_key_down(state_event):
@@ -232,6 +232,39 @@ class Walk:
             self.player.walk_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                              self.player.x, self.player.y, frame_data[2] * 4, frame_data[3] * 4)
 
+class Attack:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        self.player.xdir = 0
+        self.player.ydir = 0
+        self.player.frame = 0
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        self.player.frame = (self.player.frame + 1)
+        if self.player.frame >= len(player_attack_animation):
+            if not any(self.player.keys_pressed.values()):
+                self.player.state_machine.handle_state_event(("TOIDLE", None))
+            else:
+                self.player.state_machine.handle_state_event(("TOWALK", None))
+
+    def draw(self):
+        character_frame_data = player_idle_animation[self.player.face_dir][0]
+        frame_data = player_attack_animation[self.player.frame]
+        if self.player.face_dir == 3:  # left
+            self.player.idle_image.clip_composite_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3], 0,
+                                                       'h',
+                                                       self.player.x, self.player.y, character_frame_data[2] * 4,
+                                                       character_frame_data[3] * 4)
+        else:
+            self.player.idle_image.clip_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3],
+                                             self.player.x, self.player.y, character_frame_data[2] * 4, character_frame_data[3] * 4)
+        self.player.parring_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],self.player.x, self.player.y, character_frame_data[2] * 6, character_frame_data[3] * 6)
+
 class Player:
     def __init__(self):
         self.x, self.y = 400, 300
@@ -251,6 +284,7 @@ class Player:
         self.parring_image = load_image('resource/player/player_parring.png')
         self.roll_image = load_image('resource/player/player_roll.png')
         self.walk_image = load_image('resource/player/player_walk.png')
+        self.attack_image = load_image('resource/player/player_attack.png')
         
         self.IDLE = Idle(self)
         self.DEATH = Death(self)
@@ -258,6 +292,7 @@ class Player:
         self.PARRING = Parrying(self)
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
+        self.ATTACK = Attack(self)
         self.state_machine = StateMachine(
             self.IDLE,
         {
@@ -267,6 +302,7 @@ class Player:
             self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL, s_key_down: self.PARRING},
             self.ROLL: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             self.PARRING: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
+            self.ATTACK: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             }
         )
 
