@@ -1,21 +1,16 @@
 import game_framework
 from pico2d import *
 from player import Player
+import game_world
 
-world = []
 player = None
-running = True
 
 def init():
-    global world  # 이 줄 추가
     global player
-    world = []
     player = Player()
-    world.append(player)
+    game_world.add_object(player, 1)
 
 def handle_events():
-    global running
-
     event_list = get_events()
     for event in event_list:
         if event.type == SDL_QUIT:
@@ -27,24 +22,12 @@ def handle_events():
 
 
 def update():
-    for object in world:
-        object.update()
+    game_world.update()
 
 
 def draw():
     clear_canvas()
-    for object in world:
-        object.draw()
+    game_world.render()
     update_canvas()
 
-open_canvas()
 
-reset_world()
-
-while running:
-    handle_events()
-    update_world()
-    render_world()
-    delay(0.05)
-
-close_canvas()
