@@ -264,7 +264,7 @@ class Attack:
         else:
             self.player.idle_image.clip_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3],
                                              self.player.x, self.player.y, character_frame_data[2] * 4, character_frame_data[3] * 4)
-        self.player.parring_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],self.player.x, self.player.y, character_frame_data[2] * 6, character_frame_data[3] * 6)
+        self.player.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],self.player.x, self.player.y, character_frame_data[2] * 6, character_frame_data[3] * 6)
 
 class Player:
     def __init__(self):
@@ -299,8 +299,10 @@ class Player:
         {
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
                         left_key_down: self.WALK, right_key_down: self.WALK,
-                        space_key_down: self.ROLL, s_key_down: self.PARRING},
-            self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL, s_key_down: self.PARRING},
+                        space_key_down: self.ROLL, s_key_down: self.PARRING,
+                        a_key_down: self.ATTACK},
+            self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL,
+                        s_key_down: self.PARRING, a_key_down: self.ATTACK},
             self.ROLL: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             self.PARRING: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             self.ATTACK: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
