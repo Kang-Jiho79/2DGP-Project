@@ -19,8 +19,15 @@ class ItemNPC:
     def draw(self):
         frame_data = itemnpc_animation[int(self.frame)]
         self.image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.x, self.y, 30, 40)
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
         if self.frame >= len(itemnpc_animation):
             self.frame = 0
+
+    def get_bb(self):
+        return self.x - 30, self.y - 30, self.x + 30, self.y + 30
+
+    def handle_collision(self, other, group):
+        pass
