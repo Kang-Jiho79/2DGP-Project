@@ -1,5 +1,6 @@
 from pico2d import *
 
+import game_world
 from state_machine import StateMachine
 
 player_idle_animation = (
@@ -78,7 +79,8 @@ class Idle:
         self.player.frame = 0
 
     def exit(self, event):
-        pass
+        if a_key_down(event):
+            self.player.attack()
 
     def do(self):
         self.player.frame = (self.player.frame + 1) % len(player_idle_animation[self.player.face_dir])
@@ -188,7 +190,8 @@ class Walk:
         self.player.frame = 0
 
     def exit(self, event):
-        pass
+        if a_key_down(event):
+            self.player.attack()
 
     def do(self):
         # 애니메이션 업데이트
@@ -325,19 +328,17 @@ class Player:
         self.PARRING = Parrying(self)
         self.ROLL = Roll(self)
         self.WALK = Walk(self)
-        self.ATTACK = Attack(self)
         self.state_machine = StateMachine(
             self.IDLE,
         {
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
                         left_key_down: self.WALK, right_key_down: self.WALK,
                         space_key_down: self.ROLL, s_key_down: self.PARRING,
-                        a_key_down: self.ATTACK},
+                        a_key_down: self.IDLE},
             self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL,
-                        s_key_down: self.PARRING, a_key_down: self.ATTACK},
+                        s_key_down: self.PARRING, a_key_down: self.WALK},
             self.ROLL: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             self.PARRING: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
-            self.ATTACK: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             }
         )
 
@@ -355,3 +356,7 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
+
+    def attack(self):
+        attack = Attack(self.x,self.y,self.face_dir)
+        game_world.add_object(attack)
