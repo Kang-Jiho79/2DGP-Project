@@ -302,6 +302,7 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def attack(self):
         if not self.attacking:
@@ -311,3 +312,9 @@ class Player:
 
     def end_attack(self):
         self.attacking = False
+
+    def get_bb(self):
+        return self.x - 15, self.y - 20, self.x + 15, self.y + 20
+
+    def handle_collision(self, group, other):
+        pass
