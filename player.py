@@ -39,32 +39,32 @@ player_walk_animation = (
     ((0, 58, 15, 25), (14, 58, 15, 25), (31, 58, 15, 25), (49, 58, 15, 25), (63, 58, 15, 25), (79, 58, 15, 25))
 )
 
-def up_key_down(state_event):
+def up_key_down(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_UP
-def up_key_up(state_event):
+def up_key_up(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_UP
-def down_key_down(state_event):
+def down_key_down(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_DOWN
-def down_key_up(state_event):
+def down_key_up(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_DOWN
-def left_key_down(state_event):
+def left_key_down(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_LEFT
-def left_key_up(state_event):
+def left_key_up(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_LEFT
-def right_key_down(state_event):
+def right_key_down(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_RIGHT
-def right_key_up(state_event):
+def right_key_up(state_event, player):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYUP and state_event[1].key == SDLK_RIGHT
-def space_key_down(state_event):
-    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_SPACE
-def s_key_down(state_event):
-    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_s
-def a_key_down(state_event):
-    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_a
+def space_key_down_with_stamina(state_event, player):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_SPACE and player.stamina > 0
+def s_key_down_with_stamina(state_event, player):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_s and player.stamina > 0
+def a_key_down_with_stamina(state_event, player):
+    return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_a and player.stamina > 0
 
-def Toidle_event(state_event):
+def Toidle_event(state_event, player):
     return state_event[0] == "TOIDLE"
-def Towalk_event(state_event):
+def Towalk_event(state_event, player ):
     return state_event[0] == "TOWALK"
 
 PIXEL_PER_METER = (21.0 / 1.7)
@@ -82,16 +82,21 @@ class Idle:
         self.player = player
 
     def enter(self, event):
+        self.player.stamina_time = get_time()
         self.player.xdir = 0
         self.player.ydir = 0
         self.player.frame = 0
 
     def exit(self, event):
-        if a_key_down(event):
+        if a_key_down_with_stamina(event, self.player):
             self.player.attack()
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_idle_animation[self.player.face_dir])
+        if get_time() - self.player.stamina_time > 1.0:
+            if self.player.stamina < 10:
+                self.player.stamina += 1
+                self.player.stamina_time = get_time()
 
     def draw(self):
         frame_data = player_idle_animation[self.player.face_dir][int(self.player.frame)]
@@ -118,6 +123,7 @@ class Parrying:
         self.player = player
 
     def enter(self, event):
+        self.player.stamina -= 1
         self.player.xdir = 0
         self.player.ydir = 0
         self.player.frame = 0
@@ -151,6 +157,7 @@ class Roll:
         self.player = player
 
     def enter(self, event):
+        self.player.stamina -= 1
         if self.player.face_dir == 0:
             self.player.xdir = 0
             self.player.ydir = -1
@@ -195,20 +202,22 @@ class Walk:
         self.player = player
 
     def enter(self, event):
+        self.player.stamina_time = get_time()
         self.player.frame = 0
 
     def exit(self, event):
-        if a_key_down(event):
+        if a_key_down_with_stamina(event, self.player):
             self.player.attack()
 
     def do(self):
-        # 애니메이션 업데이트
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_walk_animation[self.player.face_dir])
+        if get_time() - self.player.stamina_time > 1.0:
+            if self.player.stamina < 10:
+                self.player.stamina += 1
+                self.player.stamina_time = get_time()
 
-        # 키 상태에 따른 이동 처리
         speed = RUN_SPEED_PPS * game_framework.frame_time
 
-        # 현재 누르고 있는 키들을 확인하여 이동
 
         self.player.xdir = 0
         self.player.ydir = 0
@@ -262,6 +271,8 @@ class Player:
         }
         self.attacking = False
 
+        self.font = load_font('ENCR10B.TTF', 16)
+
         self.idle_image = load_image('resource/player/player_idle.png')
         self.death_image = load_image('resource/player/player_death.png')
         self.hit_image = load_image('resource/player/player_hit.png')
@@ -281,10 +292,10 @@ class Player:
         {
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
                         left_key_down: self.WALK, right_key_down: self.WALK,
-                        space_key_down: self.ROLL, s_key_down: self.PARRING,
-                        a_key_down: self.IDLE},
-            self.WALK: {Toidle_event: self.IDLE, space_key_down: self.ROLL,
-                        s_key_down: self.PARRING, a_key_down: self.WALK},
+                        space_key_down_with_stamina: self.ROLL, s_key_down_with_stamina: self.PARRING,
+                        a_key_down_with_stamina: self.IDLE},
+            self.WALK: {Toidle_event: self.IDLE, space_key_down_with_stamina: self.ROLL,
+                        s_key_down_with_stamina: self.PARRING, a_key_down_with_stamina: self.WALK},
             self.ROLL: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             self.PARRING: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             }
@@ -300,15 +311,17 @@ class Player:
         elif event.type == SDL_KEYUP:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = False
-        self.state_machine.handle_state_event(("INPUT", event))
+        self.state_machine.handle_state_event(("INPUT", event), self)
 
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+        self.font.draw(self.x - 10, self.y + 50, f'HP: {self.hp:02d} ST: {self.stamina:02d}', (255, 255, 0))
 
     def attack(self):
         if not self.attacking:
             self.attacking = True
+            self.stamina -= 1
             attack = Attack(self.x, self.y, self.face_dir, self)
             game_world.add_object(attack, 1)
 
