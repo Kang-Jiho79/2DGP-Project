@@ -2,6 +2,10 @@ from pico2d import *
 import game_world
 import game_framework
 
+player_attack_animation = (
+    (0,0,42,33), (42,0,40,33), (82,0,40,33), (122,0,40,33)
+)
+
 class Attack:
     image = None
 
@@ -11,3 +15,42 @@ class Attack:
         self.x, self.y = x, y
         self.face_dir = face_dir
         self.frame = 0
+    
+    def draw(self):
+        frame_data = player_attack_animation[self.frame]
+
+        # 방향에 따른 오프셋과 회전 각도 설정
+        offset_distance = 30  # 플레이어로부터 떨어뜨릴 거리
+
+        if self.face_dir == 0:  # down
+            effect_x = self.x
+            effect_y = self.y - offset_distance
+            angle = -90
+        elif self.face_dir == 1:  # right
+            effect_x = self.x + offset_distance
+            effect_y = self.y
+            angle = 0
+        elif self.face_dir == 2:  # up
+            effect_x = self.x
+            effect_y = self.y + offset_distance
+            angle = 90
+        elif self.face_dir == 3:  # left
+            effect_x = self.x - offset_distance
+            effect_y = self.y
+            angle = 0
+
+        # 플레이어 캐릭터 그리기
+        if self.face_dir == 3:  # left
+            self.image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                                         angle, 'h',
+                                                         effect_x, effect_y, 50,
+                                                         100)
+        else:
+            self.image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                                         angle, '',
+                                                         effect_x, effect_y, 50,
+                                                         100)
+    def update(self):
+        self.frame += 1
+        if self.frame >= len(player_attack_animation):
+            game_world.remove_object(self)
