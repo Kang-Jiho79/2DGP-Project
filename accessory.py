@@ -11,9 +11,9 @@ class Accessory:
     def unequip(self, player):
         pass
 
-class HealthRing(Accessory):
+class HealthNecklace(Accessory):
     def __init__(self):
-        super().__init__("Health Ring", "health", 10)
+        super().__init__("Health Necklace", "health", 10)
 
     def equip(self, player):
         player.max_hp += self.effect_value
@@ -24,9 +24,9 @@ class HealthRing(Accessory):
         if player.hp > player.max_hp:
             player.hp = player.max_hp
 
-class StaminaRing(Accessory):
+class StaminaNecklace(Accessory):
     def __init__(self):
-        super().__init__("Stamina Ring", "Stamina", 10)
+        super().__init__("Stamina Necklace", "Stamina", 10)
 
     def equip(self, player):
         player.max_stamina += self.effect_value
