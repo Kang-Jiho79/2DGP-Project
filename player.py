@@ -343,7 +343,8 @@ class Player:
         return self.x - 15, self.y - 20, self.x + 15, self.y + 20
 
     def handle_collision(self, group, other):
-        pass
+        if group == "player:item_npc":
+            print("충돌 감지: 플레이어가 아이템 NPC와 충돌했습니다.")
 
     def equip_accessory(self, accessory):
         # 빈 슬롯 찾기
