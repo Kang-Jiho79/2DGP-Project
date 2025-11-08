@@ -266,6 +266,7 @@ class Player:
         self.max_stamina = 10
         self.damage = 1
 
+        self.equipped_accessories = [None,None]
 
         self.x, self.y = 400, 300
         self.frame = 0
@@ -343,3 +344,22 @@ class Player:
 
     def handle_collision(self, group, other):
         pass
+
+    def equip_accessory(self, accessory):
+        # 빈 슬롯 찾기
+        for i in range(2):
+            if self.equipped_accessories[i] is None:
+                self.equipped_accessories[i] = accessory
+                accessory.equip(self)
+                accessory.equipped = True
+                return True
+        return False  # 슬롯이 가득참
+
+    def unequip_accessory(self, slot_index):
+        if 0 <= slot_index < 2 and self.equipped_accessories[slot_index] is not None:
+            accessory = self.equipped_accessories[slot_index]
+            accessory.unequip(self)
+            accessory.equipped = False
+            self.equipped_accessories[slot_index] = None
+            return accessory
+        return None
