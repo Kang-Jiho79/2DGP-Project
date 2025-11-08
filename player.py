@@ -247,6 +247,8 @@ class Walk:
 
 class Player:
     def __init__(self):
+        self.hp = 10
+        self.stamina = 10
         self.x, self.y = 400, 300
         self.frame = 0
         self.face_dir = 3   # down:0, right:1, up:2, left:3
