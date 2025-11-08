@@ -268,6 +268,9 @@ class Player:
 
         self.equipped_accessories = [None,None]
 
+        self.near_npc = False
+        self.current_npc = None
+
         self.x, self.y = 400, 300
         self.frame = 0
         self.face_dir = 3   # down:0, right:1, up:2, left:3
@@ -314,11 +317,17 @@ class Player:
 
     def update(self):
         self.state_machine.update()
+        self.check_npc_proximity()
 
     def handle_events(self, event):
         if event.type == SDL_KEYDOWN:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = True
+            if event.key == SDLK_f and self.near_npc:
+                print("상점 모드로 이동합니다!")
+                import game_framework
+                import item_shop_mode
+                game_framework.push_mode(item_shop_mode)
         elif event.type == SDL_KEYUP:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = False
@@ -343,8 +352,7 @@ class Player:
         return self.x - 15, self.y - 20, self.x + 15, self.y + 20
 
     def handle_collision(self, group, other):
-        if group == "player:item_npc":
-            print("충돌 감지: 플레이어가 아이템 NPC와 충돌했습니다.")
+        pass
 
     def equip_accessory(self, accessory):
         # 빈 슬롯 찾기
@@ -364,3 +372,31 @@ class Player:
             self.equipped_accessories[slot_index] = None
             return accessory
         return None
+
+    def check_npc_proximity(self):
+        """매 프레임마다 NPC와의 거리를 체크"""
+        import game_world
+        from item_npc import ItemNPC
+
+        # 이전 상태 저장
+        was_near = self.near_npc
+
+        # 초기화
+        self.near_npc = False
+        self.current_npc = None
+
+        # NPC가 있는 레이어에서 직접 확인
+        npcs = game_world.world[1]  # 또는 NPC가 있는 적절한 레이어 인덱스
+        for obj in npcs:
+            if isinstance(obj, ItemNPC):
+                distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
+                if distance < 50:
+                    self.near_npc = True
+                    self.current_npc = obj
+                    break
+
+        # 상태 변화 감지
+        if not was_near and self.near_npc:
+            print("NPC 근처에 왔습니다!")
+        elif was_near and not self.near_npc:
+            print("NPC에서 멀어졌습니다!")
