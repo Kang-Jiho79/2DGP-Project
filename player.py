@@ -295,5 +295,7 @@ class Player:
         self.state_machine.draw()
 
     def attack(self):
-        attack = Attack(self.x, self.y, self.face_dir)
-        game_world.add_object(attack, 1)
+        if not self.attacking:
+            self.attacking = True
+            attack = Attack(self.x, self.y, self.face_dir)
+            game_world.add_object(attack, 1)
