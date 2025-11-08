@@ -82,6 +82,7 @@ class Idle:
         self.player = player
 
     def enter(self, event):
+        self.player.current_state = 'IDLE'
         self.player.stamina_time = get_time()
         self.player.xdir = 0
         self.player.ydir = 0
@@ -123,6 +124,7 @@ class Parrying:
         self.player = player
 
     def enter(self, event):
+        self.player.current_state = 'PARRING'
         self.player.stamina -= 1
         self.player.xdir = 0
         self.player.ydir = 0
@@ -157,6 +159,7 @@ class Roll:
         self.player = player
 
     def enter(self, event):
+        self.player.current_state = 'ROLL'
         self.player.stamina -= 1
         if self.player.face_dir == 0:
             self.player.xdir = 0
@@ -202,6 +205,7 @@ class Walk:
         self.player = player
 
     def enter(self, event):
+        self.player.current_state = 'WALK'
         self.player.stamina_time = get_time()
         self.player.frame = 0
 
@@ -257,7 +261,12 @@ class Walk:
 class Player:
     def __init__(self):
         self.hp = 10
+        self.max_hp = 10
         self.stamina = 10
+        self.max_stamina = 10
+        self.damage = 1
+
+
         self.x, self.y = 400, 300
         self.frame = 0
         self.face_dir = 3   # down:0, right:1, up:2, left:3
@@ -280,7 +289,8 @@ class Player:
         self.roll_image = load_image('resource/player/player_roll.png')
         self.walk_image = load_image('resource/player/player_walk.png')
         self.attack_image = load_image('resource/player/player_attack.png')
-        
+
+        self.current_state = 'IDLE'
         self.IDLE = Idle(self)
         self.DEATH = Death(self)
         self.HIT = Hit(self)
