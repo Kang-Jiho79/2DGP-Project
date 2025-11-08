@@ -1,5 +1,7 @@
 import game_framework
 from pico2d import *
+
+from item_npc import ItemNPC
 from player import Player
 import game_world
 from village import Village
@@ -12,6 +14,8 @@ def init():
     game_world.add_object(player, 1)
     village = Village()
     game_world.add_object(village, 0)
+    item_npc = ItemNPC()
+    game_world.add_object(item_npc, 1)
 
 def handle_events():
     event_list = get_events()
