@@ -9,12 +9,13 @@ player_attack_animation = (
 class Attack:
     image = None
 
-    def __init__(self, x=400, y=300, face_dir=1):
+    def __init__(self, x=400, y=300, face_dir=1, player = None):
         if Attack.image == None:
             Attack.image = load_image('resource/player/player_attack.png')
         self.x, self.y = x, y
         self.face_dir = face_dir
         self.frame = 0
+        self.player = player
     
     def draw(self):
         frame_data = player_attack_animation[self.frame]
@@ -54,3 +55,4 @@ class Attack:
         self.frame += 1
         if self.frame >= len(player_attack_animation):
             game_world.remove_object(self)
+            self.player.end_attack()

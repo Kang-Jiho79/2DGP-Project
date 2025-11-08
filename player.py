@@ -297,7 +297,7 @@ class Player:
     def attack(self):
         if not self.attacking:
             self.attacking = True
-            attack = Attack(self.x, self.y, self.face_dir)
+            attack = Attack(self.x, self.y, self.face_dir, self)
             game_world.add_object(attack, 1)
 
     def end_attack(self):
