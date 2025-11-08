@@ -249,6 +249,8 @@ class Player:
             SDLK_LEFT: False,
             SDLK_RIGHT: False
         }
+        self.attacking = False
+
         self.idle_image = load_image('resource/player/player_idle.png')
         self.death_image = load_image('resource/player/player_death.png')
         self.hit_image = load_image('resource/player/player_hit.png')
