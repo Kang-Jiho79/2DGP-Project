@@ -271,7 +271,7 @@ class Player:
         self.near_npc = False
         self.current_npc = None
 
-        self.x, self.y = 400, 300
+        self.x, self.y = 640, 360
         self.frame = 0
         self.face_dir = 3   # down:0, right:1, up:2, left:3
         self.xdir = 0

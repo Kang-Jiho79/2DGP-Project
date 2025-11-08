@@ -5,7 +5,7 @@ class Village:
         self.image = load_image('resource/background/village/village.png')
 
     def draw(self):
-        self.image.clip_composite_draw(0, 0, 1248, 832, 0, '', 400, 300, 800, 600)
+        self.image.clip_composite_draw(0, 0, 1248, 832, 0, '', 640, 360, 1280, 720)
 
     def update(self):
         pass

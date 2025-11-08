@@ -10,7 +10,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
 class ItemNPC:
-    def __init__(self, x = 245, y = 180):
+    def __init__(self, x = 390, y = 210):
         self.image = load_image('resource/npc/item_npc.png')
         self.x = x
         self.y = y
