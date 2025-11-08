@@ -11,3 +11,6 @@ class Accessory:
     def unequip(self, player):
         pass
 
+class HealthRing(Accessory):
+    def __init__(self):
+        super().__init__("Health Ring", "health", 20)
