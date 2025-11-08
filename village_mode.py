@@ -2,6 +2,7 @@ import game_framework
 from pico2d import *
 from player import Player
 import game_world
+from village import Village
 
 player = None
 
@@ -9,6 +10,8 @@ def init():
     global player
     player = Player()
     game_world.add_object(player, 1)
+    village = Village()
+    game_world.add_object(village, 0)
 
 def handle_events():
     event_list = get_events()
