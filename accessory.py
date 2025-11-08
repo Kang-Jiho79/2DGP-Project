@@ -14,3 +14,12 @@ class Accessory:
 class HealthRing(Accessory):
     def __init__(self):
         super().__init__("Health Ring", "health", 20)
+
+    def equip(self, player):
+        player.max_hp += self.effect_value
+        player.hp += self.effect_value
+
+    def unequip(self, player):
+        player.max_hp -= self.effect_value
+        if player.hp > player.max_hp:
+            player.hp = player.max_hp
