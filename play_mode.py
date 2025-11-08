@@ -23,6 +23,7 @@ def handle_events():
 
 def update():
     game_world.update()
+    game_world.handle_collision()
 
 
 def draw():
