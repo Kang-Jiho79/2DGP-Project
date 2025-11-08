@@ -87,10 +87,10 @@ class Idle:
         frame_data = player_idle_animation[self.player.face_dir][self.player.frame]
         if self.player.face_dir == 3:  # left
             self.player.idle_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0, 'h',
-                                                       self.player.x, self.player.y, frame_data[2] * 4 , frame_data[3] * 4)
+                                                       self.player.x, self.player.y, frame_data[2] * 2 , frame_data[3] * 2)
         else:
             self.player.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
-                                         self.player.x, self.player.y, frame_data[2] * 4 , frame_data[3] * 4)
+                                         self.player.x, self.player.y, frame_data[2] * 2 , frame_data[3] * 2)
 
 
 class Death:
@@ -129,12 +129,12 @@ class Parrying:
         if self.player.face_dir == 3:  # left
             self.player.idle_image.clip_composite_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3], 0,
                                                        'h',
-                                                       self.player.x, self.player.y, character_frame_data[2] * 4,
-                                                       character_frame_data[3] * 4)
+                                                       self.player.x, self.player.y, character_frame_data[2] * 2,
+                                                       character_frame_data[3] * 2)
         else:
             self.player.idle_image.clip_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3],
-                                             self.player.x, self.player.y, character_frame_data[2] * 4, character_frame_data[3] * 4)
-        self.player.parring_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],self.player.x, self.player.y, character_frame_data[2] * 6, character_frame_data[3] * 6)
+                                             self.player.x, self.player.y, character_frame_data[2] * 2, character_frame_data[3] * 2)
+        self.player.parring_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],self.player.x, self.player.y, character_frame_data[2] * 3, character_frame_data[3] * 3)
 
 class Roll:
     def __init__(self, player):
@@ -174,11 +174,11 @@ class Roll:
         if self.player.face_dir == 3:  # left
             self.player.roll_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0,
                                                        'h',
-                                                       self.player.x, self.player.y, frame_data[2] * 4,
-                                                       frame_data[3] * 4)
+                                                       self.player.x, self.player.y, frame_data[2] * 2,
+                                                       frame_data[3] * 2)
         else:
             self.player.roll_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
-                                             self.player.x, self.player.y, frame_data[2] * 4, frame_data[3] * 4)
+                                             self.player.x, self.player.y, frame_data[2] * 2, frame_data[3] * 2)
 
 class Walk:
     def __init__(self, player):
@@ -227,11 +227,11 @@ class Walk:
         if self.player.face_dir == 3:  # left
             self.player.walk_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0,
                                                        'h',
-                                                       self.player.x, self.player.y, frame_data[2] * 4,
-                                                       frame_data[3] * 4)
+                                                       self.player.x, self.player.y, frame_data[2] * 2,
+                                                       frame_data[3] * 2)
         else:
             self.player.walk_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
-                                             self.player.x, self.player.y, frame_data[2] * 4, frame_data[3] * 4)
+                                             self.player.x, self.player.y, frame_data[2] * 2, frame_data[3] * 2)
 
 class Attack:
     def __init__(self, player):
@@ -256,15 +256,47 @@ class Attack:
     def draw(self):
         character_frame_data = player_idle_animation[self.player.face_dir][0]
         frame_data = player_attack_animation[self.player.frame]
+
+        # 방향에 따른 오프셋과 회전 각도 설정
+        offset_distance = 30  # 플레이어로부터 떨어뜨릴 거리
+
+        if self.player.face_dir == 0:  # down
+            effect_x = self.player.x
+            effect_y = self.player.y - offset_distance
+            angle = -90
+        elif self.player.face_dir == 1:  # right
+            effect_x = self.player.x + offset_distance
+            effect_y = self.player.y
+            angle = 0
+        elif self.player.face_dir == 2:  # up
+            effect_x = self.player.x
+            effect_y = self.player.y + offset_distance
+            angle = 90
+        elif self.player.face_dir == 3:  # left
+            effect_x = self.player.x - offset_distance
+            effect_y = self.player.y
+            angle = 0
+
+        # 플레이어 캐릭터 그리기
         if self.player.face_dir == 3:  # left
-            self.player.idle_image.clip_composite_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3], 0,
+            self.player.idle_image.clip_composite_draw(character_frame_data[0], character_frame_data[1],
+                                                       character_frame_data[2], character_frame_data[3], 0,
                                                        'h',
-                                                       self.player.x, self.player.y, character_frame_data[2] * 4,
-                                                       character_frame_data[3] * 4)
+                                                       self.player.x, self.player.y, character_frame_data[2] * 2,
+                                                       character_frame_data[3] * 2)
+            self.player.attack_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                                         angle, 'h',
+                                                         effect_x, effect_y, character_frame_data[2] * 3,
+                                                         character_frame_data[3] * 3)
         else:
-            self.player.idle_image.clip_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3],
-                                             self.player.x, self.player.y, character_frame_data[2] * 4, character_frame_data[3] * 4)
-        self.player.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],self.player.x, self.player.y, character_frame_data[2] * 6, character_frame_data[3] * 6)
+            self.player.idle_image.clip_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2],
+                                             character_frame_data[3],
+                                             self.player.x, self.player.y, character_frame_data[2] * 2,
+                                             character_frame_data[3] * 2)
+            self.player.attack_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                                         angle, '',
+                                                         effect_x, effect_y, character_frame_data[2] * 3,
+                                                         character_frame_data[3] * 3)
 
 class Player:
     def __init__(self):

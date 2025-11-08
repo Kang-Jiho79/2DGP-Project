@@ -3,8 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../Professor/2025-2DGP/.idea/2025-2DGP.iml" filepath="$PROJECT_DIR$/../../Professor/2025-2DGP/.idea/2025-2DGP.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../2DGP-DRILL-11/.idea/2DGP-DRILL-11.iml" filepath="$PROJECT_DIR$/../2DGP-DRILL-11/.idea/2DGP-DRILL-11.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../2DGP-DRILL-10/.idea/2DGP-DRILL-10.iml" filepath="$PROJECT_DIR$/../2DGP-DRILL-10/.idea/2DGP-DRILL-10.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/2DGP-Project.iml" filepath="$PROJECT_DIR$/.idea/2DGP-Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../2DGP-DRILL-11/.idea/새 폴더.iml" filepath="$PROJECT_DIR$/../2DGP-DRILL-11/.idea/새 폴더.iml" />
     </modules>
   </component>
 </project>

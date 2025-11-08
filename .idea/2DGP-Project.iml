@@ -5,6 +5,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="2025-2DGP" />
-    <orderEntry type="module" module-name="2DGP-DRILL-11" />
+    <orderEntry type="module" module-name="2DGP-DRILL-10" />
+    <orderEntry type="module" module-name="새 폴더" />
   </component>
 </module>

@@ -37,9 +37,9 @@ def run(start_mode):
 
     while running:
         stack[-1].handle_events()
-        stack[-1].update()
         stack[-1].draw()
-        delay(0.1)
+        stack[-1].update()
+        delay(0.05)
 
     while (len(stack) > 0):
         stack[-1].finish()
