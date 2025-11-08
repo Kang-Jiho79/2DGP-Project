@@ -1,5 +1,6 @@
 from pico2d import *
 
+import game_framework
 import game_world
 from state_machine import StateMachine
 from attack import Attack
@@ -61,12 +62,20 @@ def s_key_down(state_event):
 def a_key_down(state_event):
     return state_event[0] == "INPUT" and state_event[1].type == SDL_KEYDOWN and state_event[1].key == SDLK_a
 
-
 def Toidle_event(state_event):
     return state_event[0] == "TOIDLE"
 def Towalk_event(state_event):
     return state_event[0] == "TOWALK"
 
+PIXEL_PER_METER = (21.0 / 1.7)
+RUN_SPEED_KMPH = 20.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
 
 class Idle:
     def __init__(self, player):
@@ -82,10 +91,10 @@ class Idle:
             self.player.attack()
 
     def do(self):
-        self.player.frame = (self.player.frame + 1) % len(player_idle_animation[self.player.face_dir])
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_idle_animation[self.player.face_dir])
 
     def draw(self):
-        frame_data = player_idle_animation[self.player.face_dir][self.player.frame]
+        frame_data = player_idle_animation[self.player.face_dir][int(self.player.frame)]
         if self.player.face_dir == 3:  # left
             self.player.idle_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0, 'h',
                                                        self.player.x, self.player.y, frame_data[2] * 2 , frame_data[3] * 2)
@@ -117,7 +126,7 @@ class Parrying:
         pass
 
     def do(self):
-        self.player.frame = (self.player.frame + 1)
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.player.frame >= len(player_parring_animation):
             if not any(self.player.keys_pressed.values()):
                 self.player.state_machine.handle_state_event(("TOIDLE", None))
@@ -126,7 +135,7 @@ class Parrying:
 
     def draw(self):
         character_frame_data = player_idle_animation[self.player.face_dir][0]
-        frame_data = player_parring_animation[self.player.frame]
+        frame_data = player_parring_animation[int(self.player.frame)]
         if self.player.face_dir == 3:  # left
             self.player.idle_image.clip_composite_draw(character_frame_data[0], character_frame_data[1], character_frame_data[2], character_frame_data[3], 0,
                                                        'h',
@@ -160,10 +169,10 @@ class Roll:
         pass
 
     def do(self):
-        speed = 10
+        speed = RUN_SPEED_PPS * 1.5 * game_framework.frame_time
         self.player.x += self.player.xdir * speed
         self.player.y += self.player.ydir * speed
-        self.player.frame = (self.player.frame + 1)
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.player.frame >= len(player_roll_animation[self.player.face_dir]):
             if not any(self.player.keys_pressed.values()):
                 self.player.state_machine.handle_state_event(("TOIDLE", None))
@@ -171,7 +180,7 @@ class Roll:
                 self.player.state_machine.handle_state_event(("TOWALK", None))
 
     def draw(self):
-        frame_data = player_roll_animation[self.player.face_dir][self.player.frame]
+        frame_data = player_roll_animation[self.player.face_dir][int(self.player.frame)]
         if self.player.face_dir == 3:  # left
             self.player.roll_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0,
                                                        'h',
@@ -194,10 +203,10 @@ class Walk:
 
     def do(self):
         # 애니메이션 업데이트
-        self.player.frame = (self.player.frame + 1) % len(player_walk_animation[self.player.face_dir])
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_walk_animation[self.player.face_dir])
 
         # 키 상태에 따른 이동 처리
-        speed = 5
+        speed = RUN_SPEED_PPS * game_framework.frame_time
 
         # 현재 누르고 있는 키들을 확인하여 이동
 
@@ -225,7 +234,7 @@ class Walk:
         if not any(self.player.keys_pressed.values()):
             self.player.state_machine.handle_state_event(("TOIDLE", None))
     def draw(self):
-        frame_data = player_walk_animation[self.player.face_dir][self.player.frame]
+        frame_data = player_walk_animation[self.player.face_dir][int(self.player.frame)]
         if self.player.face_dir == 3:  # left
             self.player.walk_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0,
                                                        'h',
