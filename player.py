@@ -5,6 +5,11 @@ import game_world
 from state_machine import StateMachine
 from attack import Attack
 
+import item_shop_mode
+import upgrade_shop_mode
+from item_npc import ItemNPC
+from upgrade_npc import UpgradeNPC
+
 player_idle_animation = (
     ((0, 80, 15, 21), (17, 80, 15, 21), (34, 80, 15, 20), (51, 80, 15, 21), (68, 80, 15, 21), (85, 80, 15, 21)),
     ((0, 54, 15, 20), (17, 54, 15, 20), (33, 54, 15, 20), (49, 54, 15, 20)),
@@ -332,10 +337,16 @@ class Player:
                 self.keys_pressed[event.key] = True
             if event.key == SDLK_f and self.near_npc:
                 print(f"{self.current_npc} 모드로 이동합니다!")
-                import game_framework
-                import item_shop_mode
+                self.keys_pressed = {
+                    SDLK_UP: False,
+                    SDLK_DOWN: False,
+                    SDLK_LEFT: False,
+                    SDLK_RIGHT: False
+                }
                 if self.current_npc.__class__.__name__ == 'ItemNPC':
                     game_framework.push_mode(item_shop_mode)
+                elif self.current_npc.__class__.__name__ == 'UpgradeNPC':
+                    game_framework.push_mode(upgrade_shop_mode)
         elif event.type == SDL_KEYUP:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = False
@@ -409,8 +420,6 @@ class Player:
 
     def check_npc_proximity(self):
         """매 프레임마다 NPC와의 거리를 체크"""
-        import game_world
-        from item_npc import ItemNPC
 
         # 이전 상태 저장
         was_near = self.near_npc
@@ -422,7 +431,7 @@ class Player:
         # NPC가 있는 레이어에서 직접 확인
         npcs = game_world.world[1]  # 또는 NPC가 있는 적절한 레이어 인덱스
         for obj in npcs:
-            if isinstance(obj, ItemNPC):
+            if isinstance(obj, ItemNPC) or isinstance(obj, UpgradeNPC):
                 distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
                 if distance < 50:
                     self.near_npc = True

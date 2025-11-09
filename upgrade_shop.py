@@ -1,8 +1,7 @@
 from pico2d import *
-from village_mode import player
 
 class UpgradeShop:
-    def __init__(self):
+    def __init__(self, player):
         self.image = load_image('resource/npc/upgrade_npc_ui.png')
         self.price = 100 + 50 * player.sword_level
         self.success_rate = 90 - 10 * player.sword_level

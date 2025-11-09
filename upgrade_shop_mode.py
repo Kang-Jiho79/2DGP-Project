@@ -3,11 +3,14 @@ from pico2d import *
 
 import game_world
 import village_mode
+from upgrade_shop import UpgradeShop
 
 upgrade_shop = None
 
 def init():
     global upgrade_shop
+    upgrade_shop = UpgradeShop(village_mode.player)
+    game_world.add_object(upgrade_shop, 1)
 
 def handle_events():
     event_list = get_events()
