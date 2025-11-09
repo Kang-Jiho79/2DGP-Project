@@ -37,9 +37,9 @@ class StaminaNecklace(Accessory):
         if player.stamina > player.max_stamina:
             player.stamina = player.max_stamina
 
-class AttackBracelet(Accessory):
+class AttackNecklace(Accessory):
     def __init__(self):
-        super().__init__("Attack Bracelet", "attack", 2)
+        super().__init__("Attack Necklace", "attack", 2)
 
     def equip(self, player):
         player.attack += self.effect_value

@@ -5,12 +5,12 @@ import game_world
 import village_mode
 from item_shop import ItemShop
 
-item_shop_image = None
+item_shop = None
 
 def init():
-    global item_shop_image
-    item_shop_image = ItemShop()
-    game_world.add_object(item_shop_image, 1)
+    global item_shop
+    item_shop = ItemShop()
+    game_world.add_object(item_shop, 1)
 
 def handle_events():
     event_list = get_events()
@@ -22,6 +22,7 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN:
             x, y = event.x, get_canvas_height() - event.y
             print(f"Mouse Clicked at: ({x}, {y})")
+            item_shop.handle_click(x, y, village_mode.player)
 
 
 
@@ -36,7 +37,7 @@ def draw():
     update_canvas()
 
 def finish():
-    game_world.remove_object(item_shop_image)
+    game_world.remove_object(item_shop)
 
 def pause():
     pass

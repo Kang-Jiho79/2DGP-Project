@@ -95,7 +95,7 @@ class Idle:
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_idle_animation[self.player.face_dir])
         if get_time() - self.player.stamina_time > 1.0:
-            if self.player.stamina < 10:
+            if self.player.stamina < self.player.max_stamina:
                 self.player.stamina += 1
                 self.player.stamina_time = get_time()
 
@@ -216,7 +216,7 @@ class Walk:
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_walk_animation[self.player.face_dir])
         if get_time() - self.player.stamina_time > 1.0:
-            if self.player.stamina < 10:
+            if self.player.stamina < self.player.max_stamina:
                 self.player.stamina += 1
                 self.player.stamina_time = get_time()
 
@@ -265,6 +265,7 @@ class Player:
         self.stamina = 10
         self.max_stamina = 10
         self.damage = 1
+        self.gold = 1000
 
         self.equipped_accessories = [None,None]
 
@@ -336,7 +337,8 @@ class Player:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
-        self.font.draw(self.x - 10, self.y + 50, f'X: {self.x:02f} Y: {self.y:02f}', (255, 255, 0))
+        # self.font.draw(self.x - 10, self.y + 50, f'X: {self.x:02f} Y: {self.y:02f}', (255, 255, 0))
+        self.font.draw(self.x - 10, self.y + 50, f'hp: {self.hp:02f} stamina: {self.stamina:02f}', (255, 255, 0))
 
     def attack(self):
         if not self.attacking:
