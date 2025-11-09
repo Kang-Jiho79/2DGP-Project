@@ -35,19 +35,24 @@ class ItemShop:
 
     def add_item(self, player, item):
         if player.gold >= item['price']:
-            player.gold -= item['price']
+
             if item.get('name') == 'Health Potion':
                 if player.hp + 5 <= player.max_hp:
                     player.hp += 5
                 else:
                     player.hp = player.max_hp
-            elif item.get('name') == 'Health Necklace':
-                player.equip_accessory(HealthNecklace())
-            elif item.get('name') == 'Stamina Necklace':
-                player.equip_accessory(StaminaNecklace())
-            elif item.get('name') == 'Attack Necklace':
-                player.equip_accessory(AttackNecklace())
-            # elif item.get('name') == 'Parring assistant Necklace':
-            #     player.equip_accessory(ParringAssistantNecklace())
-            # elif item.get('name') == 'Parring Damage Necklace':
-            #     player.equip_accessory(ParringDamageNecklace())
+            elif player.accessory_count < 2:
+                if item.get('name') == 'Health Necklace':
+                    player.equip_accessory(HealthNecklace())
+                elif item.get('name') == 'Stamina Necklace':
+                    player.equip_accessory(StaminaNecklace())
+                elif item.get('name') == 'Attack Necklace':
+                    player.equip_accessory(AttackNecklace())
+                # elif item.get('name') == 'Parring assistant Necklace':
+                #     player.equip_accessory(ParringAssistantNecklace())
+                # elif item.get('name') == 'Parring Damage Necklace':
+                #     player.equip_accessory(ParringDamageNecklace())
+            else:
+                print("Cannot equip more than 2 accessories.")
+                return
+            player.gold -= item['price']
