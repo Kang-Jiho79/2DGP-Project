@@ -46,3 +46,23 @@ class AttackNecklace(Accessory):
 
     def unequip(self, player):
         player.damage -= self.effect_value
+
+class ParringAssistantNecklace(Accessory):
+    def __init__(self):
+        super().__init__("Parring assistant Necklace", "parring_assistant", 0.3)
+
+    def equip(self, player):
+        player.parring_speed -= self.effect_value
+
+    def unequip(self, player):
+        player.parring_speed += self.effect_value
+
+class ParringDamageNecklace(Accessory):
+    def __init__(self):
+        super().__init__("Parring Damage Necklace", "parring_damage", 0.5)
+
+    def equip(self, player):
+        player.parring_speed += self.effect_value
+
+    def unequip(self, player):
+        player.parring_speed -= self.effect_value

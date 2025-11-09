@@ -49,10 +49,10 @@ class ItemShop:
                     player.equip_accessory(StaminaNecklace())
                 elif item.get('name') == 'Attack Necklace':
                     player.equip_accessory(AttackNecklace())
-                # elif item.get('name') == 'Parring assistant Necklace':
-                #     player.equip_accessory(ParringAssistantNecklace())
-                # elif item.get('name') == 'Parring Damage Necklace':
-                #     player.equip_accessory(ParringDamageNecklace())
+                elif item.get('name') == 'Parring assistant Necklace':
+                    player.equip_accessory(ParringAssistantNecklace())
+                elif item.get('name') == 'Parring Damage Necklace':
+                    player.equip_accessory(ParringDamageNecklace())
             else:
                 print("Cannot equip more than 2 accessories.")
                 return
