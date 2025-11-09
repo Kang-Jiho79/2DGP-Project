@@ -1,6 +1,7 @@
 import game_framework
 from pico2d import *
 
+from dummy import Dummy
 from item_npc import ItemNPC
 from player import Player
 import game_world
@@ -19,6 +20,8 @@ def init():
     game_world.add_object(item_npc, 1)
     upgrade_npc = UpgradeNPC()
     game_world.add_object(upgrade_npc, 1)
+    dummy = Dummy()
+    game_world.add_object(dummy, 1)
 
 def handle_events():
     event_list = get_events()

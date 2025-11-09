@@ -1,9 +1,14 @@
 from pico2d import *
+import game_framework
 
 dummy_animation = (
     (0, 101, 78,86), (92,101,78,86), (182,101,78,86), (270,101,78,86), (358,101,78,86), (447,101,78,86),
     (0, 0,78,86), (88,0,78,86), (177,0,78,86), (265,0,78,86), (354,0,78,86), (443,0,78,86)
 )
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
 
 class Dummy:
     def __init__(self, x = 640, y = 100):
@@ -14,14 +19,16 @@ class Dummy:
 
     def draw(self):
         frame_data = dummy_animation[int(self.frame)]
-        self.image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.x, self.y, 78, 86)
+        self.image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.x, self.y, 50, 50)
         draw_rectangle(*self.get_bb())
 
     def update(self):
-        self.frame = (self.frame + 1) % len(dummy_animation)
+        self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time
+        if self.frame >= len(dummy_animation):
+            self.frame = 0
 
     def get_bb(self):
-        return 0, 0, 0, 0
+        return self.x - 25, self.y - 25, self.x + 25, self.y + 25
 
     def handle_collision(self, other, group):
         pass
