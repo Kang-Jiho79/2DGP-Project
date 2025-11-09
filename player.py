@@ -260,7 +260,7 @@ class Walk:
 
 class Player:
     def __init__(self):
-        self.hp = 10
+        self.hp = 5
         self.max_hp = 10
         self.stamina = 10
         self.max_stamina = 10
@@ -293,7 +293,11 @@ class Player:
         self.parring_image = load_image('resource/player/player_parring.png')
         self.roll_image = load_image('resource/player/player_roll.png')
         self.walk_image = load_image('resource/player/player_walk.png')
-        self.attack_image = load_image('resource/player/player_attack.png')
+
+        self.hp_image = load_image('resource/player/hp.png')
+        self.stamina_image = load_image('resource/player/stamina.png')
+        self.damage_image = load_image('resource/player/damage.png')
+        self.coin_image = load_image('resource/player/coin.png')
 
         self.current_state = 'IDLE'
         self.IDLE = Idle(self)
@@ -338,10 +342,17 @@ class Player:
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
         # self.font.draw(self.x - 10, self.y + 50, f'X: {self.x:02f} Y: {self.y:02f}', (255, 255, 0))
-        self.font.draw(self.x - 10, self.y + 50, f'hp: {self.hp:02f} stamina: {self.stamina:02f}', (255, 255, 0))
+        # self.font.draw(self.x - 10, self.y + 50, f'hp: {self.hp:02f} stamina: {self.stamina:02f}', (255, 255, 0))
+        self.ui_draw()
 
     def ui_draw(self):
-        pass
+        # HP
+        self.hp_image.composite_draw(0,'',30, get_canvas_height()-30, 30, 30)
+        # max hp bar
+        draw_rectangle(45, get_canvas_height()-45, 45 + self.max_hp * 20, get_canvas_height()-15,0, 0, 0, 255, 1)
+        # hp bar
+        draw_rectangle(45, get_canvas_height()-45, 45 + self.hp * 20, get_canvas_height()-15,255, 0, 0, 255, 1)
+
 
     def attack(self):
         if not self.attacking:
