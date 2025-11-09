@@ -4,6 +4,7 @@ from pico2d import *
 from item_npc import ItemNPC
 from player import Player
 import game_world
+from upgrade_npc import UpgradeNPC
 from village import Village
 
 player = None
@@ -16,6 +17,8 @@ def init():
     game_world.add_object(village, 0)
     item_npc = ItemNPC()
     game_world.add_object(item_npc, 1)
+    upgrade_npc = UpgradeNPC()
+    game_world.add_object(upgrade_npc, 1)
 
 def handle_events():
     event_list = get_events()
