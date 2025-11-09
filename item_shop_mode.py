@@ -21,6 +21,7 @@ def handle_events():
             game_framework.pop_mode()
         elif event.type == SDL_MOUSEBUTTONDOWN:
             x, y = event.x, get_canvas_height() - event.y
+            print(f"Mouse Clicked at: ({x}, {y})")
 
 
 
