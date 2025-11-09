@@ -16,8 +16,6 @@ def init():
     game_world.add_object(village, 0)
     item_npc = ItemNPC()
     game_world.add_object(item_npc, 1)
-    game_world.add_collision_group('player:mob')
-    game_world.add_collision_pair('player:mob_sen', player, item_npc)
 
 def handle_events():
     event_list = get_events()
