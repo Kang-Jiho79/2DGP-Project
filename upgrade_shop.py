@@ -5,7 +5,7 @@ class UpgradeShop:
         self.image = load_image('resource/npc/upgrade_npc_ui.png')
         self.price = 100 + 50 * player.sword_level
         self.success_rate = 90 - 10 * player.sword_level
-        self.upgrade_button = (0,0,0,0)
+        self.upgrade_button = (550,280,640,450)
 
     def draw(self):
         self.image.clip_composite_draw(0, 0, 1472, 704, 0, '', 640, 360, 800, 600)
