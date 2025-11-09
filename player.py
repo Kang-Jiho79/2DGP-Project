@@ -264,7 +264,7 @@ class Player:
         self.max_hp = 10
         self.stamina = 10
         self.max_stamina = 10
-        self.damage = 1
+        self.damage = 5
         self.gold = 1000
 
         self.equipped_accessories = [None,None]
@@ -285,7 +285,7 @@ class Player:
         }
         self.attacking = False
 
-        self.font = load_font('ENCR10B.TTF', 16)
+        self.font = load_font('ENCR10B.TTF', 30)
 
         self.idle_image = load_image('resource/player/player_idle.png')
         self.death_image = load_image('resource/player/player_death.png')
@@ -359,6 +359,10 @@ class Player:
         draw_rectangle(45, get_canvas_height()-90, 45 + self.max_stamina * 20, get_canvas_height()-60,0, 0, 0, 255, 1)
         # stamina bar
         draw_rectangle(45, get_canvas_height()-90, 45 + self.stamina * 20, get_canvas_height()-60,0, 255, 0, 255, 1)
+
+        # Damage
+        self.damage_image.composite_draw(0,'',30, get_canvas_height()-120, 30, 30)
+        self.font.draw(45, get_canvas_height()-130, f'{self.damage}', (0, 0, 0))
 
     def attack(self):
         if not self.attacking:

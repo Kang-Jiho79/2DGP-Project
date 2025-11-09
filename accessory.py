@@ -42,7 +42,7 @@ class AttackNecklace(Accessory):
         super().__init__("Attack Necklace", "attack", 2)
 
     def equip(self, player):
-        player.attack += self.effect_value
+        player.damage += self.effect_value
 
     def unequip(self, player):
-        player.attack -= self.effect_value
+        player.damage -= self.effect_value
