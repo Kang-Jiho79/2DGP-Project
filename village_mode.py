@@ -22,6 +22,7 @@ def init():
     game_world.add_object(upgrade_npc, 1)
     dummy = Dummy()
     game_world.add_object(dummy, 1)
+    game_world.add_collision_pair('attack:mob',None,dummy)
 
 def handle_events():
     event_list = get_events()

@@ -387,6 +387,7 @@ class Player:
             self.stamina -= 1
             attack = Attack(self.x, self.y, self.face_dir, self)
             game_world.add_object(attack, 1)
+            game_world.add_collision_pair('attack:mob', attack, None)
 
     def end_attack(self):
         self.attacking = False
