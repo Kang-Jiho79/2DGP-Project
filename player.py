@@ -363,7 +363,11 @@ class Player:
 
         # Damage
         self.damage_image.composite_draw(0,'',30, get_canvas_height()-120, 30, 30)
-        self.font.draw(45, get_canvas_height()-130, f'{self.damage}', (0, 0, 0))
+        self.font.draw(45, get_canvas_height()-120, f'{self.damage}', (0, 0, 0))
+
+        # Gold
+        self.coin_image.composite_draw(0,'',30, get_canvas_height()-160, 30, 30)
+        self.font.draw(45, get_canvas_height()-160, f'{self.gold}', (0, 0, 0))
 
     def attack(self):
         if not self.attacking:
