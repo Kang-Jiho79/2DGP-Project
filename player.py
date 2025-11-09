@@ -267,6 +267,7 @@ class Player:
         self.damage = 5
         self.gold = 1000
 
+        self.accessory_count = 0
         self.equipped_accessories = [None,None]
 
         self.near_npc = False
@@ -387,6 +388,7 @@ class Player:
                 self.equipped_accessories[i] = accessory
                 accessory.equip(self)
                 accessory.equipped = True
+                self.accessory_count += 1
                 return True
         return False  # 슬롯이 가득참
 
@@ -396,6 +398,7 @@ class Player:
             accessory.unequip(self)
             accessory.equipped = False
             self.equipped_accessories[slot_index] = None
+            self.accessory_count -= 1
             return accessory
         return None
 
