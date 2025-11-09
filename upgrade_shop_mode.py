@@ -22,6 +22,7 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN:
             x, y = event.x, get_canvas_height() - event.y
             print(f"Mouse Clicked at: ({x}, {y})")
+            upgrade_shop.handle_click(x, y)
 
 
 

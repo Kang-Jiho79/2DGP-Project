@@ -19,3 +19,20 @@ class UpgradeShop:
 
     def update(self):
         pass
+
+    def handle_click(self, x, y):
+        left, bottom, right, top = self.upgrade_button
+        if left <= x <= right and bottom <= y <= top:
+            if self.player.gold >= self.price:
+                self.player.gold -= self.price
+                import random
+                if random.randint(1, 100) <= self.success_rate:
+                    self.player.sword_level += 1
+                    self.player.damage += 5
+                    self.price = 100 + 50 * self.player.sword_level
+                    self.success_rate = 90 - 10 * self.player.sword_level
+                    print(f"Sword upgraded to level {self.player.sword_level}!")
+                else:
+                    print("Upgrade failed.")
+            else:
+                print("Not enough gold to upgrade the sword.")

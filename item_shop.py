@@ -2,7 +2,8 @@ from pico2d import *
 from accessory import *
 
 class ItemShop:
-    def __init__(self):
+    def __init__(self, player):
+        self.player = player
         self.image = load_image('resource/npc/item_npc_ui.png')
         self.items = [
             {'rect': (500, 490, 730, 580), 'name': 'Health Potion', 'price': 50},
@@ -22,12 +23,12 @@ class ItemShop:
     def update(self):
         pass
 
-    def handle_click(self, x, y, player):
+    def handle_click(self, x, y):
         for item in self.items:
             left, bottom, right, top = item['rect']
             if left <= x <= right and bottom <= y <= top:
-                if player.gold >= item['price']:
-                    self.add_item(player, item)
+                if self.player.gold >= item['price']:
+                    self.add_item(self.player, item)
                     print(f"Purchased {item['name']} for {item['price']} gold.")
                 else:
                     print("Not enough gold to purchase this item.")

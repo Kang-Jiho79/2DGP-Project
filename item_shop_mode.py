@@ -9,7 +9,7 @@ item_shop = None
 
 def init():
     global item_shop
-    item_shop = ItemShop()
+    item_shop = ItemShop(village_mode.player)
     game_world.add_object(item_shop, 1)
 
 def handle_events():
@@ -22,7 +22,7 @@ def handle_events():
         elif event.type == SDL_MOUSEBUTTONDOWN:
             x, y = event.x, get_canvas_height() - event.y
             print(f"Mouse Clicked at: ({x}, {y})")
-            item_shop.handle_click(x, y, village_mode.player)
+            item_shop.handle_click(x, y)
 
 
 
