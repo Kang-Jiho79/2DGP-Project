@@ -99,7 +99,7 @@ class Idle:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_idle_animation[self.player.face_dir])
-        if get_time() - self.player.stamina_time > 1.0:
+        if get_time() - self.player.stamina_time > 0.5:
             if self.player.stamina < self.player.max_stamina:
                 self.player.stamina += 1
                 self.player.stamina_time = get_time()
@@ -220,7 +220,7 @@ class Walk:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_walk_animation[self.player.face_dir])
-        if get_time() - self.player.stamina_time > 1.0:
+        if get_time() - self.player.stamina_time > 0.5:
             if self.player.stamina < self.player.max_stamina:
                 self.player.stamina += 1
                 self.player.stamina_time = get_time()

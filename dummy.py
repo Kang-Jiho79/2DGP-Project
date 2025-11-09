@@ -37,6 +37,7 @@ class Dummy:
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)
+
     def take_damage(self, damage):
         print("Dummy took", damage, "damage!")
         damage_text = DamageText(self.x, self.y, damage)
