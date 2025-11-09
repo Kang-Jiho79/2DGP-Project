@@ -139,7 +139,7 @@ class Parrying:
         pass
 
     def do(self):
-        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time * self.player.parring_speed)
         if self.player.frame >= len(player_parring_animation):
             if not any(self.player.keys_pressed.values()):
                 self.player.state_machine.handle_state_event(("TOIDLE", None))
@@ -272,6 +272,7 @@ class Player:
         self.damage = 5
         self.gold = 1000
         self.sword_level = 0
+        self.parring_speed = 1.0
 
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
