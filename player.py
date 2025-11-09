@@ -340,6 +340,9 @@ class Player:
         # self.font.draw(self.x - 10, self.y + 50, f'X: {self.x:02f} Y: {self.y:02f}', (255, 255, 0))
         self.font.draw(self.x - 10, self.y + 50, f'hp: {self.hp:02f} stamina: {self.stamina:02f}', (255, 255, 0))
 
+    def ui_draw(self):
+        pass
+
     def attack(self):
         if not self.attacking:
             self.attacking = True
