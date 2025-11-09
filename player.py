@@ -330,10 +330,11 @@ class Player:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = True
             if event.key == SDLK_f and self.near_npc:
-                print("상점 모드로 이동합니다!")
+                print(f"{self.current_npc} 모드로 이동합니다!")
                 import game_framework
                 import item_shop_mode
-                game_framework.push_mode(item_shop_mode)
+                if self.current_npc.__class__.__name__ == 'ItemNPC':
+                    game_framework.push_mode(item_shop_mode)
         elif event.type == SDL_KEYUP:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = False
