@@ -21,4 +21,4 @@ class DamageText:
         return True
 
     def draw(self):
-        self.font.draw(self.x, self.y + 10, str(self.damage), 255, 255, 0)
+        self.font.draw(self.x, self.y + 10, str(self.damage), (255, 255, 0))

@@ -1,5 +1,7 @@
 from pico2d import *
 import game_framework
+import game_world
+from damage_text import DamageText
 
 dummy_animation = (
     (0, 101, 78,86), (92,101,78,86), (182,101,78,86), (270,101,78,86), (358,101,78,86), (447,101,78,86),
@@ -12,6 +14,7 @@ FRAMES_PER_ACTION = 8
 
 class Dummy:
     def __init__(self, x = 640, y = 100):
+        self.hp = 100
         self.x = x
         self.y = y
         self.image = load_image('resource/npc/dummy.png')
@@ -30,5 +33,14 @@ class Dummy:
     def get_bb(self):
         return self.x - 25, self.y - 25, self.x + 25, self.y + 25
 
-    def handle_collision(self, other, group):
-        pass
+    def handle_collision(self, group, other):
+        if group == 'attack:mob':
+            damage = other.player.damage
+            self.take_damage(damage)
+    def take_damage(self, damage):
+        print("Dummy took", damage, "damage!")
+        damage_text = DamageText(self.x, self.y, damage)
+        game_world.add_object(damage_text, 1)
+        self.hp -= damage
+        if self.hp <= 0:
+            self.hp = 100
