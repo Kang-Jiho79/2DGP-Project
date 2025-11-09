@@ -71,6 +71,7 @@ class Attack:
             return self.effect_x - 15, self.effect_y - 25, self.effect_x + 15, self.effect_y + 25
         else :
             return self.effect_x - 25, self.effect_y - 15, self.effect_x + 25, self.effect_y + 15
+
     def handle_collision(self, group, other):
         if group == 'attack:mob':
             game_world.remove_collision_object(self)

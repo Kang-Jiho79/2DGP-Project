@@ -1,6 +1,6 @@
 from pico2d import *
 import game_framework
-
+import game_world
 
 class DamageText:
     def __init__(self, x, y, damage):
@@ -17,8 +17,8 @@ class DamageText:
         self.alpha = int(255 * (self.timer / 1.0))  # 점점 투명해짐
 
         if self.timer <= 0:
-            return False  # 삭제 신호
+            game_world.remove_object(self)
         return True
 
     def draw(self):
-        self.font.draw(self.x, self.y + 10, str(self.damage), (255, 255, 0))
+        self.font.draw(self.x, self.y + 10, str(self.damage), (255, 0, 0))
