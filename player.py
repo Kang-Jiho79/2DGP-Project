@@ -266,6 +266,7 @@ class Player:
         self.max_stamina = 10
         self.damage = 5
         self.gold = 1000
+        self.sword_level = 0
 
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
