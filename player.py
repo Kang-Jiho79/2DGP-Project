@@ -270,7 +270,7 @@ class Player:
         self.stamina = 10
         self.max_stamina = 10
         self.damage = 5
-        self.gold = 1000
+        self.gold = 100000
         self.sword_level = 0
         self.parring_speed = 1.0
 
