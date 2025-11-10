@@ -348,6 +348,15 @@ class Player:
                     game_framework.push_mode(item_shop_mode)
                 elif self.current_npc.__class__.__name__ == 'UpgradeNPC':
                     game_framework.push_mode(upgrade_shop_mode)
+            elif event.key == SDLK_q:
+                # 모든 악세사리 해제
+                self.hp = 5
+                for i in range(2):
+                    if self.equipped_accessories[i] is not None:
+                        accessory = self.unequip_accessory(i)
+                        if accessory:
+                            print(f"{accessory.__class__.__name__} 해제됨")
+                print("모든 악세사리가 해제되었습니다!")
         elif event.type == SDL_KEYUP:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = False
