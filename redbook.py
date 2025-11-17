@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 import game_world
 from missile import Missile
+from guided_missile import GuidedMissile
 from state_machine import StateMachine
 import time
 
@@ -173,5 +174,6 @@ class RedBook:
 
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
-        missile = Missile(self.x, self.y, player_x, player_y)
+        # missile = Missile(self.x, self.y, player_x, player_y)
+        missile = GuidedMissile(self.x, self.y)
         game_world.add_object(missile, 1)
