@@ -1,7 +1,7 @@
 import game_framework
 from pico2d import *
 from dungeon_1 import Dungeon1
-
+from redbook import RedBook
 import game_world
 
 player = None
@@ -18,6 +18,8 @@ def init(p = None):
     player.y = 150
     dungeon_1 = Dungeon1()
     game_world.add_object(dungeon_1, 0)
+    mobs = [RedBook()]
+    game_world.add_objects(mobs, 1)
 
 
 def handle_events():

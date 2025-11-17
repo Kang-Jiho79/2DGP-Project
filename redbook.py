@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 import game_world
 from state_machine import StateMachine
+import time
 
 idle_animation = (
 (0,0,13,14), (16,0,13,14), (32,0,13,14), (48,0,13,14)
@@ -21,6 +22,14 @@ attack_end_animation = (
 (93,0,13,18), (109,0,13,16)
 )
 
+def Toidle_event(state_event, mob):
+    return state_event[0] == "TOIDLE"
+def Todeath_event(state_event, mob):
+    return state_event[0] == "TODEATH"
+def Tohit_event(state_event, mob):
+    return state_event[0] == "TOHIT"
+def Toattack_event(state_event, mob):
+    return state_event[0] == "TOATTACK"
 
 PIXEL_PER_METER = (21.0 / 1.7)
 RUN_SPEED_KMPH = 20.0
@@ -35,33 +44,54 @@ FRAMES_PER_ACTION = 8
 class Idle:
     def __init__(self, mob):
         self.mob = mob
-    def enter(self):
+    def enter(self, event):
+        self.mob.frame = 0
+        self.mob.attack_time = time.time()
+
+    def exit(self, event):
         pass
-    def exit(self):
-        pass
+
     def do(self):
-        pass
+        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(idle_animation)
+        # 자동 공격 동작 추가
+        if time.time() - self.mob.attack_time > self.mob.attack_cooldown:  # 2초마다 공격
+            self.mob.current_state = 'ATTACK'
+            self.mob.state_machine.handle_state_event(('TOATTACK',None))
+
     def draw(self):
-        pass
+        frame_data = idle_animation[int(self.mob.frame)]
+        self.mob.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
 
 class Attack:
     def __init__(self, mob):
         self.mob = mob
-    def enter(self):
-        pass
-    def exit(self):
+    def enter(self, event):
+        self.mob.frame = 0
+        self.attack_started = False
+    def exit(self, event):
         pass
     def do(self):
-        pass
+        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if self.mob.frame >= len(attack_animation) and not self.attack_started:
+            self.mob.frame = 0
+            self.attack_started = True
+        elif self.mob.frame >= len(attack_end_animation) and self.attack_started:
+            self.mob.current_state = 'IDLE'
+            self.mob.state_machine.handle_state_event(('TOIDLE',None))
     def draw(self):
-        pass
+        if not self.attack_started:
+            frame_data = attack_animation[int(self.mob.frame)]
+            self.mob.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
+        else:
+            frame_data = attack_end_animation[int(self.mob.frame)]
+            self.mob.attack_end_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
 
 class Death:
     def __init__(self, mob):
         self.mob = mob
-    def enter(self):
+    def enter(self, event):
         pass
-    def exit(self):
+    def exit(self, event):
         pass
     def do(self):
         pass
@@ -71,9 +101,9 @@ class Death:
 class Hit:
     def __init__(self, mob):
         self.mob = mob
-    def enter(self):
+    def enter(self, event):
         pass
-    def exit(self):
+    def exit(self, event):
         pass
     def do(self):
         pass
@@ -81,19 +111,16 @@ class Hit:
         pass
 
 class RedBook:
-    def __init__(self):
-        self.hp = 5
-        self.max_hp = 10
-        self.damage = 5
+    def __init__(self,x = 640, y = 360, level=1):
+        self.hp = 3 * level
+        self.damage = level
+        self.attack_cooldown = 3.0 / level
 
         self.near_thing = False
         self.current_thing = None
 
-        self.x, self.y = 640, 360
+        self.x, self.y = x, y
         self.frame = 0
-        self.face_dir = 3   # down:0, right:1, up:2, left:3
-        self.xdir = 0
-        self.ydir = 0
 
         self.font = load_font('ENCR10B.TTF', 30)
 
@@ -105,10 +132,16 @@ class RedBook:
 
         self.current_state = 'IDLE'
         self.IDLE = Idle(self)
+        self.ATTACK = Attack(self)
+        self.DEATH = Death(self)
+        self.HIT = Hit(self)
         self.state_machine = StateMachine(
             self.IDLE,
         {
-            self.IDLE: {},
+            self.IDLE: {Toattack_event: self.ATTACK},
+            self.ATTACK: {Toidle_event: self.IDLE},
+            self.DEATH: {},
+            self.HIT: {Toidle_event: self.IDLE, Todeath_event: self.DEATH}
             }
         )
 
@@ -120,6 +153,7 @@ class RedBook:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 15, self.y - 20, self.x + 15, self.y + 20

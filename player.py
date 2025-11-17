@@ -5,9 +5,6 @@ import game_framework
 import game_world
 from state_machine import StateMachine
 from attack import Attack
-
-import item_shop_mode
-import upgrade_shop_mode
 from item_npc import ItemNPC
 from upgrade_npc import UpgradeNPC
 from dungeon_gate import DungeonGate
@@ -347,10 +344,13 @@ class Player:
                     SDLK_RIGHT: False
                 }
                 if self.current_thing.__class__.__name__ == 'ItemNPC':
+                    import item_shop_mode
                     game_framework.push_mode(item_shop_mode)
                 elif self.current_thing.__class__.__name__ == 'UpgradeNPC':
+                    import upgrade_shop_mode
                     game_framework.push_mode(upgrade_shop_mode)
                 elif self.current_thing.__class__.__name__ == 'DungeonGate':
+                    import dungeon_1_mode
                     game_framework.change_mode(dungeon_1_mode, self)
             elif event.key == SDLK_q:
                 # 모든 악세사리 해제
