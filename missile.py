@@ -10,10 +10,13 @@ RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 class Missile:
-    def __init__(self, x, y, target_x, target_y, speed=1.0):
-        self.image = load_image('resource/missile/missile.png')  # 미사일 이미지 경로
-        self.x = x
-        self.y = y
+    image = None
+    def __init__(self, mob, target_x, target_y, speed=1.0):
+        if Missile.image is None:
+             Missile.image = load_image('resource/missile/missile.png')
+        self.mob = mob
+        self.x = self.mob.x
+        self.y = self.mob.y
         self.speed = speed
 
         # 목표까지의 벡터 계산
@@ -48,3 +51,7 @@ class Missile:
     def get_bb(self):
         # 충돌 박스
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
+
+    def handle_collision(self, group, other):
+        if group == 'player:mob_missile':
+            game_world.remove_object(self)

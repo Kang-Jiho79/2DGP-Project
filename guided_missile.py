@@ -11,10 +11,13 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 
 class GuidedMissile:
-    def __init__(self, x, y, speed=1.0, tracking_strength=0.5, lifetime=5.0):
-        self.image = load_image('resource/missile/guided_missile.png')
-        self.x = x
-        self.y = y
+    image = None
+    def __init__(self, mob, speed=1.0, tracking_strength=0.5, lifetime=5.0):
+        if GuidedMissile.image is None:
+            GuidedMissile.image = load_image('resource/missile/guided_missile.png')
+        self.mob = mob
+        self.x = self.mob.x
+        self.y = self.mob.y
         self.speed = speed  # 속도를 줄임 (1.0 -> 0.3)
         self.tracking_strength = tracking_strength  # 유도 강도를 줄임 (1.0 -> 0.05)
         self.lifetime = lifetime  # 생존 시간 (초)
@@ -77,3 +80,7 @@ class GuidedMissile:
 
     def get_bb(self):
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
+
+    def handle_collision(self, group, other):
+        if group == 'player:mob_missile':
+            game_world.remove_object(self)

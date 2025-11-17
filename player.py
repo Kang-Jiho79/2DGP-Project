@@ -8,6 +8,7 @@ from attack import Attack
 from item_npc import ItemNPC
 from upgrade_npc import UpgradeNPC
 from dungeon_gate import DungeonGate
+from damage_text import DamageText
 
 player_idle_animation = (
     ((0, 80, 15, 21), (17, 80, 15, 21), (34, 80, 15, 20), (51, 80, 15, 21), (68, 80, 15, 21), (85, 80, 15, 21)),
@@ -21,10 +22,10 @@ player_death_animation = (
     (138, 31, 16, 21)
 )
 player_hit_animation = (
-    ((0,53,17,21),(19,53,17,21),(36,53,17,21),(55,53,17,21),(74,53,17,21),(93,53,17,21)),
-    ((0,27,13,21),(15,27,13,21),(30,27,16,21),(48,27,16,21),(66,27,16,21)),
-    ((0,0,17,21),(17,0,17,21),(34,0,17,21),(51,0,17,21),(72,0,17,21),(93,0,17,21),(114,0,17,21)),
-    ((0,27,13,21),(15,27,13,21),(30,27,16,21),(48,27,16,21),(66,27,16,21))
+    ((0,60,17,16),(19,60,15,20),(36,60,17,20),(55,60,17,19),(74,60,17,19),(93,60,17,19)),
+    ((0,27,13,20),(15,27,13,18),(30,27,16,21),(48,27,16,21),(66,27,16,21)),
+    ((0,0,15,21),(17,0,15,19),(34,0,15,17),(51,0,19,25),(72,0,19,25),(93,0,19,21),(114,0,17,18)),
+    ((0,27,13,21),(15,27,13,18),(30,27,16,21),(48,27,16,21),(66,27,16,21))
 )
 player_parring_animation = (
     (0,52,54,102), (54,52,54,102), (108,52,54,102), (162,52,54,102), (216,52,54,102),
@@ -70,6 +71,10 @@ def Toidle_event(state_event, player):
     return state_event[0] == "TOIDLE"
 def Towalk_event(state_event, player ):
     return state_event[0] == "TOWALK"
+def Todeath_event(state_event, player):
+    return state_event[0] == "TODEATH"
+def Tohit_event(state_event, player):
+    return state_event[0] == "TOHIT"
 
 PIXEL_PER_METER = (21.0 / 1.7)
 RUN_SPEED_KMPH = 20.0
@@ -116,11 +121,52 @@ class Idle:
 class Death:
     def __init__(self, player):
         self.player = player
+    def enter(self, event):
+        self.player.current_state = 'DEATH'
+        self.player.frame = 0
+    def exit(self, event):
+        pass
+    def do(self):
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if self.player.frame >= len(player_death_animation):
+            game_world.remove_object(self.player)
+    def draw(self):
+        frame_data = player_death_animation[int(self.player.frame)]
+        self.player.death_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                         self.player.x, self.player.y, frame_data[2] * 2 , frame_data[3] * 2)
 
 
 class Hit:
     def __init__(self, player):
         self.player = player
+    def enter(self, event):
+        self.player.current_state = 'HIT'
+        self.player.frame = 0
+    def exit(self, event):
+        pass
+    def do(self):
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if self.player.frame >= len(player_hit_animation[self.player.face_dir]):
+            if self.player.hp <= 0:
+                self.player.state_machine.handle_state_event(("TODEATH", None))
+            else:
+                if not any(self.player.keys_pressed.values()):
+                    self.player.state_machine.handle_state_event(("TOIDLE", None))
+                else:
+                    self.player.state_machine.handle_state_event(("TOWALK", None))
+    def draw(self):
+        frame_data = player_hit_animation[self.player.face_dir][int(self.player.frame)]
+        if self.player.face_dir == 3:  # left
+            self.player.hit_image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], 0,
+                                                       'h',
+                                                       self.player.x, self.player.y, frame_data[2] * 2,
+                                                       frame_data[3] * 2)
+        else:
+            self.player.hit_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                             self.player.x, self.player.y, frame_data[2] * 2, frame_data[3] * 2)
+
+
+
 
 
 class Parrying:
@@ -320,11 +366,14 @@ class Player:
             self.IDLE: {up_key_down: self.WALK, down_key_down: self.WALK,
                         left_key_down: self.WALK, right_key_down: self.WALK,
                         space_key_down_with_stamina: self.ROLL, s_key_down_with_stamina: self.PARRING,
-                        a_key_down_with_stamina: self.IDLE},
+                        a_key_down_with_stamina: self.IDLE, Tohit_event: self.HIT},
             self.WALK: {Toidle_event: self.IDLE, space_key_down_with_stamina: self.ROLL,
-                        s_key_down_with_stamina: self.PARRING, a_key_down_with_stamina: self.WALK},
+                        s_key_down_with_stamina: self.PARRING, a_key_down_with_stamina: self.WALK,
+                        Tohit_event: self.HIT},
             self.ROLL: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
             self.PARRING: {Toidle_event: self.IDLE, Towalk_event: self.WALK},
+            self.DEATH:{},
+            self.HIT: {Toidle_event: self.IDLE, Towalk_event: self.WALK, Todeath_event: self.DEATH}
             }
         )
 
@@ -410,7 +459,10 @@ class Player:
         return self.x - 15, self.y - 20, self.x + 15, self.y + 20
 
     def handle_collision(self, group, other):
-        pass
+        if group == 'player:mob_missile':
+            if self.current_state == 'IDLE' or self.current_state == 'WALK':
+                damage = other.mob.damage
+                self.take_damage(damage)
 
     def equip_accessory(self, accessory):
         # 빈 슬롯 찾기
@@ -463,3 +515,10 @@ class Player:
             print("NPC 근처에 왔습니다!")
         elif was_near and not self.near_thing:
             print("NPC에서 멀어졌습니다!")
+
+    def take_damage(self, damage):
+        print("Dummy took", damage, "damage!")
+        damage_text = DamageText(self.x, self.y, damage)
+        game_world.add_object(damage_text, 1)
+        self.hp -= damage
+        self.state_machine.handle_state_event(('TOHIT', None))

@@ -63,7 +63,7 @@ class Idle:
 
     def draw(self):
         frame_data = idle_animation[int(self.mob.frame)]
-        self.mob.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
+        self.mob.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
 
 class Attack:
     def __init__(self, mob):
@@ -85,10 +85,10 @@ class Attack:
     def draw(self):
         if not self.attack_started:
             frame_data = attack_animation[int(self.mob.frame)]
-            self.mob.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
+            self.mob.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
         else:
             frame_data = attack_end_animation[int(self.mob.frame)]
-            self.mob.attack_end_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
+            self.mob.attack_end_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
 
 class Death:
     def __init__(self, mob):
@@ -103,7 +103,7 @@ class Death:
             game_world.remove_object(self.mob)
     def draw(self):
         frame_data = death_animation[int(self.mob.frame)]
-        self.mob.death_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
+        self.mob.death_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
 
 class Hit:
     def __init__(self, mob):
@@ -123,7 +123,7 @@ class Hit:
                 self.mob.state_machine.handle_state_event(('TOIDLE',None))
     def draw(self):
         frame_data = hit_animation[int(self.mob.frame)]
-        self.mob.hit_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
+        self.mob.hit_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
 
 class RedBook:
     def __init__(self,x = 640, y = 360, level=1):
@@ -170,7 +170,7 @@ class RedBook:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 15, self.y - 20, self.x + 15, self.y + 20
+        return self.x - 20, self.y - 20, self.x + 20, self.y + 20
 
     def handle_collision(self, group, other):
         if group == 'attack:mob':
@@ -195,5 +195,6 @@ class RedBook:
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
         # missile = Missile(self.x, self.y, player_x, player_y)
-        missile = GuidedMissile(self.x, self.y)
+        missile = GuidedMissile(self)
         game_world.add_object(missile, 1)
+        game_world.add_collision_pair("player:mob_missile", None, missile)
