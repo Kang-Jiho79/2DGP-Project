@@ -194,7 +194,7 @@ class GreenBook:
 
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
-        missile = Missile(self.x, self.y, player_x, player_y)
+        missile = Missile(self, player_x, player_y)
         # missile = GuidedMissile(self)
         game_world.add_object(missile, 1)
         game_world.add_collision_pair("player:mob_missile", None, missile)

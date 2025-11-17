@@ -20,8 +20,8 @@ class Missile:
         self.speed = speed
 
         # 목표까지의 벡터 계산
-        dx = target_x - x
-        dy = target_y - y
+        dx = target_x - self.x
+        dy = target_y - self.y
         distance = math.sqrt(dx * dx + dy * dy)
 
         # 정규화된 방향 벡터
