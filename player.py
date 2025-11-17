@@ -330,7 +330,7 @@ class Player:
 
     def update(self):
         self.state_machine.update()
-        self.check_npc_proximity()
+        self.check_villiage_proximity()
 
     def handle_events(self, event):
         if event.type == SDL_KEYDOWN:
@@ -429,8 +429,13 @@ class Player:
             return accessory
         return None
 
-    def check_npc_proximity(self):
+    def check_villiage_proximity(self):
         """매 프레임마다 NPC와의 거리를 체크"""
+        current = game_framework.current_mode()
+        if not current or current.__module__ != 'VillageMode':
+            self.near_npc = False
+            self.current_npc = None
+            return
 
         # 이전 상태 저장
         was_near = self.near_npc

@@ -52,3 +52,9 @@ def run(start_mode):
     while (len(stack) > 0):
         stack[-1].finish()
         stack.pop()
+
+def current_mode():
+    global stack
+    if stack and len(stack) > 0:
+        return stack[-1]
+    return None
