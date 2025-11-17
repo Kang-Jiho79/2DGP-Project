@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import game_world
+from missile import Missile
 from state_machine import StateMachine
 import time
 
@@ -75,6 +76,7 @@ class Attack:
         if self.mob.frame >= len(attack_animation) and not self.attack_started:
             self.mob.frame = 0
             self.attack_started = True
+            self.mob.fire_missile()
         elif self.mob.frame >= len(attack_end_animation) and self.attack_started:
             self.mob.current_state = 'IDLE'
             self.mob.state_machine.handle_state_event(('TOIDLE',None))
@@ -160,3 +162,16 @@ class RedBook:
 
     def handle_collision(self, group, other):
         pass
+
+    def get_player_position(self):
+        """게임월드에서 플레이어 찾기"""
+        for layer in game_world.world:
+            for obj in layer:
+                if obj.__class__.__name__ == 'Player':
+                    return obj.x, obj.y
+        return self.x, self.y
+
+    def fire_missile(self):
+        player_x, player_y = self.get_player_position()
+        missile = Missile(self.x, self.y, player_x, player_y)
+        game_world.add_object(missile, 1)

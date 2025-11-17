@@ -10,7 +10,7 @@ RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 class Missile:
-    def __init__(self, x, y, target_x, target_y, speed=300):
+    def __init__(self, x, y, target_x, target_y, speed=1.0):
         self.image = load_image('resource/missile/missile.png')  # 미사일 이미지 경로
         self.x = x
         self.y = y
@@ -42,10 +42,9 @@ class Missile:
             game_world.remove_object(self)
 
     def draw(self):
-        # 각도를 도(degree)로 변환하여 회전 그리기
-        angle_deg = math.degrees(self.angle)
-        self.image.composite_draw(angle_deg, '', self.x, self.y, 32, 16)
+        self.image.composite_draw(self.angle, '', self.x, self.y, 32, 16)
+        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         # 충돌 박스
-        return self.x - 16, self.y - 8, self.x + 16, self.y + 8
+        return self.x - 16, self.y - 16, self.x + 16, self.y + 16
