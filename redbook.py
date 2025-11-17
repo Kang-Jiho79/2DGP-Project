@@ -5,6 +5,7 @@ from missile import Missile
 from guided_missile import GuidedMissile
 from state_machine import StateMachine
 import time
+from damage_text import DamageText
 
 idle_animation = (
 (0,0,13,14), (16,0,13,14), (32,0,13,14), (48,0,13,14)
@@ -115,7 +116,7 @@ class Hit:
 
 class RedBook:
     def __init__(self,x = 640, y = 360, level=1):
-        self.hp = 3 * level
+        self.hp = 10 * level
         self.damage = level
         self.attack_cooldown = 3.0 / level
 
@@ -162,7 +163,15 @@ class RedBook:
         return self.x - 15, self.y - 20, self.x + 15, self.y + 20
 
     def handle_collision(self, group, other):
-        pass
+        if group == 'attack:mob':
+            damage = other.player.damage
+            self.take_damage(damage)
+
+    def take_damage(self, damage):
+        print("Dummy took", damage, "damage!")
+        damage_text = DamageText(self.x, self.y, damage)
+        game_world.add_object(damage_text, 1)
+        self.hp -= damage
 
     def get_player_position(self):
         """게임월드에서 플레이어 찾기"""

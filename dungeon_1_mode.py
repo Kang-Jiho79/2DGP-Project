@@ -14,12 +14,15 @@ def init(p = None):
     else:
         player = p
     game_world.add_object(player, 1)
+    game_world.add_collision_pair("player:missile", player,None)
     player.x = 640
     player.y = 150
     dungeon_1 = Dungeon1()
     game_world.add_object(dungeon_1, 0)
     mobs = [RedBook()]
     game_world.add_objects(mobs, 1)
+    for mob in mobs:
+        game_world.add_collision_pair("attack:mob", None, mob)
 
 
 def handle_events():
