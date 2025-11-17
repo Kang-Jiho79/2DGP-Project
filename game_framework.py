@@ -3,13 +3,13 @@ frame_time = 0.0
 running = None
 stack = None
 
-def change_mode(mode):
+def change_mode(mode, player):
     global stack
     if (len(stack) > 0):
         stack[-1].finish()
         stack.pop()
     stack.append(mode)
-    mode.init()
+    mode.init(player)
 
 def push_mode(mode):
     global stack

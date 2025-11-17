@@ -10,19 +10,10 @@ from village import Village
 
 player = None
 
-def init():
+def init(p):
     global player
-    player = Player()
+    player = p
     game_world.add_object(player, 1)
-    village = Village()
-    game_world.add_object(village, 0)
-    item_npc = ItemNPC()
-    game_world.add_object(item_npc, 1)
-    upgrade_npc = UpgradeNPC()
-    game_world.add_object(upgrade_npc, 1)
-    dummy = Dummy()
-    game_world.add_object(dummy, 1)
-    game_world.add_collision_pair('attack:mob',None,dummy)
 
 def handle_events():
     event_list = get_events()

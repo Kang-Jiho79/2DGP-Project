@@ -7,6 +7,7 @@ from player import Player
 import game_world
 from upgrade_npc import UpgradeNPC
 from village import Village
+import dungeon_1_mode
 
 player = None
 
@@ -30,7 +31,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.change_mode(dungeon_1_mode, player)
         else:
             player.handle_events(event)  # handle_event -> handle_events로 수정
 
