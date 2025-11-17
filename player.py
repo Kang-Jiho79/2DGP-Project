@@ -9,6 +9,7 @@ from item_npc import ItemNPC
 from upgrade_npc import UpgradeNPC
 from dungeon_gate import DungeonGate
 from damage_text import DamageText
+from villiage_gate import VillageGate
 
 player_idle_animation = (
     ((0, 80, 15, 21), (17, 80, 15, 21), (34, 80, 15, 20), (51, 80, 15, 21), (68, 80, 15, 21), (85, 80, 15, 21)),
@@ -379,7 +380,12 @@ class Player:
 
     def update(self):
         self.state_machine.update()
-        self.check_villiage_proximity()
+        current = game_framework.current_mode()
+        if current:
+            if current.__name__ == 'village_mode':
+                self.check_villiage_proximity()
+            elif current.__name__ == 'dungeon_1_mode':
+                self.check_dungeon_proximity()
 
     def handle_events(self, event):
         if event.type == SDL_KEYDOWN:
@@ -401,6 +407,9 @@ class Player:
                 elif self.current_thing.__class__.__name__ == 'DungeonGate':
                     import dungeon_1_mode
                     game_framework.change_mode(dungeon_1_mode, self)
+                elif self.current_thing.__class__.__name__ == 'VillageGate':
+                    import village_mode
+                    game_framework.change_mode(village_mode, self)
             elif event.key == SDLK_q:
                 # 모든 악세사리 해제
                 self.hp = 5
@@ -504,6 +513,36 @@ class Player:
         things = game_world.world[1]  # 또는 NPC가 있는 적절한 레이어 인덱스
         for obj in things:
             if isinstance(obj, ItemNPC) or isinstance(obj, UpgradeNPC) or isinstance(obj, DungeonGate):
+                distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
+                if distance < 50:
+                    self.near_thing = True
+                    self.current_thing = obj
+                    break
+
+        # 상태 변화 감지
+        if not was_near and self.near_thing:
+            print("NPC 근처에 왔습니다!")
+        elif was_near and not self.near_thing:
+            print("NPC에서 멀어졌습니다!")
+
+    def check_dungeon_proximity(self):
+        current = game_framework.current_mode()
+        if not current or current.__name__ != 'dungeon_1_mode':
+            self.near_thing = False
+            self.current_thing = None
+            return
+
+        # 이전 상태 저장
+        was_near = self.near_thing
+
+        # 초기화
+        self.near_thing = False
+        self.current_thing = None
+
+        # NPC가 있는 레이어에서 직접 확인
+        things = game_world.world[1]  # 또는 NPC가 있는 적절한 레이어 인덱스
+        for obj in things:
+            if isinstance(obj, VillageGate) or isinstance(obj, DungeonGate):
                 distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
                 if distance < 50:
                     self.near_thing = True

@@ -13,9 +13,15 @@ import dungeon_1_mode
 
 player = None
 
-def init():
+def init(p = None):
     global player
-    player = Player()
+    if p is None:
+        from player import Player
+        player = Player()
+    else:
+        player = p
+        player.x = 640
+        player.y = 600
     game_world.add_object(player, 1)
     village = Village()
     game_world.add_object(village, 0)

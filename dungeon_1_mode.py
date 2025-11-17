@@ -9,6 +9,7 @@ from dungeon_1 import Dungeon1
 from greenbook import GreenBook
 from redbook import RedBook
 import game_world
+from villiage_gate import VillageGate
 
 player = None
 dungeon = None
@@ -79,3 +80,5 @@ def check_monsters_remaining():
     # 모든 몬스터가 제거되었으면 던전 상태를 end로 변경
     if monster_count == 0 and dungeon.get_state() == 'fighting':
         dungeon.state = 'end'
+        villiagegate = VillageGate(640,150)
+        game_world.add_object(villiagegate,1)
