@@ -94,25 +94,36 @@ class Death:
     def __init__(self, mob):
         self.mob = mob
     def enter(self, event):
-        pass
+        self.mob.frame = 0
     def exit(self, event):
         pass
     def do(self):
-        pass
+        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if self.mob.frame >= len(death_animation):
+            game_world.remove_object(self.mob)
     def draw(self):
-        pass
+        frame_data = death_animation[int(self.mob.frame)]
+        self.mob.death_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
 
 class Hit:
     def __init__(self, mob):
         self.mob = mob
     def enter(self, event):
-        pass
+        self.mob.frame = 0
     def exit(self, event):
         pass
     def do(self):
-        pass
+        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if self.mob.frame >= len(hit_animation):
+            if self.mob.hp <= 0:
+                self.mob.current_state = 'DEATH'
+                self.mob.state_machine.handle_state_event(('TODEATH',None))
+            else:
+                self.mob.current_state = 'IDLE'
+                self.mob.state_machine.handle_state_event(('TOIDLE',None))
     def draw(self):
-        pass
+        frame_data = hit_animation[int(self.mob.frame)]
+        self.mob.hit_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 50, 50)
 
 class RedBook:
     def __init__(self,x = 640, y = 360, level=1):
@@ -134,7 +145,6 @@ class RedBook:
         self.death_image = load_image('resource/mob/redbook/redbook_death.png')
         self.hit_image = load_image('resource/mob/redbook/redbook_hit.png')
 
-        self.current_state = 'IDLE'
         self.IDLE = Idle(self)
         self.ATTACK = Attack(self)
         self.DEATH = Death(self)
@@ -142,8 +152,8 @@ class RedBook:
         self.state_machine = StateMachine(
             self.IDLE,
         {
-            self.IDLE: {Toattack_event: self.ATTACK},
-            self.ATTACK: {Toidle_event: self.IDLE},
+            self.IDLE: {Toattack_event: self.ATTACK, Tohit_event: self.HIT},
+            self.ATTACK: {Toidle_event: self.IDLE, Tohit_event: self.HIT},
             self.DEATH: {},
             self.HIT: {Toidle_event: self.IDLE, Todeath_event: self.DEATH}
             }
@@ -172,6 +182,7 @@ class RedBook:
         damage_text = DamageText(self.x, self.y, damage)
         game_world.add_object(damage_text, 1)
         self.hp -= damage
+        self.state_machine.handle_state_event(('TOHIT', None))
 
     def get_player_position(self):
         """게임월드에서 플레이어 찾기"""
