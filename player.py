@@ -175,7 +175,7 @@ class Parrying:
 
     def enter(self, event):
         self.player.current_state = 'PARRING'
-        self.player.stamina -= 1
+        self.player.stamina -= 2
         self.player.xdir = 0
         self.player.ydir = 0
         self.player.frame = 0
@@ -265,7 +265,7 @@ class Walk:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_walk_animation[self.player.face_dir])
-        if get_time() - self.player.stamina_time > 0.5:
+        if get_time() - self.player.stamina_time > 1.0:
             if self.player.stamina < self.player.max_stamina:
                 self.player.stamina += 1
                 self.player.stamina_time = get_time()

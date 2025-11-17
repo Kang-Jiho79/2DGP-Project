@@ -3,6 +3,7 @@ import random
 import game_framework
 from pico2d import *
 
+from agoniger import Agoniger
 from bluebook import BlueBook
 from dungeon_1 import Dungeon1
 from greenbook import GreenBook
@@ -26,7 +27,8 @@ def init(p = None):
     game_world.add_object(dungeon_1, 0)
     mobs = [RedBook(random.randint(100, 1180), random.randint(300, 550)),
             GreenBook(random.randint(100, 1180), random.randint(300, 550)),
-            BlueBook(random.randint(100, 1180), random.randint(300, 550)),]
+            BlueBook(random.randint(100, 1180), random.randint(300, 550)),
+            Agoniger(random.randint(100, 1180), random.randint(300, 550))]
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
