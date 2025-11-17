@@ -11,9 +11,10 @@ from redbook import RedBook
 import game_world
 
 player = None
+dungeon = None
 
 def init(p = None):
-    global player
+    global player, dungeon
     if p is None:
         from player import Player
         player = Player()
@@ -23,8 +24,8 @@ def init(p = None):
     game_world.add_collision_pair("player:mob_missile", player,None)
     player.x = 640
     player.y = 150
-    dungeon_1 = Dungeon1()
-    game_world.add_object(dungeon_1, 0)
+    dungeon = Dungeon1()
+    game_world.add_object(dungeon, 0)
     mobs = [RedBook(random.randint(100, 1180), random.randint(300, 550)),
             GreenBook(random.randint(100, 1180), random.randint(300, 550)),
             BlueBook(random.randint(100, 1180), random.randint(300, 550)),
@@ -48,6 +49,7 @@ def handle_events():
 def update():
     game_world.update()
     game_world.handle_collision()
+    check_monsters_remaining()
 
 
 def draw():
@@ -63,3 +65,17 @@ def pause():
 
 def resume():
     pass
+
+def check_monsters_remaining():
+    """남은 몬스터 수 확인하고 모든 몬스터가 제거되면 던전 상태를 end로 변경"""
+    global dungeon
+    monster_count = 0
+    for layer in game_world.world:
+        for obj in layer:
+            # 몬스터 클래스들 확인 (BlueBook, RedBook 등)
+            if obj.__class__.__name__ in ['BlueBook', 'RedBook', 'GreenBook']:
+                monster_count += 1
+
+    # 모든 몬스터가 제거되었으면 던전 상태를 end로 변경
+    if monster_count == 0 and dungeon.get_state() == 'fighting':
+        dungeon.state = 'end'
