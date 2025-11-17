@@ -12,7 +12,7 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 class GuidedMissile:
     image = None
-    def __init__(self, mob, speed=1.0, tracking_strength=0.5, lifetime=5.0):
+    def __init__(self, mob, speed=1.0, tracking_strength=0.5, lifetime=3.0):
         if GuidedMissile.image is None:
             GuidedMissile.image = load_image('resource/missile/guided_missile.png')
         self.mob = mob
