@@ -7,7 +7,9 @@ from player import Player
 import game_world
 from upgrade_npc import UpgradeNPC
 from village import Village
+from dungeon_gate import DungeonGate
 import dungeon_1_mode
+
 
 player = None
 
@@ -24,6 +26,8 @@ def init():
     dummy = Dummy()
     game_world.add_object(dummy, 1)
     game_world.add_collision_pair('attack:mob',None,dummy)
+    dungeon_gate = DungeonGate(640, 600, player.cleared_dungeons)
+    game_world.add_object(dungeon_gate, 1)
 
 def handle_events():
     event_list = get_events()
@@ -31,7 +35,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.change_mode(dungeon_1_mode, player)
+            game_framework.quit()
         else:
             player.handle_events(event)  # handle_event -> handle_events로 수정
 

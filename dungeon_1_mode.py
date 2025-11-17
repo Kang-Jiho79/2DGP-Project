@@ -1,18 +1,17 @@
 import game_framework
 from pico2d import *
 
-from dummy import Dummy
-from item_npc import ItemNPC
-from player import Player
 import game_world
-from upgrade_npc import UpgradeNPC
-from village import Village
 
 player = None
 
-def init(p):
+def init(p = None):
     global player
-    player = p
+    if p is None:
+        from player import Player
+        player = Player()
+    else:
+        player = p
     game_world.add_object(player, 1)
 
 def handle_events():

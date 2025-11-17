@@ -1,5 +1,6 @@
 from pico2d import *
 
+import dungeon_1_mode
 import game_framework
 import game_world
 from state_machine import StateMachine
@@ -9,6 +10,7 @@ import item_shop_mode
 import upgrade_shop_mode
 from item_npc import ItemNPC
 from upgrade_npc import UpgradeNPC
+from dungeon_gate import DungeonGate
 
 player_idle_animation = (
     ((0, 80, 15, 21), (17, 80, 15, 21), (34, 80, 15, 20), (51, 80, 15, 21), (68, 80, 15, 21), (85, 80, 15, 21)),
@@ -276,9 +278,10 @@ class Player:
 
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
+        self.cleared_dungeons = 0
 
-        self.near_npc = False
-        self.current_npc = None
+        self.near_thing = False
+        self.current_thing = None
 
         self.x, self.y = 640, 360
         self.frame = 0
@@ -336,18 +339,19 @@ class Player:
         if event.type == SDL_KEYDOWN:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = True
-            if event.key == SDLK_f and self.near_npc:
-                print(f"{self.current_npc} 모드로 이동합니다!")
+            if event.key == SDLK_f and self.near_thing:
                 self.keys_pressed = {
                     SDLK_UP: False,
                     SDLK_DOWN: False,
                     SDLK_LEFT: False,
                     SDLK_RIGHT: False
                 }
-                if self.current_npc.__class__.__name__ == 'ItemNPC':
+                if self.current_thing.__class__.__name__ == 'ItemNPC':
                     game_framework.push_mode(item_shop_mode)
-                elif self.current_npc.__class__.__name__ == 'UpgradeNPC':
+                elif self.current_thing.__class__.__name__ == 'UpgradeNPC':
                     game_framework.push_mode(upgrade_shop_mode)
+                elif self.current_thing.__class__.__name__ == 'DungeonGate':
+                    game_framework.change_mode(dungeon_1_mode, self)
             elif event.key == SDLK_q:
                 # 모든 악세사리 해제
                 self.hp = 5
@@ -432,30 +436,30 @@ class Player:
     def check_villiage_proximity(self):
         """매 프레임마다 NPC와의 거리를 체크"""
         current = game_framework.current_mode()
-        if not current or current.__module__ != 'VillageMode':
-            self.near_npc = False
-            self.current_npc = None
+        if not current or current.__name__ != 'village_mode':
+            self.near_thing = False
+            self.current_thing = None
             return
 
         # 이전 상태 저장
-        was_near = self.near_npc
+        was_near = self.near_thing
 
         # 초기화
-        self.near_npc = False
-        self.current_npc = None
+        self.near_thing = False
+        self.current_thing = None
 
         # NPC가 있는 레이어에서 직접 확인
-        npcs = game_world.world[1]  # 또는 NPC가 있는 적절한 레이어 인덱스
-        for obj in npcs:
-            if isinstance(obj, ItemNPC) or isinstance(obj, UpgradeNPC):
+        things = game_world.world[1]  # 또는 NPC가 있는 적절한 레이어 인덱스
+        for obj in things:
+            if isinstance(obj, ItemNPC) or isinstance(obj, UpgradeNPC) or isinstance(obj, DungeonGate):
                 distance = ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** 0.5
                 if distance < 50:
-                    self.near_npc = True
-                    self.current_npc = obj
+                    self.near_thing = True
+                    self.current_thing = obj
                     break
 
         # 상태 변화 감지
-        if not was_near and self.near_npc:
+        if not was_near and self.near_thing:
             print("NPC 근처에 왔습니다!")
-        elif was_near and not self.near_npc:
+        elif was_near and not self.near_thing:
             print("NPC에서 멀어졌습니다!")
