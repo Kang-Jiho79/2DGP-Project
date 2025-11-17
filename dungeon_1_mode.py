@@ -1,5 +1,6 @@
 import game_framework
 from pico2d import *
+from dungeon_1 import Dungeon1
 
 import game_world
 
@@ -13,6 +14,11 @@ def init(p = None):
     else:
         player = p
     game_world.add_object(player, 1)
+    player.x = 640
+    player.y = 150
+    dungeon_1 = Dungeon1()
+    game_world.add_object(dungeon_1, 0)
+
 
 def handle_events():
     event_list = get_events()
