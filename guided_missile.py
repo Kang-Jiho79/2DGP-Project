@@ -11,29 +11,39 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 
 class GuidedMissile:
-    image = None
-    def __init__(self, mob, speed=1.0, tracking_strength=0.5, lifetime=5.0):
-        if GuidedMissile.image is None:
-            GuidedMissile.image = load_image('resource/missile/guided_missile.png')
+    mob_image = None
+    player_image = None
+
+    def __init__(self, mob, speed=1.0, tracking_strength=0.5, lifetime=5.0, playered=False, original_mob=None):
+        if GuidedMissile.mob_image is None:
+            GuidedMissile.mob_image = load_image('resource/missile/guided_missile.png')
+        if GuidedMissile.player_image is None:
+            GuidedMissile.player_image = load_image('resource/missile/player_guided_missile.png')
         self.mob = mob
-        self.x = self.mob.x
-        self.y = self.mob.y
-        self.speed = speed  # 속도를 줄임 (1.0 -> 0.3)
-        self.tracking_strength = tracking_strength  # 유도 강도를 줄임 (1.0 -> 0.05)
-        self.lifetime = lifetime  # 생존 시간 (초)
-        self.elapsed_time = 0.0  # 경과 시간
+        self.x = self.mob.x if mob else 0
+        self.y = self.mob.y if mob else 0
+        self.speed = speed
+        self.tracking_strength = tracking_strength
+        self.lifetime = lifetime
+        self.elapsed_time = 0.0
+        self.playered = playered
+        self.original_mob = original_mob if original_mob else mob  # 최초 발사한 몬스터 저장
 
         # 초기 방향 (아래쪽으로)
         self.dir_x = 0
         self.dir_y = -1
 
-    def get_player_position(self):
-        """게임월드에서 플레이어 찾기"""
-        for layer in game_world.world:
-            for obj in layer:
-                if obj.__class__.__name__ == 'Player':
-                    return obj.x, obj.y
-        return self.x, self.y
+    def get_target_position(self):
+        """playered가 True면 original_mob, 아니면 플레이어 위치 반환"""
+        if self.playered and self.original_mob:
+            return self.original_mob.x, self.original_mob.y
+        else:
+            # 플레이어 위치 찾기
+            for layer in game_world.world:
+                for obj in layer:
+                    if obj.__class__.__name__ == 'Player':
+                        return obj.x, obj.y
+            return self.x, self.y
 
     def update(self):
         # 경과 시간 업데이트
@@ -43,20 +53,21 @@ class GuidedMissile:
         if self.elapsed_time >= self.lifetime:
             game_world.remove_object(self)
             return
-        # 플레이어 위치 얻기
-        player_x, player_y = self.get_player_position()
 
-        # 플레이어 방향 계산
-        dx = player_x - self.x
-        dy = player_y - self.y
+        # 타겟 위치 얻기
+        target_x, target_y = self.get_target_position()
+
+        # 타겟 방향 계산
+        dx = target_x - self.x
+        dy = target_y - self.y
         distance = math.sqrt(dx * dx + dy * dy)
 
         if distance > 0:
-            # 플레이어 방향으로의 단위 벡터
+            # 타겟 방향으로의 단위 벡터
             target_dir_x = dx / distance
             target_dir_y = dy / distance
 
-            # 현재 방향을 플레이어 방향으로 조금씩 변경 (유도)
+            # 현재 방향을 타겟 방향으로 조금씩 변경 (유도)
             self.dir_x += (target_dir_x - self.dir_x) * self.tracking_strength
             self.dir_y += (target_dir_y - self.dir_y) * self.tracking_strength
 
@@ -75,7 +86,10 @@ class GuidedMissile:
             game_world.remove_object(self)
 
     def draw(self):
-        self.image.draw(self.x, self.y, 32, 16)
+        if self.playered:
+            self.player_image.draw(self.x, self.y, 32, 32)
+        else:
+            self.mob_image.draw(self.x, self.y, 32, 32)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
@@ -83,4 +97,19 @@ class GuidedMissile:
 
     def handle_collision(self, group, other):
         if group == 'player:mob_missile':
+            # # 새로운 튕겨진 미사일 생성
+            # from player import Player  # 플레이어 클래스 import
+            # if isinstance(other, Player):
+            #     new_missile = GuidedMissile(
+            #         mob=other,  # 플레이어를 새 발사체로
+            #         speed=self.speed,
+            #         tracking_strength=self.tracking_strength,
+            #         lifetime=self.lifetime,
+            #         playered=True,
+            #         original_mob=self.original_mob  # 원래 몬스터 정보 전달
+            #     )
+            #     new_missile.x = self.x
+            #     new_missile.y = self.y
+            #     game_world.add_object(new_missile, 2)  # 적절한 레이어에 추가
+
             game_world.remove_object(self)
