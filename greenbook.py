@@ -176,6 +176,9 @@ class GreenBook:
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)
+        if group == 'player_missile:mob' or group == 'player_guided_missile:mob':
+            damage = other.shooter.damage / 2
+            self.take_damage(damage)
 
     def take_damage(self, damage):
         print("Dummy took", damage, "damage!")

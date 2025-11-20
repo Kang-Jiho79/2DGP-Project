@@ -12,17 +12,17 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 class Missile:
     mob_image = None
     player_image = None
-    def __init__(self, mob, target_x, target_y, speed=1.0, playered=False, original_mob=None):
+    def __init__(self, shooter, target_x, target_y, speed=1.0, playered=False, original_mob=None):
         if Missile.mob_image is None:
              Missile.mob_image = load_image('resource/missile/missile.png')
         if Missile.player_image is None:
              Missile.player_image = load_image('resource/missile/player_missile.png')
-        self.mob = mob
-        self.x = self.mob.x if mob else 0
-        self.y = self.mob.y if mob else 0
+        self.shooter = shooter
+        self.x = self.shooter.x if shooter else 0
+        self.y = self.shooter.y if shooter else 0
         self.speed = speed
         self.playered = playered
-        self.original_mob = original_mob if original_mob else mob  # 최초 발사한 몬스터 저장
+        self.original_mob = original_mob if original_mob else shooter  # 최초 발사한 몬스터 저장
 
         # 목표까지의 벡터 계산
         dx = target_x - self.x
@@ -53,7 +53,7 @@ class Missile:
         if self.playered:
             self.player_image.composite_draw(self.angle, '', self.x, self.y, 32, 16)
         else:
-            self.image.composite_draw(self.angle, '', self.x, self.y, 32, 16)
+            self.mob_image.composite_draw(self.angle, '', self.x, self.y, 32, 16)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
@@ -61,7 +61,7 @@ class Missile:
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
 
     def handle_collision(self, group, other):
-        if group == 'player:mob_missile':
+        if group == 'player:mob_missile' or group == 'player_missile:mob':
             # # 새로운 튕겨진 미사일 생성
             # from player import Player  # 플레이어 클래스 import
             # if isinstance(other, Player) and self.original_mob:

@@ -178,6 +178,9 @@ class BlueBook:
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)
+        if group == 'player_missile:mob' or group == 'player_guided_missile:mob':
+            damage = other.shooter.damage / 2
+            self.take_damage(damage)
 
     def take_damage(self, damage):
         print("Dummy took", damage, "damage!")
@@ -199,8 +202,10 @@ class BlueBook:
         if random.random() < 0.5:
             # 일반 미사일
             missile = Missile(self, player_x, player_y)
+            game_world.add_object(missile, 1)
+            game_world.add_collision_pair("player:mob_missile", None, missile)
         else:
             # 유도 미사일
             missile = GuidedMissile(self)
-        game_world.add_object(missile, 1)
-        game_world.add_collision_pair("player:mob_missile", None, missile)
+            game_world.add_object(missile, 1)
+            game_world.add_collision_pair("player:mob_guided_missile", None, missile)

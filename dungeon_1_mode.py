@@ -23,6 +23,7 @@ def init(p = None):
         player = p
     game_world.add_object(player, 1)
     game_world.add_collision_pair("player:mob_missile", player,None)
+    game_world.add_collision_pair("player:mob_guided_missile", player, None)
     player.x = 640
     player.y = 150
     dungeon = Dungeon1()
@@ -34,6 +35,8 @@ def init(p = None):
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
+        game_world.add_collision_pair("player_missile:mob", None, mob)
+        game_world.add_collision_pair("player_guided_missile:mob", None, mob)
 
 
 def handle_events():

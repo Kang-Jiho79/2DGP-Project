@@ -14,20 +14,20 @@ class GuidedMissile:
     mob_image = None
     player_image = None
 
-    def __init__(self, mob, speed=1.0, tracking_strength=0.5, lifetime=5.0, playered=False, original_mob=None):
+    def __init__(self, shooter, speed=1.0, tracking_strength=0.5, lifetime=5.0, playered=False, original_mob=None):
         if GuidedMissile.mob_image is None:
             GuidedMissile.mob_image = load_image('resource/missile/guided_missile.png')
         if GuidedMissile.player_image is None:
             GuidedMissile.player_image = load_image('resource/missile/player_guided_missile.png')
-        self.mob = mob
-        self.x = self.mob.x if mob else 0
-        self.y = self.mob.y if mob else 0
+        self.shooter = shooter
+        self.x = self.shooter.x if shooter else 0
+        self.y = self.shooter.y if shooter else 0
         self.speed = speed
         self.tracking_strength = tracking_strength
         self.lifetime = lifetime
         self.elapsed_time = 0.0
         self.playered = playered
-        self.original_mob = original_mob if original_mob else mob  # 최초 발사한 몬스터 저장
+        self.original_mob = original_mob if original_mob else shooter  # 최초 발사한 몬스터 저장
 
         # 초기 방향 (아래쪽으로)
         self.dir_x = 0
@@ -96,7 +96,7 @@ class GuidedMissile:
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
 
     def handle_collision(self, group, other):
-        if group == 'player:mob_missile':
+        if group == 'player:mob_guided_missile' or group == 'player_guided_missile:mob':
             # # 새로운 튕겨진 미사일 생성
             # from player import Player  # 플레이어 클래스 import
             # if isinstance(other, Player):

@@ -339,6 +339,7 @@ class Player:
             SDLK_RIGHT: False
         }
         self.attacking = False
+        self.deflected_missile_info = None
 
         self.font = load_font('ENCR10B.TTF', 30)
 
@@ -380,6 +381,24 @@ class Player:
 
     def update(self):
         self.state_machine.update()
+        if self.deflected_missile_info:
+            info = self.deflected_missile_info
+            if info['type'] == 'missile':
+                from missile import Missile
+                missile = Missile(self, info['target'].x, info['target'].y, info['speed'], True, info['target'])
+                missile.x, missile.y = info['pos']
+                game_world.add_object(missile, 1)
+                game_world.add_collision_pair('player_missile:mob', missile, None)
+            elif info['type'] == 'guided_missile':
+                from guided_missile import GuidedMissile
+                guided_missile = GuidedMissile(self, info['speed'], info['tracking_strength'],
+                                               info['lifetime'], True, info['target'])
+                guided_missile.x, guided_missile.y = info['pos']
+                game_world.add_object(guided_missile, 1)
+                game_world.add_collision_pair('player_guided_missile:mob', guided_missile, None)
+
+            self.deflected_missile_info = None
+
         current = game_framework.current_mode()
         if current:
             if current.__name__ == 'village_mode':
@@ -470,8 +489,31 @@ class Player:
     def handle_collision(self, group, other):
         if group == 'player:mob_missile':
             if self.current_state == 'IDLE' or self.current_state == 'WALK':
-                damage = other.mob.damage
+                damage = other.shooter.damage
                 self.take_damage(damage)
+            elif self.current_state == 'PARRING':
+                # 즉시 생성하지 않고 정보만 저장
+                self.deflected_missile_info = {
+                    'type': 'missile',
+                    'pos': (other.x, other.y),
+                    'target': other.original_mob,
+                    'speed': other.speed
+                }
+
+        if group == 'player:mob_guided_missile':
+            if self.current_state == 'IDLE' or self.current_state == 'WALK':
+                damage = other.shooter.damage
+                self.take_damage(damage)
+            elif self.current_state == 'PARRING':
+                # 즉시 생성하지 않고 정보만 저장
+                self.deflected_missile_info = {
+                    'type': 'guided_missile',
+                    'pos': (other.x, other.y),
+                    'target': other.original_mob,
+                    'speed': other.speed,
+                    'tracking_strength': other.tracking_strength,
+                    'lifetime': other.lifetime
+                }
 
     def equip_accessory(self, accessory):
         # 빈 슬롯 찾기
