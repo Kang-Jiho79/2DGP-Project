@@ -231,8 +231,19 @@ class Roll:
 
     def do(self):
         speed = RUN_SPEED_PPS * 1.5 * game_framework.frame_time
-        self.player.x += self.player.xdir * speed
-        self.player.y += self.player.ydir * speed
+
+        # 이동 후 위치 계산
+        new_x = self.player.x + self.player.xdir * speed
+        new_y = self.player.y + self.player.ydir * speed
+
+        # 화면 경계 체크
+        new_x = max(15, min(new_x, get_canvas_width() - 15))
+        new_y = max(20, min(new_y, get_canvas_height() - 20))
+
+        # 실제 이동
+        self.player.x = new_x
+        self.player.y = new_y
+
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.player.frame >= len(player_roll_animation[self.player.face_dir]):
             if not any(self.player.keys_pressed.values()):
@@ -265,14 +276,14 @@ class Walk:
             self.player.attack()
 
     def do(self):
-        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_walk_animation[self.player.face_dir])
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(
+            player_walk_animation[self.player.face_dir])
         if get_time() - self.player.stamina_time > 1.0:
             if self.player.stamina < self.player.max_stamina:
                 self.player.stamina += 1
                 self.player.stamina_time = get_time()
 
         speed = RUN_SPEED_PPS * game_framework.frame_time
-
 
         self.player.xdir = 0
         self.player.ydir = 0
@@ -290,9 +301,17 @@ class Walk:
             self.player.ydir -= 1
             self.player.face_dir = 0
 
+        # 이동 후 위치 계산
+        new_x = self.player.x + self.player.xdir * speed
+        new_y = self.player.y + self.player.ydir * speed
+
+        # 화면 경계 체크
+        new_x = max(15, min(new_x, get_canvas_width() - 15))
+        new_y = max(20, min(new_y, get_canvas_height() - 20))
+
         # 실제 이동
-        self.player.x += self.player.xdir * speed
-        self.player.y += self.player.ydir * speed
+        self.player.x = new_x
+        self.player.y = new_y
 
         # 아무 키도 누르지 않으면 IDLE로 전환
         if not any(self.player.keys_pressed.values()):
@@ -576,6 +595,7 @@ class Player:
                 self.current_thing = other
                 self.near_thing = True
                 print(f"{other.__class__.__name__}와 가까이 있습니다!")
+
         if group == 'object:wall':
             # 벽과 충돌 시 이전 위치로 되돌리기
             player_left = self.x - 15
