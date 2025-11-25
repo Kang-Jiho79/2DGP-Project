@@ -425,10 +425,10 @@ class Player:
                     game_framework.push_mode(upgrade_shop_mode)
                 elif self.current_thing.__class__.__name__ == 'DungeonGate':
                     import dungeon_1_mode
-                    game_framework.change_mode(dungeon_1_mode, self)
+                    game_framework.change_mode(dungeon_1_mode)
                 elif self.current_thing.__class__.__name__ == 'VillageGate':
                     import village_mode
-                    game_framework.change_mode(village_mode, self)
+                    game_framework.change_mode(village_mode)
             elif event.key == SDLK_q:
                 # 모든 악세사리 해제
                 self.hp = 5

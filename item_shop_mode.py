@@ -4,12 +4,13 @@ from pico2d import *
 import game_world
 import village_mode
 from item_shop import ItemShop
+import common
 
 item_shop = None
 
 def init():
     global item_shop
-    item_shop = ItemShop(village_mode.player)
+    item_shop = ItemShop(common.player)
     game_world.add_object(item_shop, 1)
 
 def handle_events():

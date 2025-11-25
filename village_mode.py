@@ -8,21 +8,16 @@ import game_world
 from upgrade_npc import UpgradeNPC
 from village import Village
 from dungeon_gate import DungeonGate
-import dungeon_1_mode
+import common
 
-
-player = None
-
-def init(p = None):
-    global player
-    if p is None:
+def init():
+    if common.player is None:
         from player import Player
-        player = Player()
+        common.player = Player()
     else:
-        player = p
-        player.x = 640
-        player.y = 600
-    game_world.add_object(player, 1)
+        common.player.x = 640
+        common.player.y = 600
+    game_world.add_object(common.player, 1)
     village = Village()
     game_world.add_object(village, 0)
     item_npc = ItemNPC()
@@ -32,7 +27,7 @@ def init(p = None):
     dummy = Dummy()
     game_world.add_object(dummy, 1)
     game_world.add_collision_pair('attack:mob',None,dummy)
-    dungeon_gate = DungeonGate(640, 600, player.cleared_dungeons)
+    dungeon_gate = DungeonGate(640, 600, common.player.cleared_dungeons)
     game_world.add_object(dungeon_gate, 1)
 
 def handle_events():
@@ -43,7 +38,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         else:
-            player.handle_events(event)  # handle_event -> handle_events로 수정
+            common.player.handle_events(event)  # handle_event -> handle_events로 수정
 
 
 def update():

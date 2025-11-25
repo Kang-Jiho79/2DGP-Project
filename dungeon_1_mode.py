@@ -3,6 +3,7 @@ import random
 import game_framework
 from pico2d import *
 
+
 from agoniger import Agoniger
 from bluebook import BlueBook
 from dungeon_1 import Dungeon1
@@ -10,22 +11,20 @@ from greenbook import GreenBook
 from redbook import RedBook
 import game_world
 from villiage_gate import VillageGate
+import common
 
-player = None
 dungeon = None
 
 def init(p = None):
-    global player, dungeon
-    if p is None:
+    global dungeon
+    if common.player is None:
         from player import Player
-        player = Player()
-    else:
-        player = p
-    game_world.add_object(player, 1)
-    game_world.add_collision_pair("player:mob_missile", player,None)
-    game_world.add_collision_pair("player:mob_guided_missile", player, None)
-    player.x = 640
-    player.y = 150
+        common.player = Player()
+    game_world.add_object(common.player, 1)
+    game_world.add_collision_pair("player:mob_missile", common.player,None)
+    game_world.add_collision_pair("player:mob_guided_missile", common.player, None)
+    common.player.x = 640
+    common.player.y = 150
     dungeon = Dungeon1()
     game_world.add_object(dungeon, 0)
     mobs = [RedBook(random.randint(100, 1180), random.randint(300, 550)),
@@ -47,7 +46,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         else:
-            player.handle_events(event)  # handle_event -> handle_events로 수정
+            common.player.handle_events(event)  # handle_event -> handle_events로 수정
 
 
 def update():
