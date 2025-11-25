@@ -21,6 +21,7 @@ def init(p = None):
         from player import Player
         common.player = Player()
     game_world.add_object(common.player, 1)
+    game_world.add_collision_pair("player:object", common.player,None)
     game_world.add_collision_pair("player:mob_missile", common.player,None)
     game_world.add_collision_pair("player:mob_guided_missile", common.player, None)
     common.player.x = 640
@@ -82,5 +83,6 @@ def check_monsters_remaining():
     # 모든 몬스터가 제거되었으면 던전 상태를 end로 변경
     if monster_count == 0 and dungeon.get_state() == 'fighting':
         dungeon.state = 'end'
-        villiagegate = VillageGate(640,150)
-        game_world.add_object(villiagegate,1)
+        villiage_gate = VillageGate(640,150)
+        game_world.add_object(villiage_gate,1)
+        game_world.add_collision_pair("player:object", None, villiage_gate)

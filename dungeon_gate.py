@@ -13,3 +13,9 @@ class DungeonGate:
 
     def draw(self):
         draw_rectangle(self.x - 25, self.y - 25, self.x + 25, self.y + 25)
+
+    def get_bb(self):
+        return self.x - 25, self.y - 25, self.x + 25, self.y + 25
+
+    def handle_collision(self, group, other):
+        pass

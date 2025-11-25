@@ -66,5 +66,5 @@ def handle_collision():
                 if collide(a, b):
                     a.handle_collision(group, b)
                     b.handle_collision(group, a)
-                elif group == "player:npcs" and collide(a, b) is False:
-                    a.npcs_unhandle_collision(group, b)
+                elif group == "player:object" and collide(a, b) is False:
+                    a.object_unhandle_collision(group, b)

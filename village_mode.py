@@ -18,17 +18,21 @@ def init():
         common.player.x = 640
         common.player.y = 600
     game_world.add_object(common.player, 1)
+    game_world.add_collision_pair("player:object", common.player, None)
     village = Village()
     game_world.add_object(village, 0)
     item_npc = ItemNPC()
     game_world.add_object(item_npc, 1)
+    game_world.add_collision_pair("player:object", None, item_npc)
     upgrade_npc = UpgradeNPC()
     game_world.add_object(upgrade_npc, 1)
+    game_world.add_collision_pair("player:object", None, upgrade_npc)
     dummy = Dummy()
     game_world.add_object(dummy, 1)
     game_world.add_collision_pair('attack:mob',None,dummy)
     dungeon_gate = DungeonGate(640, 600, common.player.cleared_dungeons)
     game_world.add_object(dungeon_gate, 1)
+    game_world.add_collision_pair("player:object", None, dungeon_gate)
 
 def handle_events():
     event_list = get_events()
