@@ -1,15 +1,10 @@
 from pico2d import *
 
-import dungeon_1_mode
 import game_framework
 import game_world
 from state_machine import StateMachine
 from attack import Attack
-from item_npc import ItemNPC
-from upgrade_npc import UpgradeNPC
-from dungeon_gate import DungeonGate
 from damage_text import DamageText
-from villiage_gate import VillageGate
 
 player_idle_animation = (
     ((0, 80, 15, 21), (17, 80, 15, 21), (34, 80, 15, 20), (51, 80, 15, 21), (68, 80, 15, 21), (85, 80, 15, 21)),
