@@ -38,16 +38,12 @@ class Idle:
         self.mob = mob
     def enter(self, event):
         self.mob.frame = 0
-        self.mob.attack_time = time.time()
 
     def exit(self, event):
         pass
 
     def do(self):
-        # 자동 공격 동작 추가
-        if time.time() - self.mob.attack_time > self.mob.attack_cooldown:  # 2초마다 공격
-            self.mob.current_state = 'ATTACK'
-            self.mob.state_machine.handle_state_event(('TOATTACK',None))
+       pass
 
     def draw(self):
         self.mob.idle_image.clip_draw(0, 0, 48, 61, self.mob.x, self.mob.y, 80, 80)
@@ -58,12 +54,12 @@ class Attack:
     def enter(self, event):
         self.mob.frame = 0
     def exit(self, event):
-        pass
+        self.mob.attack_time = time.time()
+
     def do(self):
         self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.mob.frame >= len(attack_animation):
-            self.mob.current_state = 'IDLE'
-            self.mob.state_machine.handle_state_event(('TOIDLE',None))
+            self.mob.state_machine.handle_state_event(('TOIDLE', None))
             self.mob.fire_missile()
     def draw(self):
         frame_data = attack_animation[int(self.mob.frame)]
@@ -93,10 +89,8 @@ class Hit:
         pass
     def do(self):
         if self.mob.hp <= 0:
-            self.mob.current_state = 'DEATH'
             self.mob.state_machine.handle_state_event(('TODEATH',None))
         else:
-            self.mob.current_state = 'IDLE'
             self.mob.state_machine.handle_state_event(('TOIDLE',None))
     def draw(self):
         self.mob.hit_image.clip_draw(0,0,46,61, self.mob.x, self.mob.y, 80, 80)
@@ -112,6 +106,8 @@ class Agoniger:
 
         self.x, self.y = x, y
         self.frame = 0
+
+        self.attack_time = time.time()
 
         self.font = load_font('ENCR10B.TTF', 30)
 
@@ -136,7 +132,9 @@ class Agoniger:
 
     def update(self):
         self.state_machine.update()
-
+        if (isinstance(self.state_machine.cur_state, Idle) and
+                time.time() - self.attack_time > self.attack_cooldown):
+            self.state_machine.handle_state_event(('TOATTACK', None))
     def handle_events(self, event):
         pass
 

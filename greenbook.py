@@ -49,17 +49,12 @@ class Idle:
         self.mob = mob
     def enter(self, event):
         self.mob.frame = 0
-        self.mob.attack_time = time.time()
 
     def exit(self, event):
         pass
 
     def do(self):
         self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(idle_animation)
-        # 자동 공격 동작 추가
-        if time.time() - self.mob.attack_time > self.mob.attack_cooldown:  # 2초마다 공격
-            self.mob.current_state = 'ATTACK'
-            self.mob.state_machine.handle_state_event(('TOATTACK',None))
 
     def draw(self):
         frame_data = idle_animation[int(self.mob.frame)]
@@ -72,7 +67,7 @@ class Attack:
         self.mob.frame = 0
         self.attack_started = False
     def exit(self, event):
-        pass
+        self.mob.attack_time = time.time()
     def do(self):
         self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.mob.frame >= len(attack_animation) and not self.attack_started:
@@ -137,6 +132,8 @@ class GreenBook:
         self.x, self.y = x, y
         self.frame = 0
 
+        self.attack_time = time.time()
+
         self.font = load_font('ENCR10B.TTF', 30)
 
         self.idle_image = load_image('resource/mob/greenbook/greenbook_idle.png')
@@ -161,6 +158,9 @@ class GreenBook:
 
     def update(self):
         self.state_machine.update()
+        if (isinstance(self.state_machine.cur_state, Idle) and
+                time.time() - self.attack_time > self.attack_cooldown):
+            self.state_machine.handle_state_event(('TOATTACK', None))
 
     def handle_events(self, event):
         pass
