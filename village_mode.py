@@ -8,9 +8,16 @@ import game_world
 from upgrade_npc import UpgradeNPC
 from village import Village
 from dungeon_gate import DungeonGate
+from wall import Wall
 import common
 
+walls_info = (
+    (265, 430, 520, 240),
+    (775, 430, 1030, 240),
+)
+
 def init():
+    # player 추가
     if common.player is None:
         from player import Player
         common.player = Player()
@@ -19,20 +26,31 @@ def init():
         common.player.y = 600
     game_world.add_object(common.player, 1)
     game_world.add_collision_pair("player:object", common.player, None)
+    game_world.add_collision_pair("object:wall", common.player, None)
+
+    # 배경 추가
     village = Village()
     game_world.add_object(village, 0)
+    # NPC 추가
     item_npc = ItemNPC()
     game_world.add_object(item_npc, 1)
     game_world.add_collision_pair("player:object", None, item_npc)
     upgrade_npc = UpgradeNPC()
     game_world.add_object(upgrade_npc, 1)
     game_world.add_collision_pair("player:object", None, upgrade_npc)
+    # 더미 추가
     dummy = Dummy()
     game_world.add_object(dummy, 1)
     game_world.add_collision_pair('attack:mob',None,dummy)
+    # 던전 게이트 추가
     dungeon_gate = DungeonGate(640, 600, common.player.cleared_dungeons)
     game_world.add_object(dungeon_gate, 1)
     game_world.add_collision_pair("player:object", None, dungeon_gate)
+    # 벽 추가
+    for wall_info in walls_info:
+        wall = Wall(*wall_info)
+        game_world.add_object(wall, 1)
+        game_world.add_collision_pair("object:wall", None, wall)
 
 def handle_events():
     event_list = get_events()

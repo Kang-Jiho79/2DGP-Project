@@ -481,7 +481,7 @@ class Player:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
-        # self.font.draw(self.x - 10, self.y + 50, f'X: {self.x:02f} Y: {self.y:02f}', (255, 255, 0))
+        self.font.draw(self.x - 10, self.y + 50, f'X: {self.x:02f} Y: {self.y:02f}', (255, 255, 0))
         self.ui_draw()
 
     def ui_draw(self):
@@ -576,6 +576,36 @@ class Player:
                 self.current_thing = other
                 self.near_thing = True
                 print(f"{other.__class__.__name__}와 가까이 있습니다!")
+        if group == 'object:wall':
+            # 벽과 충돌 시 이전 위치로 되돌리기
+            player_left = self.x - 15
+            player_right = self.x + 15
+            player_bottom = self.y - 20
+            player_top = self.y + 20
+
+            wall_left = other.left
+            wall_right = other.right
+            wall_bottom = other.bottom
+            wall_top = other.top
+
+            # 겹침 정도 계산
+            overlap_x = min(player_right - wall_left, wall_right - player_left)
+            overlap_y = min(player_top - wall_bottom, wall_top - player_bottom)
+
+            # 더 적게 겹친 축으로만 밀어내기
+            if overlap_x < overlap_y:
+                # x축으로 밀어내기
+                if self.x < other.x:
+                    self.x = wall_left - 15  # 왼쪽으로 밀어내기
+                else:
+                    self.x = wall_right + 15  # 오른쪽으로 밀어내기
+            else:
+                # y축으로 밀어내기
+                if self.y < other.y:
+                    self.y = wall_bottom - 20  # 아래로 밀어내기
+                else:
+                    self.y = wall_top + 20  # 위로 밀어내기
+
 
     def object_unhandle_collision(self, group, other):
         if self.current_thing != other:
