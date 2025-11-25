@@ -320,6 +320,15 @@ class Player:
         self.sword_level = 0
         self.parring_speed = 1.0
 
+        self.current_hp = 5  # 현재 표시되는 HP (애니메이션용)
+        self.hp_animation_speed = 5.0  # HP 감소 속도
+        self.hp_shake_time = 0  # HP바 흔들림 시간
+        self.hp_shake_duration = 0.5  # 흔들림 지속시간
+        self.hp_shake_intensity = 3  # 흔들림 강도
+
+        self.current_stamina = 10.0  # 현재 표시되는 스테미나 (애니메이션용)
+        self.stamina_animation_speed = 8.0  # 스테미나 변화 속도
+
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
         self.cleared_dungeons = 0
@@ -354,6 +363,7 @@ class Player:
         self.stamina_image = load_image('resource/player/stamina.png')
         self.damage_image = load_image('resource/player/damage.png')
         self.coin_image = load_image('resource/player/coin.png')
+        self.F_image = load_image('resource/player/F_key.png')
 
         self.current_state = 'IDLE'
         self.IDLE = Idle(self)
@@ -381,6 +391,9 @@ class Player:
 
     def update(self):
         self.state_machine.update()
+
+        self.update_ui_animation()
+
         if self.deflected_missile_info:
             info = self.deflected_missile_info
             if info['type'] == 'missile':
@@ -398,6 +411,35 @@ class Player:
                 game_world.add_collision_pair('player_guided_missile:mob', guided_missile, None)
 
             self.deflected_missile_info = None
+
+    def update_ui_animation(self):
+        # HP 감소 애니메이션
+        if self.current_hp > self.hp:
+            self.current_hp -= self.hp_animation_speed * game_framework.frame_time
+            if self.current_hp < self.hp:
+                self.current_hp = self.hp
+
+        # HP 증가 애니메이션 (회복 시)
+        elif self.current_hp < self.hp:
+            self.current_hp += self.hp_animation_speed * game_framework.frame_time
+            if self.current_hp > self.hp:
+                self.current_hp = self.hp
+
+        # 스테미나 감소 애니메이션
+        if self.current_stamina > self.stamina:
+            self.current_stamina -= self.stamina_animation_speed * game_framework.frame_time
+            if self.current_stamina < self.stamina:
+                self.current_stamina = self.stamina
+
+        # 스테미나 증가 애니메이션 (회복 시)
+        elif self.current_stamina < self.stamina:
+            self.current_stamina += self.stamina_animation_speed * game_framework.frame_time
+            if self.current_stamina > self.stamina:
+                self.current_stamina = self.stamina
+
+        # HP바 흔들림 타이머 업데이트
+        if self.hp_shake_time > 0:
+            self.hp_shake_time -= game_framework.frame_time
 
     def handle_events(self, event):
         if event.type == SDL_KEYDOWN:
@@ -443,19 +485,37 @@ class Player:
         self.ui_draw()
 
     def ui_draw(self):
+        import math
+
+        # HP바 흔들림 계산
+        shake_x = 0
+        shake_y = 0
+        if self.hp_shake_time > 0:
+            shake_intensity = self.hp_shake_intensity * (self.hp_shake_time / self.hp_shake_duration)
+            shake_x = math.sin(self.hp_shake_time * 30) * shake_intensity
+            shake_y = math.cos(self.hp_shake_time * 25) * shake_intensity
+
         # HP
-        self.hp_image.composite_draw(0,'',30, get_canvas_height()-30, 30, 30)
-        # max hp bar
-        draw_rectangle(45, get_canvas_height()-45, 45 + self.max_hp * 20, get_canvas_height()-15,0, 0, 0, 255, 1)
-        # hp bar
-        draw_rectangle(45, get_canvas_height()-45, 45 + self.hp * 20, get_canvas_height()-15,255, 0, 0, 255, 1)
+        self.hp_image.composite_draw(0, '', 30 + shake_x, get_canvas_height() - 30 + shake_y, 30, 30)
+
+        # max hp bar (배경)
+        draw_rectangle(45 + shake_x, get_canvas_height() - 45 + shake_y,
+                       45 + self.max_hp * 20 + shake_x, get_canvas_height() - 15 + shake_y,
+                       0, 0, 0, 255, 1)
+
+        # current hp bar (애니메이션되는 HP)
+        if self.current_hp > 0:
+            draw_rectangle(45 + shake_x, get_canvas_height() - 45 + shake_y,
+                           45 + self.current_hp * 20 + shake_x, get_canvas_height() - 15 + shake_y,
+                           255, 0, 0, 255, 1)
 
         # Stamina
         self.stamina_image.composite_draw(0,'',30, get_canvas_height()-75, 30, 30)
         # max stamina bar
         draw_rectangle(45, get_canvas_height()-90, 45 + self.max_stamina * 20, get_canvas_height()-60,0, 0, 0, 255, 1)
         # stamina bar
-        draw_rectangle(45, get_canvas_height()-90, 45 + self.stamina * 20, get_canvas_height()-60,0, 255, 0, 255, 1)
+        if self.current_stamina > 0:
+            draw_rectangle(45, get_canvas_height() - 90, 45 + self.current_stamina * 20, get_canvas_height() - 60, 0, 255, 0, 255, 1)
 
         # Damage
         self.damage_image.composite_draw(0,'',30, get_canvas_height()-120, 30, 30)
@@ -464,6 +524,9 @@ class Player:
         # Gold
         self.coin_image.composite_draw(0,'',30, get_canvas_height()-160, 30, 30)
         self.font.draw(45, get_canvas_height()-160, f'{self.gold}', (0, 0, 0))
+
+        if self.near_thing:
+            self.F_image.composite_draw(0,'', self.x, self.y + 40, 30, 30)
 
     def attack(self):
         if not self.attacking:
@@ -548,4 +611,5 @@ class Player:
         damage_text = DamageText(self.x, self.y, damage)
         game_world.add_object(damage_text, 1)
         self.hp -= damage
+        self.hp_shake_time = self.hp_shake_duration
         self.state_machine.handle_state_event(('TOHIT', None))
