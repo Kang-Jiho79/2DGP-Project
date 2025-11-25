@@ -9,14 +9,20 @@ from bluebook import BlueBook
 from dungeon_1 import Dungeon1
 from greenbook import GreenBook
 from redbook import RedBook
+from wall import Wall
 import game_world
 from villiage_gate import VillageGate
 import common
 
-dungeon = None
+walls_info = (
+    (0,720, 1280,590),
+    (0,720, 160, 0),
+    (0,135, 1280,0),
+    (1120,720, 1280, 0)
+)
 
 def init(p = None):
-    global dungeon
+    # player 추가
     if common.player is None:
         from player import Player
         common.player = Player()
@@ -24,20 +30,31 @@ def init(p = None):
     game_world.add_collision_pair("player:object", common.player,None)
     game_world.add_collision_pair("player:mob_missile", common.player,None)
     game_world.add_collision_pair("player:mob_guided_missile", common.player, None)
+    game_world.add_collision_pair("object:wall", common.player, None)
     common.player.x = 640
     common.player.y = 150
+    common.player.current_thing = None
+    common.player.near_thing = False
+
+    # 배경 추가
     dungeon = Dungeon1()
     game_world.add_object(dungeon, 0)
-    mobs = [RedBook(random.randint(100, 1180), random.randint(300, 550)),
-            GreenBook(random.randint(100, 1180), random.randint(300, 550)),
-            BlueBook(random.randint(100, 1180), random.randint(300, 550)),
-            Agoniger(random.randint(100, 1180), random.randint(300, 550))]
+    # 몬스터 추가
+    mobs = [RedBook(random.randint(200, 1050), random.randint(300, 550)),
+            GreenBook(random.randint(200, 1050), random.randint(300, 550)),
+            BlueBook(random.randint(200, 1050), random.randint(300, 550)),
+            Agoniger(random.randint(200, 1050), random.randint(300, 550))]
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
         game_world.add_collision_pair("player_missile:mob", None, mob)
         game_world.add_collision_pair("player_guided_missile:mob", None, mob)
 
+    # 벽 추가
+    for wall_info in walls_info:
+        wall = Wall(*wall_info)
+        game_world.add_object(wall, 1)
+        game_world.add_collision_pair("object:wall", None, wall)
 
 def handle_events():
     event_list = get_events()
