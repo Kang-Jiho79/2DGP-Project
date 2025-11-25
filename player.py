@@ -99,10 +99,16 @@ class Idle:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(player_idle_animation[self.player.face_dir])
+        # 처음 0.5초 대기 후 애니메이션 주기마다 회복
         if get_time() - self.player.stamina_time > 0.5:
-            if self.player.stamina < self.player.max_stamina:
-                self.player.stamina += 1
-                self.player.stamina_time = get_time()
+            animation_duration = len(player_idle_animation[self.player.face_dir]) / (
+                        FRAMES_PER_ACTION * ACTION_PER_TIME)
+            elapsed_since_first_recovery = get_time() - self.player.stamina_time - 0.5
+
+            if elapsed_since_first_recovery >= 0 and int(elapsed_since_first_recovery / animation_duration) > int(
+                    (elapsed_since_first_recovery - game_framework.frame_time) / animation_duration):
+                if self.player.stamina < self.player.max_stamina:
+                    self.player.stamina += 1
 
     def draw(self):
         frame_data = player_idle_animation[self.player.face_dir][int(self.player.frame)]
@@ -112,7 +118,6 @@ class Idle:
         else:
             self.player.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                          self.player.x, self.player.y, frame_data[2] * 2 , frame_data[3] * 2)
-
 
 class Death:
     def __init__(self, player):
@@ -130,7 +135,6 @@ class Death:
         frame_data = player_death_animation[int(self.player.frame)]
         self.player.death_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                          self.player.x, self.player.y, frame_data[2] * 2 , frame_data[3] * 2)
-
 
 class Hit:
     def __init__(self, player):
@@ -160,10 +164,6 @@ class Hit:
         else:
             self.player.hit_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                              self.player.x, self.player.y, frame_data[2] * 2, frame_data[3] * 2)
-
-
-
-
 
 class Parrying:
     def __init__(self, player):
@@ -273,10 +273,17 @@ class Walk:
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(
             player_walk_animation[self.player.face_dir])
+
+        # 처음 1.0초 대기 후 애니메이션 주기마다 회복
         if get_time() - self.player.stamina_time > 1.0:
-            if self.player.stamina < self.player.max_stamina:
-                self.player.stamina += 1
-                self.player.stamina_time = get_time()
+            animation_duration = len(player_walk_animation[self.player.face_dir]) / (
+                        FRAMES_PER_ACTION * ACTION_PER_TIME)
+            elapsed_since_first_recovery = get_time() - self.player.stamina_time - 1.0
+
+            if elapsed_since_first_recovery >= 0 and int(elapsed_since_first_recovery / animation_duration) > int(
+                    (elapsed_since_first_recovery - game_framework.frame_time) / animation_duration):
+                if self.player.stamina < self.player.max_stamina:
+                    self.player.stamina += 1
 
         speed = RUN_SPEED_PPS * game_framework.frame_time
 
