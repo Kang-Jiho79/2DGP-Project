@@ -3,8 +3,7 @@ import random
 from pico2d import *
 import game_framework
 import game_world
-from Missile.missile import Missile
-from Missile.guided_missile import GuidedMissile
+from Missile.bombshee_misssile import BombsheeMissile
 from state_machine import StateMachine
 import time
 from damage_text import DamageText
@@ -16,7 +15,7 @@ death_animation = (
 (0,0,18,27), (22,0,34,34)
 )
 hit_animation = (
-(0,0,18,28)
+(0,0,18,28),
 )
 attack_animation = (
 (0,0,18,27), (22,0,18,23), (44,0,18,28)
@@ -37,7 +36,7 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-TIME_PER_ACTION = 0.5
+TIME_PER_ACTION = 0.8
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
@@ -60,7 +59,7 @@ class Idle:
 
     def draw(self):
         frame_data = idle_animation[int(self.mob.frame)]
-        self.mob.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
+        self.mob.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 40)
 
 class Attack:
     def __init__(self, mob):
@@ -75,6 +74,8 @@ class Attack:
             self.mob.frame = 0
             self.attack_started = True
             self.mob.fire_missile()
+            self.mob.current_state = 'IDLE'
+            self.mob.state_machine.handle_state_event(('TOIDLE',None))
     def draw(self):
         frame_data = attack_animation[int(self.mob.frame)]
         self.mob.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
@@ -130,7 +131,6 @@ class Bombshee:
 
         self.idle_image = load_image('resource/mob/bombshee/bombshee_idle.png')
         self.attack_image = load_image('resource/mob/bombshee/bombshee_attack.png')
-        self.attack_end_image = load_image('resource/mob/bombshee/bombshee_attackend.png')
         self.death_image = load_image('resource/mob/bombshee/bombshee_death.png')
         self.hit_image = load_image('resource/mob/bombshee/bombshee_hit.png')
 
@@ -165,7 +165,7 @@ class Bombshee:
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)
-        if group == 'player_missile:mob' or group == 'player_guided_missile:mob':
+        if group == 'player_missile:mob':
             damage = other.shooter.damage / 2
             self.take_damage(damage)
 
@@ -186,13 +186,7 @@ class Bombshee:
 
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
-        if random.random() < 0.5:
-            # 일반 미사일
-            missile = Missile(self, player_x, player_y)
-            game_world.add_object(missile, 1)
-            game_world.add_collision_pair("player:mob_missile", None, missile)
-        else:
-            # 유도 미사일
-            missile = GuidedMissile(self)
-            game_world.add_object(missile, 1)
-            game_world.add_collision_pair("player:mob_guided_missile", None, missile)
+        missile = BombsheeMissile(self, player_x, player_y)
+        game_world.add_object(missile, 1)
+        game_world.add_collision_pair("player:mob_missile", None, missile)
+        game_world.add_collision_pair("object:wall", missile, None)
