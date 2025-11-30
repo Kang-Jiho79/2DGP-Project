@@ -2,7 +2,7 @@ import game_framework
 from pico2d import *
 
 import game_world
-from upgrade_shop import UpgradeShop
+from Npc.upgrade_shop import UpgradeShop
 import common
 
 upgrade_shop = None

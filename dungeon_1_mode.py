@@ -48,7 +48,6 @@ def init(p = None):
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
         game_world.add_collision_pair("player_missile:mob", None, mob)
-        game_world.add_collision_pair("player_missile:mob", None, mob)
 
     # 벽 추가
     for wall_info in walls_info:

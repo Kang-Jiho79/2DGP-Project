@@ -94,6 +94,7 @@ class Death:
     def do(self):
         self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.mob.frame >= len(death_animation):
+            print("Mob died and removed from game world.")
             game_world.remove_object(self.mob)
     def draw(self):
         frame_data = death_animation[int(self.mob.frame)]
@@ -173,6 +174,7 @@ class BlueBook:
         return self.x - 20, self.y - 20, self.x + 20, self.y + 20
 
     def handle_collision(self, group, other):
+        print(f"Collision detected: {group}, HP: {self.hp}, State: {type(self.state_machine.cur_state).__name__}")
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)

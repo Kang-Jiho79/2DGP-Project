@@ -2,7 +2,7 @@ import game_framework
 from pico2d import *
 
 import game_world
-from item_shop import ItemShop
+from Npc.item_shop import ItemShop
 import common
 
 item_shop = None

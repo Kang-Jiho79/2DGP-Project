@@ -490,7 +490,7 @@ class Player:
                     import dungeon_1_mode
                     game_framework.change_mode(dungeon_1_mode)
                 elif self.current_thing.__class__.__name__ == 'VillageGate':
-                    from village import village_mode
+                    from Village import village_mode
                     game_framework.change_mode(village_mode)
             elif event.key == SDLK_q:
                 # 모든 악세사리 해제
