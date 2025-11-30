@@ -225,7 +225,7 @@ class Roll:
         pass
 
     def do(self):
-        speed = RUN_SPEED_PPS * 1.5 * game_framework.frame_time
+        speed = RUN_SPEED_PPS * 2 * game_framework.frame_time * self.player.speed_multiplier
 
         # 이동 후 위치 계산
         new_x = self.player.x + self.player.xdir * speed
@@ -285,7 +285,7 @@ class Walk:
                 if self.player.stamina < self.player.max_stamina:
                     self.player.stamina += 1
 
-        speed = RUN_SPEED_PPS * game_framework.frame_time
+        speed = RUN_SPEED_PPS * game_framework.frame_time * self.player.speed_multiplier
 
         self.player.xdir = 0
         self.player.ydir = 0
@@ -357,6 +357,11 @@ class Player:
         self.near_thing = False
         self.current_thing = None
 
+        # 디버프 시스템 추가
+        self.speed_debuff_active = False
+        self.speed_debuff_end_time = 0
+        self.speed_multiplier = 1.0  # 기본 속도 배율
+
         self.x, self.y = 640, 360
         self.frame = 0
         self.face_dir = 3   # down:0, right:1, up:2, left:3
@@ -412,6 +417,8 @@ class Player:
 
     def update(self):
         self.state_machine.update()
+
+        self.update_debuffs()
 
         self.update_ui_animation()
 
@@ -553,6 +560,12 @@ class Player:
         self.coin_image.composite_draw(0,'',30, get_canvas_height()-160, 30, 30)
         self.font.draw(45, get_canvas_height()-160, f'{self.gold}', (0, 0, 0))
 
+        # 디버프 표시
+        if self.speed_debuff_active:
+            remaining_time = max(0, self.speed_debuff_end_time - get_time())
+            self.font.draw(get_canvas_width() - 200, get_canvas_height() - 50,
+                           f'속도저하: {remaining_time:.1f}초', (255, 0, 0))
+
         if self.near_thing:
             self.F_image.composite_draw(0,'', self.x, self.y + 40, 30, 30)
 
@@ -649,7 +662,6 @@ class Player:
                 else:
                     self.y = wall_top + 20  # 위로 밀어내기
 
-
     def object_unhandle_collision(self, group, other):
         if self.current_thing != other:
             return
@@ -686,3 +698,20 @@ class Player:
         self.hp -= damage
         self.hp_shake_time = self.hp_shake_duration
         self.state_machine.handle_state_event(('TOHIT', None))
+
+    def apply_slow_debuff(self, duration, slow_ratio):
+        """속도 저하 디버프 적용
+        duration: 지속 시간(초)
+        slow_ratio: 속도 감소율 (0.5 = 50% 속도)
+        """
+        self.speed_debuff_active = True
+        self.speed_debuff_end_time = get_time() + duration
+        self.speed_multiplier = slow_ratio
+        print(f"속도 디버프 적용! {duration}초간 {int((1-slow_ratio)*100)}% 속도 감소")
+
+    def update_debuffs(self):
+        """디버프 상태 업데이트"""
+        if self.speed_debuff_active and get_time() > self.speed_debuff_end_time:
+            self.speed_debuff_active = False
+            self.speed_multiplier = 1.0
+            print("속도 디버프 해제됨!")

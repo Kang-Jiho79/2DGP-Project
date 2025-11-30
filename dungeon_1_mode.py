@@ -6,6 +6,7 @@ from pico2d import *
 
 from Mob.agoniger import Agoniger
 from Mob.bluebook import BlueBook
+from Mob.bombshee import Bombshee
 from dungeon_1 import Dungeon1
 from Mob.greenbook import GreenBook
 from Mob.redbook import RedBook
@@ -43,7 +44,8 @@ def init(p = None):
     mobs = [RedBook(random.randint(200, 1050), random.randint(300, 550)),
             GreenBook(random.randint(200, 1050), random.randint(300, 550)),
             BlueBook(random.randint(200, 1050), random.randint(300, 550)),
-            Agoniger(random.randint(200, 1050), random.randint(300, 550))]
+            Agoniger(random.randint(200, 1050), random.randint(300, 550)),
+            Bombshee(random.randint(200, 1050), random.randint(300, 550))]
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
@@ -93,7 +95,7 @@ def check_monsters_remaining():
     for layer in game_world.world:
         for obj in layer:
             # 몬스터 클래스들 확인 (BlueBook, RedBook 등)
-            if obj.__class__.__name__ in ['BlueBook', 'RedBook', 'GreenBook']:
+            if obj.__class__.__name__ in ['BlueBook', 'RedBook', 'GreenBook', 'Agoniger', 'Bombshee']:
                 monster_count += 1
 
     # 모든 몬스터가 제거되었으면 던전 상태를 end로 변경
