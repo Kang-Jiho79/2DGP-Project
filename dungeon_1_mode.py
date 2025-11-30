@@ -22,6 +22,7 @@ walls_info = (
 )
 
 def init(p = None):
+    global dungeon
     # player 추가
     if common.player is None:
         from player import Player
@@ -29,7 +30,6 @@ def init(p = None):
     game_world.add_object(common.player, 1)
     game_world.add_collision_pair("player:object", common.player,None)
     game_world.add_collision_pair("player:mob_missile", common.player,None)
-    game_world.add_collision_pair("player:mob_guided_missile", common.player, None)
     game_world.add_collision_pair("object:wall", common.player, None)
     common.player.x = 640
     common.player.y = 150
@@ -48,7 +48,7 @@ def init(p = None):
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
         game_world.add_collision_pair("player_missile:mob", None, mob)
-        game_world.add_collision_pair("player_guided_missile:mob", None, mob)
+        game_world.add_collision_pair("player_missile:mob", None, mob)
 
     # 벽 추가
     for wall_info in walls_info:

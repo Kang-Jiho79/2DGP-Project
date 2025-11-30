@@ -3,8 +3,7 @@ import random
 from pico2d import *
 import game_framework
 import game_world
-from missile import Missile
-from guided_missile import GuidedMissile
+from bouncing_missile import BouncingMissile
 from state_machine import StateMachine
 import time
 from damage_text import DamageText
@@ -179,7 +178,7 @@ class BlueBook:
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)
-        if group == 'player_missile:mob' or group == 'player_guided_missile:mob':
+        if group == 'player_missile:mob':
             damage = other.shooter.damage / 2
             self.take_damage(damage)
 
@@ -200,13 +199,26 @@ class BlueBook:
 
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
-        if random.random() < 0.5:
-            # 일반 미사일
-            missile = Missile(self, player_x, player_y)
-            game_world.add_object(missile, 1)
-            game_world.add_collision_pair("player:mob_missile", None, missile)
+
+        # 플레이어 방향으로 초기 속도 계산
+        dx = player_x - self.x
+        dy = player_y - self.y
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+
+        if distance > 0:
+            velocity_x = (dx / distance) * 200  # 속도 조정
+            velocity_y = (dy / distance) * 200
         else:
-            # 유도 미사일
-            missile = GuidedMissile(self)
-            game_world.add_object(missile, 1)
-            game_world.add_collision_pair("player:mob_guided_missile", None, missile)
+            velocity_x = 200
+            velocity_y = 0
+
+        # 바운싱 미사일만 발사
+        missile = BouncingMissile(
+            self,
+            self.x, self.y,
+            velocity_x, velocity_y,
+        )
+
+        game_world.add_object(missile, 1)
+        game_world.add_collision_pair("player:mob_missile", None, missile)
+        game_world.add_collision_pair("object:wall", missile, None)

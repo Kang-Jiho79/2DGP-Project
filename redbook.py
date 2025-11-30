@@ -180,7 +180,7 @@ class RedBook:
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)
-        if group == 'player_missile:mob' or group == 'player_guided_missile:mob':
+        if group == 'player_missile:mob':
             damage = other.shooter.damage / 2
             self.take_damage(damage)
 
@@ -204,4 +204,5 @@ class RedBook:
         # missile = Missile(self.x, self.y, player_x, player_y)
         missile = GuidedMissile(self)
         game_world.add_object(missile, 1)
-        game_world.add_collision_pair("player:mob_guided_missile", None, missile)
+        game_world.add_collision_pair("player:mob_missile", None, missile)
+        game_world.add_collision_pair("object:wall", missile, None)

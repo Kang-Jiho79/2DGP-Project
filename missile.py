@@ -22,7 +22,8 @@ class Missile:
         self.y = self.shooter.y if shooter else 0
         self.speed = speed
         self.playered = playered
-        self.original_mob = original_mob if original_mob else shooter  # 최초 발사한 몬스터 저장
+        self.original_mob = original_mob if original_mob else shooter
+        self.is_alive = True  # 미사일 상태 추가
 
         # 목표까지의 벡터 계산
         dx = target_x - self.x
@@ -41,15 +42,21 @@ class Missile:
         self.angle = math.atan2(dy, dx)
 
     def update(self):
+        if not self.is_alive:
+            return
+
         # 미사일 이동
         self.x += self.dir_x * self.speed * game_framework.frame_time * RUN_SPEED_PPS
         self.y += self.dir_y * self.speed * game_framework.frame_time * RUN_SPEED_PPS
 
         # 화면 밖으로 나가면 제거
         if self.x < -50 or self.x > 1330 or self.y < -50 or self.y > 770:
-            game_world.remove_object(self)
+            self._remove_missile()
 
     def draw(self):
+        if not self.is_alive:
+            return
+
         if self.playered:
             self.player_image.composite_draw(self.angle, '', self.x, self.y, 32, 16)
         else:
@@ -57,25 +64,20 @@ class Missile:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        # 충돌 박스
+        if not self.is_alive:
+            return 0, 0, 0, 0
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
 
     def handle_collision(self, group, other):
-        if group == 'player:mob_missile' or group == 'player_missile:mob':
-            # # 새로운 튕겨진 미사일 생성
-            # from player import Player  # 플레이어 클래스 import
-            # if isinstance(other, Player) and self.original_mob:
-            #     # 원래 몬스터를 타겟으로 하는 새 미사일 생성
-            #     new_missile = Missile(
-            #         mob=other,  # 플레이어를 새 발사체로
-            #         target_x=self.original_mob.x,
-            #         target_y=self.original_mob.y,
-            #         speed=self.speed,
-            #         playered=True,
-            #         original_mob=self.original_mob  # 원래 몬스터 정보 전달
-            #     )
-            #     new_missile.x = self.x
-            #     new_missile.y = self.y
-            #     game_world.add_object(new_missile, 2)  # 적절한 레이어에 추가
+        if not self.is_alive:
+            return
 
+        if group == 'player:mob_missile' or group == 'player_missile:mob':
+            self._remove_missile()
+        if group == 'object:wall':
+            self._remove_missile()
+
+    def _remove_missile(self):
+        if self.is_alive:
+            self.is_alive = False
             game_world.remove_object(self)

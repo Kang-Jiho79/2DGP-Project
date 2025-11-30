@@ -429,7 +429,14 @@ class Player:
                                                info['lifetime'], True, info['target'])
                 guided_missile.x, guided_missile.y = info['pos']
                 game_world.add_object(guided_missile, 1)
-                game_world.add_collision_pair('player_guided_missile:mob', guided_missile, None)
+                game_world.add_collision_pair('player_missile:mob', guided_missile, None)
+            elif info['type'] == 'bouncing_missile':
+                from bouncing_missile import BouncingMissile
+                bouncing_missile = BouncingMissile(self,info['pos'][0], info['pos'][1],
+                                                   info['velocity_x'], info['velocity_y'], True, info['target'])
+                game_world.add_object(bouncing_missile, 1)
+                game_world.add_collision_pair('player_missile:mob', bouncing_missile, None)
+                game_world.add_collision_pair('object:wall', bouncing_missile, None)
 
             self.deflected_missile_info = None
 
@@ -564,33 +571,47 @@ class Player:
         return self.x - 15, self.y - 20, self.x + 15, self.y + 20
 
     def handle_collision(self, group, other):
-        if group == 'player:mob_missile':
-            if self.current_state == 'IDLE' or self.current_state == 'WALK':
-                damage = other.shooter.damage
-                self.take_damage(damage)
-            elif self.current_state == 'PARRING':
-                # 즉시 생성하지 않고 정보만 저장
-                self.deflected_missile_info = {
-                    'type': 'missile',
-                    'pos': (other.x, other.y),
-                    'target': other.original_mob,
-                    'speed': other.speed
-                }
 
-        if group == 'player:mob_guided_missile':
-            if self.current_state == 'IDLE' or self.current_state == 'WALK':
-                damage = other.shooter.damage
-                self.take_damage(damage)
-            elif self.current_state == 'PARRING':
-                # 즉시 생성하지 않고 정보만 저장
-                self.deflected_missile_info = {
-                    'type': 'guided_missile',
-                    'pos': (other.x, other.y),
-                    'target': other.original_mob,
-                    'speed': other.speed,
-                    'tracking_strength': other.tracking_strength,
-                    'lifetime': other.lifetime
-                }
+        if group == 'player:mob_missile':
+            if other.__class__.__name__ == 'Missile':
+                if self.current_state == 'IDLE' or self.current_state == 'WALK':
+                    damage = other.shooter.damage
+                    self.take_damage(damage)
+                elif self.current_state == 'PARRING':
+                    # 즉시 생성하지 않고 정보만 저장
+                    self.deflected_missile_info = {
+                        'type': 'missile',
+                        'pos': (other.x, other.y),
+                        'target': other.original_mob,
+                        'speed': other.speed
+                    }
+            if other.__class__.__name__ == 'GuidedMissile':
+                if self.current_state == 'IDLE' or self.current_state == 'WALK':
+                    damage = other.shooter.damage
+                    self.take_damage(damage)
+                elif self.current_state == 'PARRING':
+                    # 즉시 생성하지 않고 정보만 저장
+                    self.deflected_missile_info = {
+                        'type': 'guided_missile',
+                        'pos': (other.x, other.y),
+                        'target': other.original_mob,
+                        'speed': other.speed,
+                        'tracking_strength': other.tracking_strength,
+                        'lifetime': other.lifetime
+                    }
+            elif other.__class__.__name__ == 'BouncingMissile':
+                if self.current_state == 'IDLE' or self.current_state == 'WALK':
+                    damage = other.shooter.damage  # 바운싱 미사일 기본 데미지
+                    self.take_damage(damage)
+                elif self.current_state == 'PARRING':
+                    # 바운싱 미사일도 패링 가능
+                    self.deflected_missile_info = {
+                        'type': 'bouncing_missile',
+                        'pos': (other.x, other.y),
+                        'velocity_x': -other.velocity_x,  # 반대 방향으로
+                        'velocity_y': -other.velocity_y,
+                        'target': other.original_mob
+                    }
 
         if group == 'player:object':
             if self.current_thing != other:

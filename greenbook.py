@@ -176,7 +176,7 @@ class GreenBook:
         if group == 'attack:mob':
             damage = other.player.damage
             self.take_damage(damage)
-        if group == 'player_missile:mob' or group == 'player_guided_missile:mob':
+        if group == 'player_missile:mob':
             damage = other.shooter.damage / 2
             self.take_damage(damage)
 
@@ -201,3 +201,4 @@ class GreenBook:
         # missile = GuidedMissile(self)
         game_world.add_object(missile, 1)
         game_world.add_collision_pair("player:mob_missile", None, missile)
+        game_world.add_collision_pair("object:wall", missile, None)

@@ -27,7 +27,8 @@ class GuidedMissile:
         self.lifetime = lifetime
         self.elapsed_time = 0.0
         self.playered = playered
-        self.original_mob = original_mob if original_mob else shooter  # 최초 발사한 몬스터 저장
+        self.original_mob = original_mob if original_mob else shooter
+        self.is_alive = True  # 미사일 상태 추가
 
         # 초기 방향 (아래쪽으로)
         self.dir_x = 0
@@ -46,12 +47,15 @@ class GuidedMissile:
             return self.x, self.y
 
     def update(self):
+        if not self.is_alive:
+            return
+
         # 경과 시간 업데이트
         self.elapsed_time += game_framework.frame_time
 
         # 생존 시간 초과시 제거
         if self.elapsed_time >= self.lifetime:
-            game_world.remove_object(self)
+            self._remove_missile()
             return
 
         # 타겟 위치 얻기
@@ -83,9 +87,12 @@ class GuidedMissile:
 
         # 화면 밖으로 나가면 제거
         if self.x < -50 or self.x > 1330 or self.y < -50 or self.y > 770:
-            game_world.remove_object(self)
+            self._remove_missile()
 
     def draw(self):
+        if not self.is_alive:
+            return
+
         if self.playered:
             self.player_image.draw(self.x, self.y, 32, 32)
         else:
@@ -93,23 +100,20 @@ class GuidedMissile:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
+        if not self.is_alive:
+            return 0, 0, 0, 0
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
 
     def handle_collision(self, group, other):
-        if group == 'player:mob_guided_missile' or group == 'player_guided_missile:mob':
-            # # 새로운 튕겨진 미사일 생성
-            # from player import Player  # 플레이어 클래스 import
-            # if isinstance(other, Player):
-            #     new_missile = GuidedMissile(
-            #         mob=other,  # 플레이어를 새 발사체로
-            #         speed=self.speed,
-            #         tracking_strength=self.tracking_strength,
-            #         lifetime=self.lifetime,
-            #         playered=True,
-            #         original_mob=self.original_mob  # 원래 몬스터 정보 전달
-            #     )
-            #     new_missile.x = self.x
-            #     new_missile.y = self.y
-            #     game_world.add_object(new_missile, 2)  # 적절한 레이어에 추가
+        if not self.is_alive:
+            return
 
+        if group == 'player:mob_missile' or group == 'player_missile:mob':
+            self._remove_missile()
+        if group == 'object:wall':
+            self._remove_missile()
+
+    def _remove_missile(self):
+        if self.is_alive:
+            self.is_alive = False
             game_world.remove_object(self)
