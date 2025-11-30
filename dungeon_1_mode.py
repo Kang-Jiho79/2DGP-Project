@@ -4,11 +4,11 @@ import game_framework
 from pico2d import *
 
 
-from agoniger import Agoniger
-from bluebook import BlueBook
+from Mob.agoniger import Agoniger
+from Mob.bluebook import BlueBook
 from dungeon_1 import Dungeon1
-from greenbook import GreenBook
-from redbook import RedBook
+from Mob.greenbook import GreenBook
+from Mob.redbook import RedBook
 from wall import Wall
 import game_world
 from villiage_gate import VillageGate
