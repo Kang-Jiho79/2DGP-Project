@@ -418,20 +418,20 @@ class Player:
         if self.deflected_missile_info:
             info = self.deflected_missile_info
             if info['type'] == 'missile':
-                from missile import Missile
+                from Missile.missile import Missile
                 missile = Missile(self, info['target'].x, info['target'].y, info['speed'], True, info['target'])
                 missile.x, missile.y = info['pos']
                 game_world.add_object(missile, 1)
                 game_world.add_collision_pair('player_missile:mob', missile, None)
             elif info['type'] == 'guided_missile':
-                from guided_missile import GuidedMissile
+                from Missile.guided_missile import GuidedMissile
                 guided_missile = GuidedMissile(self, info['speed'], info['tracking_strength'],
                                                info['lifetime'], True, info['target'])
                 guided_missile.x, guided_missile.y = info['pos']
                 game_world.add_object(guided_missile, 1)
                 game_world.add_collision_pair('player_missile:mob', guided_missile, None)
             elif info['type'] == 'bouncing_missile':
-                from bouncing_missile import BouncingMissile
+                from Missile.bouncing_missile import BouncingMissile
                 bouncing_missile = BouncingMissile(self,info['pos'][0], info['pos'][1],
                                                    info['velocity_x'], info['velocity_y'], True, info['target'])
                 game_world.add_object(bouncing_missile, 1)

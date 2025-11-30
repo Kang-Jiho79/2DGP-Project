@@ -1,8 +1,7 @@
 from pico2d import *
 import game_framework
 import game_world
-from missile import Missile
-from guided_missile import GuidedMissile
+from Missile.missile import Missile
 from state_machine import StateMachine
 import time
 from damage_text import DamageText

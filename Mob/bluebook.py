@@ -1,9 +1,7 @@
-import random
-
 from pico2d import *
 import game_framework
 import game_world
-from bouncing_missile import BouncingMissile
+from Missile.bouncing_missile import BouncingMissile
 from state_machine import StateMachine
 import time
 from damage_text import DamageText
