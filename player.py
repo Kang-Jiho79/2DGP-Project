@@ -481,16 +481,16 @@ class Player:
                     SDLK_RIGHT: False
                 }
                 if self.current_thing.__class__.__name__ == 'ItemNPC':
-                    import item_shop_mode
+                    from Npc import item_shop_mode
                     game_framework.push_mode(item_shop_mode)
                 elif self.current_thing.__class__.__name__ == 'UpgradeNPC':
-                    import upgrade_shop_mode
+                    from Npc import upgrade_shop_mode
                     game_framework.push_mode(upgrade_shop_mode)
                 elif self.current_thing.__class__.__name__ == 'DungeonGate':
                     import dungeon_1_mode
                     game_framework.change_mode(dungeon_1_mode)
                 elif self.current_thing.__class__.__name__ == 'VillageGate':
-                    import village_mode
+                    from village import village_mode
                     game_framework.change_mode(village_mode)
             elif event.key == SDLK_q:
                 # 모든 악세사리 해제

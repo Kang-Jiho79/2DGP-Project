@@ -2,10 +2,9 @@ import game_framework
 from pico2d import *
 
 from dummy import Dummy
-from item_npc import ItemNPC
-from player import Player
+from Npc.item_npc import ItemNPC
 import game_world
-from upgrade_npc import UpgradeNPC
+from Npc.upgrade_npc import UpgradeNPC
 from village import Village
 from dungeon_gate import DungeonGate
 from wall import Wall
