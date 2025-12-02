@@ -7,9 +7,11 @@ from pico2d import *
 from Mob.agoniger import Agoniger
 from Mob.bluebook import BlueBook
 from Mob.bombshee import Bombshee
-from dungeon_1 import Dungeon1
 from Mob.greenbook import GreenBook
 from Mob.redbook import RedBook
+from Mob.shades import Shades
+
+from dungeon_1 import Dungeon1
 from wall import Wall
 import game_world
 from villiage_gate import VillageGate
@@ -45,7 +47,8 @@ def init(p = None):
             GreenBook(random.randint(200, 1050), random.randint(300, 550)),
             BlueBook(random.randint(200, 1050), random.randint(300, 550)),
             Agoniger(random.randint(200, 1050), random.randint(300, 550)),
-            Bombshee(random.randint(200, 1050), random.randint(300, 550))]
+            Bombshee(random.randint(200, 1050), random.randint(300, 550)),
+            Shades(random.randint(200, 1050), random.randint(300, 550))]
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)

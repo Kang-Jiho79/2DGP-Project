@@ -6,11 +6,11 @@ import game_framework
 import game_world
 from damage_text import DamageText
 from state_machine import StateMachine
-from behavior_tree import BehaviorTree, Selector, Sequence, Action as BTAction, Condition as BTCondition
+from behavior_tree import BehaviorTree, Selector, Sequence, Action, Condition
+from Missile.missile import Missile
 
 idle_animation = (
-(0,0,24,39), (28,0,24,38), (56,0,24,38), (84,0,24,39),
-(137,0,24,39), (165,0,24,38), (193,0,24,38), (221,0,24,39)
+(0,0,24,39), (28,0,24,38), (56,0,24,38), (84,0,24,39)
 )
 death_animation = (
 (0,0,33,32), (37,0,31,29), (72,0,36,24), (112,0,33,24),
@@ -28,8 +28,8 @@ charge_attack_animation = (
 (0,0,24,39), (28,0,24,38), (56, 0, 24, 37), (84,0,24,37)
 )
 walk_animation = (
-(0,44,24,39), (28,44,28,40), (60,44,28,36), (92,44,25,39), (121,44,28,40), (153,44,28,38),
-(0,0,25,39), (29,0,28,40), (61,0,27,36), (92,0,25,39), (121,0,28,40), (153,0,28,38),
+    ((0,44,24,39), (28,44,28,40), (60,44,28,36), (92,44,25,39), (121,44,28,40), (153,44,28,38)), # 오른쪽 아래
+    ((0,0,25,39), (29,0,28,40), (61,0,27,36), (92,0,25,39), (121,0,28,40), (153,0,28,38)),       # 오른쪽 위
 )
 
 # 상태 이벤트 헬퍼
@@ -39,8 +39,15 @@ def Todeath_event(state_event, mob):
     return state_event[0] == "TODEATH"
 def Tohit_event(state_event, mob):
     return state_event[0] == "TOHIT"
-def Toattack_event(state_event, mob):
+
+def Toattack_normal_event(state_event, mob):
     return state_event[0] == "TOATTACK"
+
+def Toattack_charge_event(state_event, mob):
+    return state_event[0] == "TOCHARGEATTACK"
+
+def Towalk_event(state_event, mob):
+    return state_event[0] == "TOWALK"
 
 # 속도/애니메이션 상수 (필요하면 조정)
 PIXEL_PER_METER = (21.0 / 1.7)
@@ -75,6 +82,61 @@ class Idle:
         frame_data = idle_animation[int(self.mob.frame)]
         self.mob.idle_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 40)
 
+class Walk:
+    def __init__(self, mob):
+        self.mob = mob
+        self.duration = 0.0
+        self.elapsed = 0.0
+        self.frame = 0
+        self.anim_index = 0
+        self.flip = False
+
+    def enter(self, event):
+        # event expected: ('TOWALK', (dx, dy, duration))
+        self.frame = 0
+        self.elapsed = 0.0
+        if event and len(event) > 1 and event[1]:
+            dx, dy, duration = event[1]
+        else:
+            dx = dy = 0.0
+            duration = 0.5
+        self.mob.walk_dx = dx
+        self.mob.walk_dy = dy
+        self.duration = duration
+
+        # 애니메이션 행 선택: dy > 0 -> index 1 (오른쪽 위), else 0 (오른쪽 아래)
+        self.anim_index = 1 if dy > 0 else 0
+        # 왼쪽으로 이동하면 좌우 반전
+        self.flip = True if dx < 0 else False
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        dt = game_framework.frame_time
+        # 이동
+        self.mob.x += self.mob.walk_dx * dt
+        self.mob.y += self.mob.walk_dy * dt
+
+        # 애니메이션 프레임 업데이트 (walk 애니메이션은 6프레임)
+        frames = len(walk_animation[self.anim_index])
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt) % frames
+
+        # 시간 카운트, 시간이 끝나면 IDLE로 복귀
+        self.elapsed += dt
+        if self.elapsed >= self.duration:
+            self.mob.current_state = 'IDLE'
+            self.mob.state_machine.handle_state_event(('TOIDLE', None))
+
+    def draw(self):
+        frame_data = walk_animation[self.anim_index][int(self.frame)]
+        left, top, w, h = frame_data
+        if self.flip:
+            # 좌우 반전해서 그리기 (pico2d clip_composite_draw 사용)
+            self.mob.walk_image.clip_composite_draw(left, top, w, h, 0, 'h', self.mob.x, self.mob.y, 30, 40)
+        else:
+            self.mob.walk_image.clip_draw(left, top, w, h, self.mob.x, self.mob.y, 30, 40)
+
 class Attack:
     def __init__(self, mob):
         self.mob = mob
@@ -86,29 +148,70 @@ class Attack:
         pass
 
     def do(self):
-        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
-        if self.mob.frame >= len(attack_animation):
+        dt = game_framework.frame_time
+        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt)
+        if int(self.mob.frame) >= len(attack_animation):
             self.mob.frame = 0
-            # 실제 발사는 여기서 한 번만 수행
-            if getattr(self.mob, 'next_attack_type', None) == 'charge':
-                orig_damage = self.mob.damage
-                # 차지 데미지 배수 (필요하면 조정)
-                self.mob.damage = int(self.mob.damage * 3)
-                self.mob.fire_missile()
-                self.mob.damage = orig_damage
-            else:
-                self.mob.fire_missile()
+            # 일반 발사
+            self.mob.fire_missile()
 
             # 발사 후 공통 처리
             self.mob.next_attack_type = None
             self.mob.attack_time = time.time()
 
+            # IDLE로 전환
             self.mob.current_state = 'IDLE'
             self.mob.state_machine.handle_state_event(('TOIDLE', None))
 
+            # 즉시 wander 시작
+            if hasattr(self.mob, 'start_random_walk'):
+                self.mob.start_random_walk()
+
     def draw(self):
-        frame_data = attack_animation[int(self.mob.frame)]
-        self.mob.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.mob.x, self.mob.y, 30, 30)
+        frame_data = attack_animation[int(self.mob.frame) % len(attack_animation)]
+        self.mob.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                        self.mob.x, self.mob.y, 30, 30)
+
+class ChargeAttack:
+    def __init__(self, mob):
+        self.mob = mob
+
+    def enter(self, event):
+        self.mob.frame = 0
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        dt = game_framework.frame_time
+        # charge 애니메이션 사용 (더 짧거나 다른 프레임셋)
+        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt)
+        if int(self.mob.frame) >= len(charge_attack_animation):
+            self.mob.frame = 0
+            # 차지 발사: 임시로 데미지 증가
+            orig_damage = self.mob.damage
+            try:
+                self.mob.damage = int(self.mob.damage * 3)
+                self.mob.fire_missile()
+            finally:
+                self.mob.damage = orig_damage
+
+            # 발사 후 공통 처리
+            self.mob.next_attack_type = None
+            self.mob.attack_time = time.time()
+
+            # IDLE로 전환
+            self.mob.current_state = 'IDLE'
+            self.mob.state_machine.handle_state_event(('TOIDLE', None))
+
+            # 즉시 wander 시작
+            if hasattr(self.mob, 'start_random_walk'):
+                self.mob.start_random_walk()
+
+    def draw(self):
+        frame_data = charge_attack_animation[int(self.mob.frame) % len(charge_attack_animation)]
+        self.mob.chargeattack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+                                        self.mob.x, self.mob.y, 30, 30)
 
 class Hit:
     def __init__(self, mob):
@@ -168,22 +271,37 @@ class Shades:
         self.font = load_font('ENCR10B.TTF', 30)
         self.idle_image = load_image('resource/mob/shades/shades_idle.png')
         self.attack_image = load_image('resource/mob/shades/shades_attack.png')
+        self.charge_attack_image = load_image('resource/mob/shades/shades_charge_attack.png')
         self.death_image = load_image('resource/mob/shades/shades_death.png')
         self.hit_image = load_image('resource/mob/shades/shades_hit.png')
+        self.walk_image = load_image('resource/mob/shades/shades_walk.png')
 
-        # 상태들 및 상태기계
         self.IDLE = Idle(self)
         self.ATTACK = Attack(self)
+        self.CHARGE_ATTACK = ChargeAttack(self)  # <- 반드시 추가
         self.DEATH = Death(self)
         self.HIT = Hit(self)
+        self.WALK = Walk(self)
 
         self.state_machine = StateMachine(
             self.IDLE,
             {
-                self.IDLE: {Toattack_event: self.ATTACK, Tohit_event: self.HIT},
+                self.IDLE: {
+                    Toattack_normal_event: self.ATTACK,
+                    Toattack_charge_event: self.CHARGE_ATTACK,
+                    Tohit_event: self.HIT,
+                    Towalk_event: self.WALK
+                },
                 self.ATTACK: {Toidle_event: self.IDLE, Tohit_event: self.HIT},
+                self.CHARGE_ATTACK: {Toidle_event: self.IDLE, Tohit_event: self.HIT},
                 self.DEATH: {},
-                self.HIT: {Toidle_event: self.IDLE, Todeath_event: self.DEATH}
+                self.HIT: {Toidle_event: self.IDLE, Todeath_event: self.DEATH},
+                self.WALK: {
+                    Toidle_event: self.IDLE,
+                    Tohit_event: self.HIT,
+                    Toattack_normal_event: self.ATTACK,
+                    Toattack_charge_event: self.CHARGE_ATTACK
+                }
             }
         )
 
@@ -193,38 +311,48 @@ class Shades:
         self.behavior_tree = self._build_behavior_tree()
 
     def _build_behavior_tree(self):
-        # 조건: 공격 준비(쿨타임 지남)
         def cond_attack_ready(mob):
-            return BehaviorTree.SUCCESS if (time.time() - mob.attack_time) > mob.attack_cooldown else BehaviorTree.FAIL
+            ready = (time.time() - mob.attack_time) > mob.attack_cooldown
+            return BehaviorTree.SUCCESS if ready else BehaviorTree.FAIL
 
-        # 일반 공격 액션 70%
         def action_normal_attack(mob):
-            if random.random() < 0.7:
+            r = random.random()
+            will = r < 0.7
+            if will:
                 mob.next_attack_type = 'normal'
-                mob.state_machine.handle_state_event(('TOATTACK', None))
+                mob.attack_time = time.time()
+                # Toattack_normal_event이 'TOATTACK'만 검사하므로 정확히 해당 이벤트 전송
+                mob.state_machine.handle_state_event(('TOATTACK',))
                 return BehaviorTree.SUCCESS
             return BehaviorTree.FAIL
 
-        # 차지 공격 액션 (나머지)
         def action_charge_attack(mob):
             mob.next_attack_type = 'charge'
-            mob.state_machine.handle_state_event(('TOATTACK', None))
+            mob.attack_time = time.time()
+            # Toattack_charge_event이 'TOCHARGEATTACK'만 검사하므로 해당 이벤트 전송
+            mob.state_machine.handle_state_event(('TOCHARGEATTACK',))
             return BehaviorTree.SUCCESS
 
-        # 쿨다운 중 wander
         def action_wander(mob):
-            dx = random.uniform(-20, 20) * 0.02
-            dy = random.uniform(-20, 20) * 0.02
-            mob.x += dx
-            mob.y += dy
+            raw_dx = random.uniform(-20, 20)
+            raw_dy = random.uniform(-20, 20)
+            speed = random.uniform(20, 40)
+            length = (raw_dx ** 2 + raw_dy ** 2) ** 0.5
+            if length == 0:
+                dx = dy = 0.0
+            else:
+                dx = raw_dx / length * speed
+                dy = raw_dy / length * speed
+            duration = random.uniform(0.4, 1.0)
+            mob.state_machine.handle_state_event(('TOWALK', (dx, dy, duration)))
             return BehaviorTree.SUCCESS
 
-        cond_node = BTCondition('AttackReady', cond_attack_ready, self)
+        cond_node = Condition('AttackReady', cond_attack_ready, self)
         attack_choice = Selector('AttackChoice',
-                                 BTAction('NormalAttack', action_normal_attack, self),
-                                 BTAction('ChargeAttack', action_charge_attack, self))
+                                 Action('NormalAttack', action_normal_attack, self),
+                                 Action('ChargeAttack', action_charge_attack, self))
         attack_seq = Sequence('AttackSeq', cond_node, attack_choice)
-        root = Selector('Root', attack_seq, BTAction('Wander', action_wander, self))
+        root = Selector('Root', attack_seq, Action('Wander', action_wander, self))
 
         return BehaviorTree(root)
 
@@ -268,7 +396,22 @@ class Shades:
 
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
-        missile = ShadesMissile(self, player_x, player_y)
+        missile = Missile(self, player_x, player_y)
         game_world.add_object(missile, 1)
         game_world.add_collision_pair("player:mob_missile", None, missile)
         game_world.add_collision_pair("object:wall", missile, None)
+
+    def start_random_walk(self):
+        # 방향과 속도, 지속시간을 난수로 선택하여 Walk 상태로 전환
+        raw_dx = random.uniform(-20, 20)
+        raw_dy = random.uniform(-20, 20)
+        speed = random.uniform(20, 40)
+        length = (raw_dx ** 2 + raw_dy ** 2) ** 0.5
+        if length == 0:
+            dx = 0.0
+            dy = 0.0
+        else:
+            dx = raw_dx / length * speed
+            dy = raw_dy / length * speed
+        duration = random.uniform(0.4, 1.0)
+        self.state_machine.handle_state_event(('TOWALK', (dx, dy, duration)))
