@@ -10,6 +10,7 @@ from Mob.bombshee import Bombshee
 from Mob.greenbook import GreenBook
 from Mob.redbook import RedBook
 from Mob.shades import Shades
+from Mob.smilely import Smilely
 
 from dungeon_1 import Dungeon1
 from wall import Wall
@@ -48,7 +49,8 @@ def init(p = None):
             BlueBook(random.randint(200, 1050), random.randint(300, 550)),
             Agoniger(random.randint(200, 1050), random.randint(300, 550)),
             Bombshee(random.randint(200, 1050), random.randint(300, 550)),
-            Shades(random.randint(200, 1050), random.randint(300, 550))]
+            Shades(random.randint(200, 1050), random.randint(300, 550)),
+            Smilely(random.randint(200, 1050), random.randint(300, 550)),]
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
