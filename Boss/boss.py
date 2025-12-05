@@ -460,7 +460,7 @@ class Boss:
         # 기본 스탯
         self.hp = 50 * level
         self.max_hp = 50 * level
-        self.damage = level * 2
+        self.damage = 5
         self.attack_cooldown = 2.0
 
         # 위치/애니메이션 상태
@@ -501,11 +501,27 @@ class Boss:
                     Towalk_event: self.WALK,
                     Toroll_event: self.ROLL
                 },
-                self.ATTACK: {Toidle_event: self.IDLE, Tohit_event: self.HIT},
-                self.CHEESE_ATTACK: {Toidle_event: self.IDLE, Tohit_event: self.HIT},
-                self.ELEMENT_ATTACK: {Toidle_event: self.IDLE, Tohit_event: self.HIT},
+                self.ATTACK: {
+                    Toidle_event: self.IDLE,
+                    Tohit_event: self.HIT,
+                    Toroll_event: self.ROLL
+                },
+                self.CHEESE_ATTACK: {
+                    Toidle_event: self.IDLE,
+                    Tohit_event: self.HIT,
+                    Toroll_event: self.ROLL
+                },
+                self.ELEMENT_ATTACK: {
+                    Toidle_event: self.IDLE,
+                    Tohit_event: self.HIT,
+                    Toroll_event: self.ROLL
+                },
                 self.DEATH: {},
-                self.HIT: {Toidle_event: self.IDLE, Todeath_event: self.DEATH},
+                self.HIT: {
+                    Toidle_event: self.IDLE,
+                    Todeath_event: self.DEATH,
+                    Toroll_event: self.ROLL
+                },
                 self.WALK: {
                     Toidle_event: self.IDLE,
                     Tohit_event: self.HIT,
@@ -519,7 +535,12 @@ class Boss:
                     Toidle_event: self.IDLE,
                     Tohit_event: self.HIT
                 },
-                self.SET_TRAP: {Towalk_event: self.WALK, Tohit_event: self.HIT, Toidle_event: self.IDLE}
+                self.SET_TRAP: {
+                    Towalk_event: self.WALK,
+                    Tohit_event: self.HIT,
+                    Toidle_event: self.IDLE,
+                    Toroll_event: self.ROLL
+                }
             }
         )
 
@@ -544,7 +565,7 @@ class Boss:
 
     def action_cheese_attack(self):
         r = random.random()
-        if r < 0.3:  # 30% 확률
+        if r < 0.5:  # 30% 확률
             self.next_attack_type = 'cheese'
             self.state_machine.handle_state_event(('TOCHEESEATTACK', None))
             return BehaviorTree.SUCCESS
@@ -630,10 +651,17 @@ class Boss:
         return self.x - 25, self.y - 30, self.x + 25, self.y + 30
 
     def handle_collision(self, group, other):
-        if group == 'attack:boss' or group == 'player_missile:boss':
-            if group == 'attack:boss':
+        if group == 'attack:mob' or group == 'player_missile:mob':
+            # 70% 확률로 롤 회피
+            if (self.state_machine.cur_state == self.IDLE or
+                    self.state_machine.cur_state == self.WALK):
+                if random.random() < 0.7:
+                    # 롤 상태로 전환하여 데미지 무효화
+                    self.state_machine.handle_state_event(('TOROLL', None))
+                    return  # 데미지를 받지 않고 종료
+            if group == 'attack:mob':
                 damage = other.player.damage
-            elif group == 'player_missile:boss':
+            elif group == 'player_missile:mob':
                 damage = other.shooter.damage
             self.take_damage(damage)
         if group == 'object:wall':
@@ -682,10 +710,31 @@ class Boss:
 
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
-        missile = Missile(self, player_x, player_y)
-        game_world.add_object(missile, 1)
-        game_world.add_collision_pair("player:mob_missile", None, missile)
-        game_world.add_collision_pair("object:wall", missile, None)
+
+        # 플레이어 방향 각도 계산
+        dx = player_x - self.x
+        dy = player_y - self.y
+        base_angle = math.atan2(dy, dx)
+
+        # 부채꼴 각도 범위 (총 60도)
+        spread_angle = math.pi / 3  # 60도
+
+        # 5개 미사일을 부채꼴 모양으로 발사
+        for i in range(5):
+            # -30도 ~ +30도 범위에서 균등하게 배치
+            offset_angle = (i - 2) * (spread_angle / 4)  # -30, -15, 0, +15, +30도
+            missile_angle = base_angle + offset_angle
+
+            # 목표 지점 계산
+            distance = 800  # 충분히 먼 거리
+            target_x = self.x + math.cos(missile_angle) * distance
+            target_y = self.y + math.sin(missile_angle) * distance
+
+            # 미사일 생성
+            missile = Missile(self, target_x, target_y)
+            game_world.add_object(missile, 1)
+            game_world.add_collision_pair("player:mob_missile", None, missile)
+            game_world.add_collision_pair("object:wall", missile, None)
 
     def fire_cheese_missile(self):
         from Missile.cheese_missile import CheeseMissile

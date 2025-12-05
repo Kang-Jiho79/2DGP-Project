@@ -352,7 +352,7 @@ class Player:
 
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
-        self.cleared_dungeon = 0
+        self.cleared_dungeon = 3
 
         self.near_thing = False
         self.current_thing = None

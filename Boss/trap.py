@@ -62,4 +62,4 @@ class Trap:
                     other.take_damage(self.boss.damage) # 데미지
 
             if hasattr(other, 'apply_slow_debuff'):
-                other.apply_slow_debuff(3.0, 1.0)  # 3초간 50% 속도 저하
+                other.apply_slow_debuff(1.0, 1.0)  # 3초간 50% 속도 저하
