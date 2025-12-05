@@ -15,11 +15,12 @@ class Element:
         self.y = y
         self.boss = boss
         self.direction = direction  # 0~7 (8방향)
+        self.damaged = False
 
         # 방향별 벡터 계산 (반시계방향, 아래부터 시작)
-        angle = self.direction * (math.pi / 4) - (math.pi / 2)  # 아래부터 시작
+        angle = self.direction * (math.pi / 4) + (math.pi / 2)  # 아래부터 시작
         self.velocity_x = math.cos(angle) * 100  # 속도
-        self.velocity_y = math.sin(angle) * 100
+        self.velocity_y = -math.sin(angle) * 100
 
         # 이동 관련
         self.travel_distance = random.uniform(100, 300)  # 랜덤 이동 거리
@@ -32,7 +33,7 @@ class Element:
         self.explosion_delay = random.uniform(1.0, 3.0)  # 랜덤 폭발 시간
         self.is_exploding = False
 
-        self.image = load_image('resource/missile/element.png')
+        self.image = load_image('resource/boss/boss_element.png')
 
     def update(self):
         dt = game_framework.frame_time
@@ -79,9 +80,14 @@ class Element:
         return self.x - 10, self.y - 10, self.x + 10, self.y + 10
 
     def handle_collision(self, group, other):
-        if group == 'element:player':
+        if group == 'player:mob_missile':
             if self.is_exploding and self.frame >= 1:
                 # 폭발 중에만 데미지
+                if hasattr(other, 'take_damage') and not self.damaged:
+                    if other.current_state == 'IDLE' or other.current_state == 'WALK' or other.current_state == 'ATTACK':
+                        self.damaged = True  # 한 번만 데미지 주도록 설정
+                        other.take_damage(self.boss.damage * 2)
+
                 return
         elif group == 'object:wall':
             if self.is_moving:

@@ -11,47 +11,58 @@ from Missile.missile import Missile
 from Missile.element import Element
 
 # 애니메이션 데이터
-idle_animation = (
-    (0, 0, 24, 39), (28, 0, 24, 38), (56, 0, 24, 37), (84, 0, 24, 37)
+cheese_attack_animation = (
+(0, 0, 24, 21), (26, 0, 24, 22), (51, 0, 24, 21), (78, 0, 24, 21),
+(104, 0, 24, 21), (130, 0, 24, 22), (156, 0, 24, 21), (182, 0, 24, 22),
+(208, 0, 24, 21), (234, 0, 24, 21), (260, 0, 24, 21), (286, 0, 24, 22)
 )
 
 death_animation = (
-    (0, 0, 30, 39), (34, 0, 30, 39)
+(0, 3, 21, 20), (23, 4, 22, 19), (47, 3, 25, 17), (74, 1, 25, 16),
+(101, 0, 27, 16)
+)
+
+element_attack_animation = (
+(0, 38, 20, 20), (22, 41, 22, 20), (46, 42, 26, 20), (74, 37, 26, 20),
+(102, 37, 22, 18), (126, 36, 16, 20), (144, 36, 16, 19), (162, 36, 16, 20),
+(183, 36, 18, 23), (203, 37,18, 21), (223, 36, 16, 22), (0, 1, 16, 22),
+(18, 1, 24, 21), (44, 1, 31, 23), (77, 1, 30, 25), (109, 2, 16, 28),
+(127, 1, 28, 26), (157, 0, 27, 24), (186, 1, 16, 22), (204, 2, 16, 21),
+(222, 4, 24, 20), (248, 1, 16, 20), (266, 1, 16, 19), (284, 1, 16, 20)
 )
 
 hit_animation = (
-    (0, 0, 30, 39), (34, 0, 30, 39)
+(0, 0, 22, 20), (23, 0, 21, 22), (46, 0, 22, 21)
+)
+
+idle_animation = (
+(0, 0, 16, 21), (18, 0, 16, 21), (36, 0, 16, 20), (54, 0, 16, 21)
 )
 
 attack_animation = (
-    (0, 0, 35, 41), (39, 0, 29, 41), (72, 0, 24, 41), (100, 0, 29, 41),
-    (133, 0, 35, 41), (172, 0, 33, 40), (209, 0, 35, 41)
-)
-
-charge_attack_animation = (
-    (0, 0, 24, 39), (28, 0, 24, 38), (56, 0, 24, 37), (84, 0, 24, 37)
-)
-
-walk_animation = (
-    ((0, 44, 24, 39), (28, 44, 28, 40), (60, 44, 28, 36), (92, 44, 25, 39), (121, 44, 28, 40), (153, 44, 28, 38)),
-    # down
-    ((0, 0, 25, 39), (29, 0, 28, 40), (61, 0, 27, 36), (92, 0, 25, 39), (121, 0, 28, 40), (153, 0, 28, 38)),  # right
-    ((0, 44, 24, 39), (28, 44, 28, 40), (60, 44, 28, 36), (92, 44, 25, 39), (121, 44, 28, 40), (153, 44, 28, 38)),  # up
-    ((0, 0, 25, 39), (29, 0, 28, 40), (61, 0, 27, 36), (92, 0, 25, 39), (121, 0, 28, 40), (153, 0, 28, 38))  # left
+(0, 0, 24, 21), (27, 5, 16, 23), (45, 6, 18, 22), (65, 11, 19, 22),
+(86, 9, 18, 22), (106, 5, 21, 24), (129, 1, 22, 21), (153, 1, 28, 17),
+(183, 1, 26, 18)
 )
 
 roll_animation = (
-    ((0, 0, 24, 39), (28, 0, 24, 38), (56, 0, 24, 37), (84, 0, 24, 37)),  # down
-    ((0, 44, 24, 39), (28, 44, 28, 40), (60, 44, 28, 36), (92, 44, 25, 39)),  # right
-    ((121, 44, 28, 40), (153, 44, 28, 38), (181, 44, 28, 36), (209, 44, 25, 39)),  # up
-    ((0, 44, 24, 39), (28, 44, 28, 40), (60, 44, 28, 36), (92, 44, 25, 39)),     # left
+((0, 116, 18, 18), (20, 119, 20, 16), (42, 121, 20, 14), (64, 112, 16, 22), (82, 107, 18, 20), (102, 108, 19, 15), (123, 108, 21, 9), (146, 107, 18, 16), (166, 108, 16, 19)),  # down
+((0, 79, 26, 21), (29, 83, 27, 18), (58, 83, 29, 17), (89, 76, 22, 22), (114, 69, 19, 17), (135, 69, 19, 13), (156, 69, 15, 17), (173, 70, 17, 19), (192, 70, 20,21)),          # right
+((0, 39, 16, 24), (18, 45, 18, 17), (38, 47, 16, 13), (56, 42, 14, 15), (72, 36, 16, 14), (90, 37, 20, 10), (112, 37, 18, 14), (133, 36, 16, 19), (151, 26, 16, 21)),           # up
+((0, 79, 26, 21), (29, 83, 27, 18), (58, 83, 29, 17), (89, 76, 22, 22), (114, 69, 19, 17), (135, 69, 19, 13), (156, 69, 15, 17), (173, 70, 17, 19), (192, 70, 20,21))
 )
 
 set_trap_animation = (
 (0, 2, 19, 22), (21, 0, 19, 20), (42, 3, 19, 17), (63, 7, 22, 22),
 (86, 8, 21, 22), (109, 9, 21, 22), (132, 4, 25, 19), (159, 2, 21, 19),
-(182, 2, 21, 24), (205, 10, 20, 22), (227, 9, 18, 22), (247, 4, 21, 24),
-(270, 3, 22, 21)
+(182, 2, 21, 24), (205, 10, 20, 22), (227, 9, 18, 22), (247, 4, 21, 24), (270, 3, 22, 21)
+)
+
+walk_animation = (
+    ((0, 102, 16, 20), (18, 99, 18, 20), (38, 98, 16, 18), (56, 102, 16, 20), (74, 99, 18, 20), (94, 98, 16, 18)),          # down
+    ((0, 71, 25, 21), (27, 67, 23, 22), (52, 66, 22, 21), (76, 71, 20, 21), (98, 67, 21, 22), (121, 66, 19, 21)),           # right
+    ((0, 37, 16, 23), (18, 37, 18, 20), (38, 34, 16, 20), (57, 37, 16, 23), (75, 37, 18, 20), (95, 34, 16, 20)),            # up
+    ((0, 71, 25, 21), (27, 67, 23, 22), (52, 66, 22, 21), (76, 71, 20, 21), (98, 67, 21, 22), (121, 66, 19, 21)),
 )
 
 
@@ -166,10 +177,13 @@ class Walk:
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt) % frames
 
         self.elapsed += dt
+
+        if random.random() < 0.001:  # 0.5% 확률
+            self.boss.state_machine.handle_state_event(('TOSETTRAP', None))
+            return
+
         if self.elapsed >= self.duration:
             self.boss.state_machine.handle_state_event(('TOIDLE', None))
-            if random.random() < 0.001:  # 0.1% 확률로 함정 설치
-                self.boss.state_machine.handle_state_event(('TOSETTRAP', None))
 
     def draw(self):
         frame_data = walk_animation[self.anim_index][int(self.frame)]
@@ -276,35 +290,66 @@ class Attack:
 class CheeseAttack:
     def __init__(self, boss):
         self.boss = boss
+        self.last_missile_time = 0
+        self.missile_interval = 0.1
 
     def enter(self, event):
         self.boss.frame = 0
+        self.last_missile_time = 0
+        self.missile_interval = 0.05
 
     def exit(self, event):
         pass
 
     def do(self):
         dt = game_framework.frame_time
-        self.boss.frame = (self.boss.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt)
-        if int(self.boss.frame) >= len(charge_attack_animation):
-            self.boss.frame = 0
+        self.boss.frame = (self.boss.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt * 0.5)
+        self.last_missile_time += dt
+        if self.last_missile_time >= self.missile_interval:
             self.boss.fire_cheese_missile()
+            self.last_missile_time = 0
+
+        # 플레이어를 보스 쪽으로 끌어당기기 (블랙홀 효과)
+        player_x, player_y = self.boss.get_player_position()
+        if player_x != self.boss.x or player_y != self.boss.y:
+            dx = self.boss.x - player_x
+            dy = self.boss.y - player_y
+            distance = math.sqrt(dx * dx + dy * dy)
+
+            if distance > 0:
+                # 플레이어를 조금씩 끌어당김
+                pull_strength = 50.0  # 끌어당기는 힘
+                pull_x = (dx / distance) * pull_strength * dt
+                pull_y = (dy / distance) * pull_strength * dt
+
+                # 플레이어 위치 업데이트
+                for layer in game_world.world:
+                    for obj in layer:
+                        if obj.__class__.__name__ == 'Player':
+                            obj.x += pull_x
+                            obj.y += pull_y
+                            break
+
+        if int(self.boss.frame) >= len(cheese_attack_animation):
+            self.boss.frame = 0
             self.boss.next_attack_type = None
             self.boss.attack_time = time.time()
             self.boss.state_machine.handle_state_event(('TOIDLE', None))
 
     def draw(self):
-        frame_data = charge_attack_animation[int(self.boss.frame) % len(charge_attack_animation)]
-        self.boss.charge_attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+        frame_data =cheese_attack_animation[int(self.boss.frame) % len(cheese_attack_animation)]
+        self.boss.cheese_attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                                 self.boss.x, self.boss.y, 50, 60)
 
 
 class ElementAttack:
     def __init__(self, boss):
         self.boss = boss
+        self.fired_frames = set()
 
     def enter(self, event):
         self.boss.frame = 0
+        self.fired_frames.clear()
 
     def exit(self, event):
         pass
@@ -312,16 +357,21 @@ class ElementAttack:
     def do(self):
         dt = game_framework.frame_time
         self.boss.frame = (self.boss.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt)
-        if int(self.boss.frame) >= len(charge_attack_animation):
+        current_frame = int(self.boss.frame)
+        if 11 <= current_frame <= 18:
+            if current_frame not in self.fired_frames:
+                direction = current_frame - 11  # 0~6 방향
+                self.boss.fire_element_attack(direction)
+                self.fired_frames.add(current_frame)
+        if int(self.boss.frame) >= len(element_attack_animation):
             self.boss.frame = 0
-            self.boss.fire_element_attack()
             self.boss.next_attack_type = None
             self.boss.attack_time = time.time()
             self.boss.state_machine.handle_state_event(('TOIDLE', None))
 
     def draw(self):
-        frame_data = charge_attack_animation[int(self.boss.frame) % len(charge_attack_animation)]
-        self.boss.charge_attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+        frame_data = element_attack_animation[int(self.boss.frame) % len(element_attack_animation)]
+        self.boss.element_attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                                 self.boss.x, self.boss.y, 50, 60)
 
 
@@ -396,12 +446,13 @@ class SetTrap:
             self.trap_created = True
             print("보스가 함정을 설치했습니다!")
 
-        if int(self.boss.frame) >= len(settrap_animation):
-            self.boss.state_machine.handle_state_event(('TOWALK', None))
+        if int(self.boss.frame) >= len(set_trap_animation):
+            self.boss.frame = 0
+            self.boss.state_machine.handle_state_event(('TOIDLE', None))
 
     def draw(self):
-        frame_data = settrap_animation[int(self.boss.frame) % len(settrap_animation)]
-        self.boss.settrap_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
+        frame_data = set_trap_animation[int(self.boss.frame) % len(set_trap_animation)]
+        self.boss.set_trap_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                           self.boss.x, self.boss.y, 40, 50)
 
 class Boss:
@@ -419,13 +470,14 @@ class Boss:
         # 리소스 로드
         self.font = load_font('ENCR10B.TTF', 30)
         self.idle_image = load_image('resource/boss/boss_idle.png')
-        self.attack_image = load_image('resource/boss/boss_attack.png')
-        self.charge_attack_image = load_image('resource/boss/boss_charge_attack.png')
+        self.attack_image = load_image('resource/boss/boss_missile_attack.png')
+        self.element_attack_image = load_image('resource/boss/boss_element_attack.png')
+        self.cheese_attack_image = load_image('resource/boss/boss_cheese_attack.png')
         self.death_image = load_image('resource/boss/boss_death.png')
         self.hit_image = load_image('resource/boss/boss_hit.png')
         self.walk_image = load_image('resource/boss/boss_walk.png')
         self.roll_image = load_image('resource/boss/boss_roll.png')
-        self.settrap_image = load_image('resource/Boss/boss_settrap.png')
+        self.set_trap_image = load_image('resource/Boss/boss_set_trap.png')
 
         # 상태 초기화
         self.IDLE = Idle(self)
@@ -467,86 +519,88 @@ class Boss:
                     Toidle_event: self.IDLE,
                     Tohit_event: self.HIT
                 },
-                self.SET_TRAP: {Towalk_event: self.WALK, Tohit_event: self.HIT}
+                self.SET_TRAP: {Towalk_event: self.WALK, Tohit_event: self.HIT, Toidle_event: self.IDLE}
             }
         )
 
         # behavior-tree 관련 초기화
         self.next_attack_type = None
         self.attack_time = time.time()
-        self.behavior_tree = self._build_behavior_tree()
+        self._build_behavior_tree()
+
+    def cond_attack_ready(self):
+        ready = (time.time() - self.attack_time) > self.attack_cooldown
+        return BehaviorTree.SUCCESS if ready else BehaviorTree.FAIL
+
+    # --- 공격 액션들 ---
+
+    def action_normal_attack(self):
+        r = random.random()
+        if r < 0.4:  # 40% 확률
+            self.next_attack_type = 'normal'
+            self.state_machine.handle_state_event(('TOATTACK', None))
+            return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+
+    def action_cheese_attack(self):
+        r = random.random()
+        if r < 0.3:  # 30% 확률
+            self.next_attack_type = 'cheese'
+            self.state_machine.handle_state_event(('TOCHEESEATTACK', None))
+            return BehaviorTree.SUCCESS
+        return BehaviorTree.FAIL
+
+    def action_element_attack(self):
+        # 마지막 보정 공격
+        self.next_attack_type = 'element'
+        self.state_machine.handle_state_event(('TOELEMENTATTACK', None))
+        return BehaviorTree.SUCCESS
+
+    def action_wander(self):
+        # 이미 Walk 상태면 그대로 둠
+        if self.state_machine.cur_state == self.WALK:
+            return BehaviorTree.SUCCESS
+
+        # 랜덤 방향/속도/시간 결정
+        raw_dx = random.uniform(-50, 50)
+        raw_dy = random.uniform(-50, 50)
+        speed = random.uniform(40, 80)
+        length = (raw_dx ** 2 + raw_dy ** 2) ** 0.5
+        if length == 0:
+            dx = dy = 0.0
+        else:
+            dx = raw_dx / length * speed
+            dy = raw_dy / length * speed
+        duration = random.uniform(1.0, 2.0)
+
+        # Walk 상태로 한 번만 전환
+        self.state_machine.handle_state_event(('TOWALK', (dx, dy, duration)))
+        return BehaviorTree.SUCCESS
 
     def _build_behavior_tree(self):
-        def cond_attack_ready(boss):
-            ready = (time.time() - boss.attack_time) > boss.attack_cooldown
-            return BehaviorTree.SUCCESS if ready else BehaviorTree.FAIL
+        # --- 트리 구성 ---
 
-        def action_normal_attack(boss):
-            if boss.next_attack_type == 'normal' and boss.state_machine.cur_state == boss.ATTACK:
-                return BehaviorTree.RUNNING
+        attack_ready = Condition('AttackReady', self.cond_attack_ready)
 
-            r = random.random()
-            if r < 0.4:  # 40% 확률
-                boss.next_attack_type = 'normal'
-                boss.state_machine.handle_state_event(('TOATTACK',))
-                return BehaviorTree.RUNNING
-            return BehaviorTree.FAIL
+        attack_choice = Selector(
+            'AttackChoice',
+            Action('NormalAttack', self.action_normal_attack),
+            Action('CheeseAttack', self.action_cheese_attack),
+            Action('ElementAttack', self.action_element_attack)
+        )
+        attack_seq = Sequence('AttackSeq', attack_ready, attack_choice)
 
-        def action_cheese_attack(boss):
-            if boss.next_attack_type == 'cheese' and boss.state_machine.cur_state == boss.CHEESE_ATTACK:
-                return BehaviorTree.RUNNING
+        wander = Action('Wander', self.action_wander)
 
-            r = random.random()
-            if r < 0.3:  # 30% 확률
-                boss.next_attack_type = 'cheese'
-                boss.state_machine.handle_state_event(('TOCHEESEATTACK',))
-                return BehaviorTree.RUNNING
-            return BehaviorTree.FAIL
+        root = Selector('Root', attack_seq, wander)
 
-        def action_element_attack(boss):
-            if boss.next_attack_type == 'element' and boss.state_machine.cur_state == boss.ELEMENT_ATTACK:
-                return BehaviorTree.RUNNING
-
-            boss.next_attack_type = 'element'
-            boss.state_machine.handle_state_event(('TOELEMENTATTACK',))
-            return BehaviorTree.RUNNING
-
-        def action_roll(boss):
-            boss.state_machine.handle_state_event(('TOROLL', None))
-            return BehaviorTree.SUCCESS
-
-        def action_wander(boss):
-            raw_dx = random.uniform(-30, 30)
-            raw_dy = random.uniform(-30, 30)
-            speed = random.uniform(30, 60)
-            length = (raw_dx ** 2 + raw_dy ** 2) ** 0.5
-            if length == 0:
-                dx = dy = 0.0
-            else:
-                dx = raw_dx / length * speed
-                dy = raw_dy / length * speed
-            duration = random.uniform(0.5, 1.5)
-            boss.state_machine.handle_state_event(('TOWALK', (dx, dy, duration)))
-            return BehaviorTree.SUCCESS
-
-        cond_node = Condition('AttackReady', cond_attack_ready, self)
-        attack_choice = Selector('AttackChoice',
-                                 Action('NormalAttack', action_normal_attack, self),
-                                 Action('CheeseAttack', action_cheese_attack, self),
-                                 Action('ElementAttack', action_element_attack, self))
-        attack_seq = Sequence('AttackSeq', cond_node, attack_choice)
-
-        movement_choice = Selector('MovementChoice',
-                                   Action('Roll', action_roll, self),
-                                   Action('Wander', action_wander, self))
-
-        root = Selector('Root', attack_seq, movement_choice)
-
-        return BehaviorTree(root)
+        self.behavior_tree = BehaviorTree(root)
 
     def update(self):
-        if hasattr(self, 'behavior_tree'):
+        if self.state_machine.cur_state == self.IDLE and hasattr(self, 'behavior_tree'):
             self.behavior_tree.run()
+
+        # 실제 애니메이션/이동/공격 실행
         self.state_machine.update()
 
     def handle_events(self, event):
@@ -576,15 +630,42 @@ class Boss:
         return self.x - 25, self.y - 30, self.x + 25, self.y + 30
 
     def handle_collision(self, group, other):
-        if group == 'attack:boss' or group == 'player_missile:boss' or group == 'cheese_missile:boss':
+        if group == 'attack:boss' or group == 'player_missile:boss':
             if group == 'attack:boss':
                 damage = other.player.damage
             elif group == 'player_missile:boss':
                 damage = other.shooter.damage
-            elif group == 'cheese_missile:boss':
-                damage = 10  # 치즈 미사일 데미지
-
             self.take_damage(damage)
+        if group == 'object:wall':
+            # 벽과 충돌 시 이전 위치로 되돌리기 (플레이어와 동일한 로직)
+            boss_left = self.x - 25
+            boss_right = self.x + 25
+            boss_bottom = self.y - 30
+            boss_top = self.y + 30
+
+            wall_left = other.left
+            wall_right = other.right
+            wall_bottom = other.bottom
+            wall_top = other.top
+
+            # 겹침 정도 계산
+            overlap_x = min(boss_right - wall_left, wall_right - boss_left)
+            overlap_y = min(boss_top - wall_bottom, wall_top - boss_bottom)
+
+            # 더 적게 겹친 축으로만 밀어내기
+            if overlap_x < overlap_y:
+                # x축으로 밀어내기
+                if self.x < other.x:
+                    self.x = wall_left - 25  # 왼쪽으로 밀어내기
+                else:
+                    self.x = wall_right + 25  # 오른쪽으로 밀어내기
+            else:
+                # y축으로 밀어내기
+                if self.y < other.y:
+                    self.y = wall_bottom - 30  # 아래로 밀어내기
+                else:
+                    self.y = wall_top + 30  # 위로 밀어내기
+
 
     def take_damage(self, damage):
         damage_text = DamageText(self.x, self.y, damage)
@@ -608,15 +689,34 @@ class Boss:
 
     def fire_cheese_missile(self):
         from Missile.cheese_missile import CheeseMissile
-        cheese_missile = CheeseMissile(self.x, self.y, self, 150)
+
+        # 맵 밖 랜덤 위치에서 생성
+        canvas_width = get_canvas_width()
+        canvas_height = get_canvas_height()
+
+        # 4방향 중 하나 선택
+        side = random.randint(0, 3)
+        if side == 0:  # 위쪽에서
+            start_x = random.randint(0, canvas_width)
+            start_y = canvas_height + 50
+        elif side == 1:  # 오른쪽에서
+            start_x = canvas_width + 50
+            start_y = random.randint(0, canvas_height)
+        elif side == 2:  # 아래쪽에서
+            start_x = random.randint(0, canvas_width)
+            start_y = -50
+        else:  # 왼쪽에서
+            start_x = -50
+            start_y = random.randint(0, canvas_height)
+
+        # 보스를 타겟으로 하는 치즈 미사일 생성
+        cheese_missile = CheeseMissile(start_x, start_y, self, 500)
         game_world.add_object(cheese_missile, 1)
         game_world.add_collision_pair("cheese_missile:boss", cheese_missile, None)
         game_world.add_collision_pair("player:mob_missile", None, cheese_missile)
-
-    def fire_element_attack(self):
+    def fire_element_attack(self, direction):
         # 8방향으로 Element 생성
-        for direction in range(8):
-            element = Element(self.x, self.y, direction, self)
-            game_world.add_object(element, 1)
-            game_world.add_collision_pair("element:player", element, None)
-            game_world.add_collision_pair("object:wall", element, None)
+        element = Element(self.x, self.y, direction, self)
+        game_world.add_object(element, 1)
+        game_world.add_collision_pair("player:mob_missile", None, element)
+        game_world.add_collision_pair("object:wall", element, None)

@@ -20,18 +20,18 @@ class Trap:
         self.lifetime = 10.0  # 10초 후 자동 제거
         self.elapsed_time = 0
 
-        self.image = load_image('resource/Boss/trap.png')
+        self.image = load_image('resource/Boss/boss_trap.png')
 
     def update(self):
         dt = game_framework.frame_time
 
         if not self.activated:
             # 대기 상태 애니메이션 (처음 3프레임 반복)
-            self.frame = (self.frame + 5 * dt) % 3
+            self.frame = (self.frame + 5 * dt) % 1
         else:
             # 활성화 애니메이션 (4번째 프레임부터)
-            if self.frame < 3:
-                self.frame = 3
+            if self.frame < 1:
+                self.frame = 1
             else:
                 self.frame = min(self.frame + 10 * dt, len(trap_animation) - 1)
                 # 애니메이션이 끝나면 제거
@@ -58,7 +58,8 @@ class Trap:
             self.activated = True
             # 플레이어에게 데미지와 이동 불가 디버프 적용
             if hasattr(other, 'take_damage'):
-                other.take_damage(self.boss.damage)  # 데미지
+                if other.current_state == 'IDLE' or other.current_state == 'WALK' or other.current_state == 'ATTACK':
+                    other.take_damage(self.boss.damage) # 데미지
 
             if hasattr(other, 'apply_slow_debuff'):
                 other.apply_slow_debuff(3.0, 1.0)  # 3초간 50% 속도 저하

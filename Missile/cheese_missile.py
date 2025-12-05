@@ -10,7 +10,7 @@ class CheeseMissile:
         self.y = y
         self.target = target  # 보스
         self.speed = speed
-        self.image = load_image('resource/missile/cheese_missile.png')
+        self.image = load_image('resource/boss/boss_cheese_missile.png')
         self.angle = 0  # 회전 각도
 
     def update(self):
@@ -35,5 +35,9 @@ class CheeseMissile:
         return self.x - 10, self.y - 10, self.x + 10, self.y + 10
 
     def handle_collision(self, group, other):
-        if group == 'cheese_missile:boss' and group == "player:mob_missile":
+        if group == 'cheese_missile:boss':
             game_world.remove_object(self)
+        if group == "player:mob_missile":
+            if hasattr(other, 'take_damage'):
+                if other.current_state == 'IDLE' or other.current_state == 'WALK' or other.current_state == 'ATTACK':
+                    other.take_damage(self.target.damage)
