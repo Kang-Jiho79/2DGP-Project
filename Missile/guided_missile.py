@@ -14,7 +14,7 @@ class GuidedMissile:
     mob_image = None
     player_image = None
 
-    def __init__(self, shooter, speed=1.0, tracking_strength=0.5, lifetime=5.0, playered=False, original_mob=None):
+    def __init__(self, shooter, speed=1.0, tracking_strength=0.5, lifetime=3.0, playered=False, original_mob=None):
         if GuidedMissile.mob_image is None:
             GuidedMissile.mob_image = load_image('resource/missile/guided_missile.png')
         if GuidedMissile.player_image is None:
