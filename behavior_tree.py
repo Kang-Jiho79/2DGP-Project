@@ -58,23 +58,18 @@ class Selector(Node):
         self.has_condition = False
         self.prev_running_pos = 0
 
-    def reset(self):
-        self.value = BehaviorTree.UNDEF
-        for child in self.children:
-            child.reset()
-
     def tag_condition(self):
         for child in self.children:
             child.tag_condition()
             if child.has_condition:
                 self.has_condition = True
 
-
     def reset(self):
+        # 하나로 통합: value와 자식들 모두 리셋
+        self.value = BehaviorTree.UNDEF
         self.prev_running_pos = 0
         for node in self.children:
             node.reset()
-
 
     @Node.show_result
     def run(self):
