@@ -119,7 +119,8 @@ class BombsheeMissile:
 
             # 플레이어에게 데미지와 디버프 적용
             if hasattr(other, 'take_damage'):
-                other.take_damage(self.shooter.damage)  # 데미지
+                if other.current_state == 'IDLE' or other.current_state == 'WALK' or other.current_state == 'ATTACK':
+                    other.take_damage(self.shooter.damage)  # 데미지
 
             if hasattr(other, 'apply_slow_debuff'):
                 other.apply_slow_debuff(3.0, 0.8)  # 3초간 50% 속도 저하
