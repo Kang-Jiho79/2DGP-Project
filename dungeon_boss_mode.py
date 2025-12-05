@@ -4,13 +4,7 @@ import game_framework
 from pico2d import *
 
 
-from Mob.agoniger import Agoniger
-from Mob.bluebook import BlueBook
-from Mob.bombshee import Bombshee
-from Mob.greenbook import GreenBook
-from Mob.redbook import RedBook
-from Mob.shades import Shades
-from Mob.smilely import Smilely
+from Boss.boss import Boss
 
 from dungeon import Dungeon
 from wall import Wall
@@ -35,6 +29,7 @@ def init(p = None):
     game_world.add_object(common.player, 1)
     game_world.add_collision_pair("player:object", common.player,None)
     game_world.add_collision_pair("player:mob_missile", common.player,None)
+    game_world.add_collision_pair("trap:player", None, common.player)
     game_world.add_collision_pair("object:wall", common.player, None)
     common.player.x = 640
     common.player.y = 150
@@ -45,11 +40,12 @@ def init(p = None):
     dungeon = Dungeon(common.player.cleared_dungeon + 1)
     game_world.add_object(dungeon, 0)
     # 몬스터 추가
-    mobs = []
+    mobs = [Boss(get_canvas_width()/2, get_canvas_height()*2/3, common.player.cleared_dungeon + 1)]
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
         game_world.add_collision_pair("player_missile:mob", None, mob)
+        game_world.add_collision_pair("cheese_missile:boss", None, mob)
 
     # 벽 추가
     for wall_info in walls_info:
@@ -95,7 +91,7 @@ def check_monsters_remaining():
     for layer in game_world.world:
         for obj in layer:
             # 몬스터 클래스들 확인 (BlueBook, RedBook 등)
-            if obj.__class__.__name__ in ['BlueBook', 'RedBook', 'GreenBook', 'Agoniger', 'Bombshee', 'Shades', 'Smilely']:
+            if obj.__class__.__name__ in ['BlueBook', 'RedBook', 'GreenBook', 'Agoniger', 'Bombshee', 'Shades', 'Smilely', 'Boss']:
                 monster_count += 1
 
     # 모든 몬스터가 제거되었으면 던전 상태를 end로 변경

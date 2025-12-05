@@ -4,13 +4,10 @@ import game_framework
 from pico2d import *
 
 
-from Mob.agoniger import Agoniger
 from Mob.bluebook import BlueBook
-from Mob.bombshee import Bombshee
 from Mob.greenbook import GreenBook
 from Mob.redbook import RedBook
-from Mob.shades import Shades
-from Mob.smilely import Smilely
+from Boss.boss import Boss
 
 from dungeon import Dungeon
 from wall import Wall
@@ -45,11 +42,17 @@ def init(p = None):
     dungeon = Dungeon(common.player.cleared_dungeon + 1)
     game_world.add_object(dungeon, 0)
     # 몬스터 추가
-    mobs = []
+    mobs = [
+        BlueBook(get_canvas_width()/3, get_canvas_height()*2/3, common.player.cleared_dungeon + 1),
+        RedBook(get_canvas_width()*2/3, get_canvas_height()*2/3, common.player.cleared_dungeon + 1),
+        GreenBook(get_canvas_width()/2, get_canvas_height()*2/3, common.player.cleared_dungeon + 1)
+            ]
+
     game_world.add_objects(mobs, 1)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
         game_world.add_collision_pair("player_missile:mob", None, mob)
+        game_world.add_collision_pair("object:wall", mob, None)
 
     # 벽 추가
     for wall_info in walls_info:
