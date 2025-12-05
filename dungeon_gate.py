@@ -3,10 +3,9 @@ from pico2d import *
 
 
 class DungeonGate:
-    def __init__(self, x, y, current_level):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.current_level = current_level  # 현재 던전 레벨
 
     def update(self):
         pass

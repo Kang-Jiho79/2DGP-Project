@@ -101,10 +101,6 @@ def check_monsters_remaining():
     # 모든 몬스터가 제거되었으면 던전 상태를 end로 변경
     if monster_count == 0 and dungeon.get_state() == 'fighting':
         dungeon.state = 'end'
-        common.player.cleared_dungeon += 1
-        dungeon_gate = DungeonGate(640, 570)
-        game_world.add_object(dungeon_gate,1)
-        game_world.add_collision_pair("player:object", None, dungeon_gate)
         villiage_gate = VillageGate(640,155)
         game_world.add_object(villiage_gate,1)
         game_world.add_collision_pair("player:object", None, villiage_gate)

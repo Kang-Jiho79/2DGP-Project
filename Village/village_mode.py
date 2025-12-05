@@ -42,7 +42,7 @@ def init():
     game_world.add_object(dummy, 1)
     game_world.add_collision_pair('attack:mob',None,dummy)
     # 던전 게이트 추가
-    dungeon_gate = DungeonGate(640, 600, common.player.cleared_dungeons)
+    dungeon_gate = DungeonGate(640, 600)
     game_world.add_object(dungeon_gate, 1)
     game_world.add_collision_pair("player:object", None, dungeon_gate)
     # 벽 추가

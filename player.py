@@ -352,7 +352,7 @@ class Player:
 
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
-        self.cleared_dungeons = 0
+        self.cleared_dungeon = 0
 
         self.near_thing = False
         self.current_thing = None
@@ -494,8 +494,18 @@ class Player:
                     from Npc import upgrade_shop_mode
                     game_framework.push_mode(upgrade_shop_mode)
                 elif self.current_thing.__class__.__name__ == 'DungeonGate':
-                    import dungeon_1_mode
-                    game_framework.change_mode(dungeon_1_mode)
+                    if self.cleared_dungeon == 0:
+                        import dungeon_1_mode
+                        game_framework.change_mode(dungeon_1_mode)
+                    elif self.cleared_dungeon == 1:
+                        import dungeon_2_mode
+                        game_framework.change_mode(dungeon_2_mode)
+                    elif self.cleared_dungeon == 2:
+                        import dungeon_3_mode
+                        game_framework.change_mode(dungeon_3_mode)
+                    elif self.cleared_dungeon == 3:
+                        import dungeon_boss_mode
+                        game_framework.change_mode(dungeon_boss_mode)
                 elif self.current_thing.__class__.__name__ == 'VillageGate':
                     from Village import village_mode
                     game_framework.change_mode(village_mode)

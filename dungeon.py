@@ -1,11 +1,24 @@
 from pico2d import *
 import time
 
-class Dungeon1:
-    def __init__(self):
-        self.entry_image = load_image('resource/background/dungeon_1/Dungeon_1_entry.png')
-        self.fighting_image = load_image('resource/background/dungeon_1/Dungeon_1_fighting.png')
-        self.end_image = load_image('resource/background/dungeon_1/Dungeon_1_end.png')
+class Dungeon:
+    def __init__(self, level):
+        if level == 1:
+            self.entry_image = load_image('resource/background/dungeon_1/Dungeon_1_entry.png')
+            self.fighting_image = load_image('resource/background/dungeon_1/Dungeon_1_fighting.png')
+            self.end_image = load_image('resource/background/dungeon_1/Dungeon_1_end.png')
+        elif level == 2:
+            self.entry_image = load_image('resource/background/dungeon_2/Dungeon_2_entry.png')
+            self.fighting_image = load_image('resource/background/dungeon_2/Dungeon_2_fighting.png')
+            self.end_image = load_image('resource/background/dungeon_2/Dungeon_2_end.png')
+        elif level == 3:
+            self.entry_image = load_image('resource/background/dungeon_3/Dungeon_3_entry.png')
+            self.fighting_image = load_image('resource/background/dungeon_3/Dungeon_3_fighting.png')
+            self.end_image = load_image('resource/background/dungeon_3/Dungeon_3_end.png')
+        elif level == 4:
+            self.entry_image = load_image( 'resource/background/dungeon_boss/Dungeon_boss_entry.png')
+            self.fighting_image = load_image('resource/background/dungeon_boss/Dungeon_boss_fighting.png')
+            self.end_image = load_image('resource/background/dungeon_boss/Dungeon_boss_end.png')
         # 던전 상태 관리
         self.state = 'entry'
         self.entry_time = time.time()
