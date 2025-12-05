@@ -336,9 +336,9 @@ class Player:
         self.max_hp = 10
         self.stamina = 10
         self.max_stamina = 10
-        self.damage = 5
+        self.damage = 50
         self.gold = 100000
-        self.sword_level = 0
+        self.sword_level = 10
         self.parring_speed = 1.0
 
         self.current_hp = 5  # 현재 표시되는 HP (애니메이션용)
@@ -570,12 +570,6 @@ class Player:
         self.coin_image.composite_draw(0,'',30, get_canvas_height()-160, 30, 30)
         self.font.draw(45, get_canvas_height()-160, f'{self.gold}', (0, 0, 0))
 
-        # 디버프 표시
-        if self.speed_debuff_active:
-            remaining_time = max(0, self.speed_debuff_end_time - get_time())
-            self.font.draw(get_canvas_width() - 200, get_canvas_height() - 50,
-                           f'속도저하: {remaining_time:.1f}초', (255, 0, 0))
-
         if self.near_thing:
             self.F_image.composite_draw(0,'', self.x, self.y + 40, 30, 30)
 
@@ -710,10 +704,6 @@ class Player:
         self.state_machine.handle_state_event(('TOHIT', None))
 
     def apply_slow_debuff(self, duration, slow_ratio):
-        """속도 저하 디버프 적용
-        duration: 지속 시간(초)
-        slow_ratio: 속도 감소율 (0.5 = 50% 속도)
-        """
         self.speed_debuff_active = True
         self.speed_debuff_end_time = get_time() + duration
         self.speed_multiplier = slow_ratio
