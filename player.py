@@ -332,13 +332,13 @@ class Walk:
 
 class Player:
     def __init__(self):
-        self.hp = 5
+        self.hp = 10
         self.max_hp = 10
         self.stamina = 10
         self.max_stamina = 10
-        self.damage = 50
+        self.damage = 5
         self.gold = 100000
-        self.sword_level = 10
+        self.sword_level = 1
         self.parring_speed = 1.0
 
         self.current_hp = 5  # 현재 표시되는 HP (애니메이션용)
@@ -352,7 +352,7 @@ class Player:
 
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
-        self.cleared_dungeon = 3
+        self.cleared_dungeon = 0
 
         self.near_thing = False
         self.current_thing = None

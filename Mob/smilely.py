@@ -4,6 +4,7 @@ import time
 from pico2d import *
 import game_framework
 import game_world
+from Missile.bouncing_missile import BouncingMissile
 from damage_text import DamageText
 from state_machine import StateMachine
 from behavior_tree import BehaviorTree, Selector, Sequence, Action, Condition
@@ -165,34 +166,83 @@ class Attack:
         self.mob.attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                         self.mob.x, self.mob.y, 30, 40)
 
+
+import math
+
+
 class ChargeAttack:
     def __init__(self, mob):
         self.mob = mob
+        self.charge_duration = 2.0  # 차지 시간 2초
+        self.charge_elapsed = 0.0
+        self.missile_timer = 0.0
+        self.missile_interval = 0.8  # 0.2초마다 미사일 발사
 
     def enter(self, event):
         self.mob.frame = 0
+        self.charge_elapsed = 0.0
+        self.missile_timer = 0.0
 
     def exit(self, event):
         pass
 
     def do(self):
         dt = game_framework.frame_time
-        # charge 애니메이션 사용 (더 짧거나 다른 프레임셋)
-        self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt)
-        if int(self.mob.frame) >= len(attack_animation):
-            self.mob.frame = 0
-            self.mob.fire_missile()
-            self.mob.next_attack_type = None  # 공격 완료 신호
-            self.mob.attack_time = time.time()
-            self.mob.current_state = 'IDLE'
-            self.mob.state_machine.handle_state_event(('TOIDLE', None))
-            if hasattr(self.mob, 'start_random_walk'):
-                self.mob.start_random_walk()
+
+        # 애니메이션이 마지막 프레임에 도달하지 않았으면 정상 애니메이션
+        if int(self.mob.frame) < len(charge_attack_animation) - 1:
+            self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * dt)
+        else:
+            # 마지막 프레임에서 머물면서 차지 공격 실행
+            self.mob.frame = len(charge_attack_animation) - 1
+            self.charge_elapsed += dt
+            self.missile_timer += dt
+
+            # 0.2초마다 사방으로 바운싱 미사일 발사
+            if self.missile_timer >= self.missile_interval:
+                self.fire_radial_bouncing_missiles()
+                self.missile_timer = 0.0
+
+            # 2초 후 공격 종료
+            if self.charge_elapsed >= self.charge_duration:
+                self.mob.next_attack_type = None
+                self.mob.attack_time = time.time()
+                self.mob.current_state = 'IDLE'
+                self.mob.state_machine.handle_state_event(('TOIDLE', None))
+                if hasattr(self.mob, 'start_random_walk'):
+                    self.mob.start_random_walk()
+
+    def fire_radial_bouncing_missiles(self):
+        from Missile.bouncing_missile import BouncingMissile
+
+        # 회전 각도 추가 (22.5도씩 회전)
+        if not hasattr(self, 'rotation_offset'):
+            self.rotation_offset = 0.0
+
+        # 8방향으로 바운싱 미사일 발사
+        directions = 8
+        for i in range(directions):
+            # 기본 각도에 회전 오프셋 추가
+            angle = (2 * math.pi / directions) * i + self.rotation_offset
+            speed = 200
+            dx = math.cos(angle) * speed
+            dy = math.sin(angle) * speed
+
+            missile = BouncingMissile(self.mob, self.mob.x, self.mob.y, dx, dy, False, self.mob)
+            game_world.add_object(missile, 1)
+            game_world.add_collision_pair("player:mob_missile", None, missile)
+            game_world.add_collision_pair("object:wall", missile, None)
+
+        # 다음 발사를 위해 22.5도(π/8) 반시계 방향으로 회전
+        self.rotation_offset += math.pi / 16
+        # 2π를 넘으면 초기화
+        if self.rotation_offset >= 2 * math.pi:
+            self.rotation_offset -= 2 * math.pi
 
     def draw(self):
         frame_data = charge_attack_animation[int(self.mob.frame) % len(charge_attack_animation)]
         self.mob.charge_attack_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
-                                        self.mob.x, self.mob.y, 30, 40)
+                                               self.mob.x, self.mob.y, 30, 40)
 
 class Hit:
     def __init__(self, mob):
@@ -379,7 +429,24 @@ class Smilely:
 
     def fire_missile(self):
         player_x, player_y = self.get_player_position()
-        missile = Missile(self, player_x, player_y)
+
+        # 플레이어 방향으로 초기 속도 계산
+        dx = player_x - self.x
+        dy = player_y - self.y
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+
+        if distance > 0:
+            velocity_x = (dx / distance) * 200  # 속도 조정
+            velocity_y = (dy / distance) * 200
+        else:
+            velocity_x = 200
+            velocity_y = 0
+        # 바운싱 미사일만 발사
+        missile = BouncingMissile(
+            self,
+            self.x, self.y,
+            velocity_x, velocity_y,
+        )
         game_world.add_object(missile, 1)
         game_world.add_collision_pair("player:mob_missile", None, missile)
         game_world.add_collision_pair("object:wall", missile, None)
