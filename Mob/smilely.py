@@ -281,6 +281,8 @@ class Death:
     def do(self):
         self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.mob.frame >= len(death_animation):
+            import common
+            common.player.gold += 2000
             game_world.remove_object(self.mob)
 
     def draw(self):

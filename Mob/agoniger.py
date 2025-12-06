@@ -5,6 +5,7 @@ from Missile.missile import Missile
 from state_machine import StateMachine
 import time
 from damage_text import DamageText
+import common
 
 death_animation = (
 (0,0,46,61), (51,0,46,60), (102,0,46,60)
@@ -74,6 +75,7 @@ class Death:
     def do(self):
         self.mob.frame = (self.mob.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.mob.frame >= len(death_animation):
+            common.player.gold += 1000
             game_world.remove_object(self.mob)
     def draw(self):
         frame_data = death_animation[int(self.mob.frame)]
