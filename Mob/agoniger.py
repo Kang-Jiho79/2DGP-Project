@@ -97,6 +97,7 @@ class Hit:
 class Agoniger:
     def __init__(self,x = 640, y = 360, level=1):
         self.hp = 30 * level
+        self.max_hp = 30 * level
         self.damage = level
         self.attack_cooldown = 4.0 / level
 
@@ -140,6 +141,24 @@ class Agoniger:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+
+        # HP바 그리기
+        bar_width = 50
+        bar_height = 5
+        bar_x = self.x - bar_width // 2
+        bar_y = self.y + 45
+
+        # 최대 HP 사용 (저장된 max_hp 또는 계산된 값)
+        max_hp = getattr(self, 'max_hp', 30 * getattr(self, 'level', 1))
+        hp_ratio = max(0, min(1, self.hp / max_hp))
+
+        # 배경 (검은색 테두리)
+        draw_rectangle(bar_x - 1, bar_y - 1, bar_x + bar_width + 1, bar_y + bar_height + 1)
+
+        # HP바 (현재 HP에 따라)
+        if hp_ratio > 0:
+            hp_width = int(bar_width * hp_ratio)
+            draw_rectangle(bar_x, bar_y, bar_x + hp_width, bar_y + bar_height,255, 0, 0, 255, 1)
 
     def get_bb(self):
         return self.x - 40, self.y - 40, self.x + 40, self.y + 40

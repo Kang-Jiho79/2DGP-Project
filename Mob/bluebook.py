@@ -168,7 +168,23 @@ class BlueBook:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
-        self.font.draw(self.x, self.y + 20, 'cooldown: %.2f' % max(0, self.attack_cooldown - (time.time() - self.attack_time)), (255, 255, 255))
+
+        # HP바 그리기
+        bar_width = 40
+        bar_height = 4
+        bar_x = self.x - bar_width // 2
+        bar_y = self.y + 25
+
+        max_hp = 10 * getattr(self, 'level', 1)
+        hp_ratio = max(0, min(1, self.hp / max_hp))
+
+        # 배경
+        draw_rectangle(bar_x - 1, bar_y - 1, bar_x + bar_width + 1, bar_y + bar_height + 1)
+
+        # HP바
+        if hp_ratio > 0:
+            hp_width = int(bar_width * hp_ratio)
+            draw_rectangle(bar_x, bar_y, bar_x + hp_width, bar_y + bar_height,255, 0, 0, 255, 1)
 
     def get_bb(self):
         return self.x - 20, self.y - 20, self.x + 20, self.y + 20
