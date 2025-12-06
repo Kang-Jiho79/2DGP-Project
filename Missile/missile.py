@@ -61,7 +61,6 @@ class Missile:
             self.player_image.composite_draw(self.angle, '', self.x, self.y, 32, 16)
         else:
             self.mob_image.composite_draw(self.angle, '', self.x, self.y, 32, 16)
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         if not self.is_alive:

@@ -23,7 +23,6 @@ class Dummy:
     def draw(self):
         frame_data = dummy_animation[int(self.frame)]
         self.image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3], self.x, self.y, 50, 50)
-        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time

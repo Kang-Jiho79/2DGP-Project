@@ -168,7 +168,6 @@ class BlueBook:
 
     def draw(self):
         self.state_machine.draw()
-        draw_rectangle(*self.get_bb())
 
         # HP바 그리기
         bar_width = 40

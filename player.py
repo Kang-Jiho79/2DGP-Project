@@ -337,11 +337,11 @@ class Player:
         self.stamina = 10
         self.max_stamina = 10
         self.damage = 5
-        self.gold = 100000
+        self.gold = 100
         self.sword_level = 1
         self.parring_speed = 1.0
 
-        self.current_hp = 5  # 현재 표시되는 HP (애니메이션용)
+        self.current_hp = 10  # 현재 표시되는 HP (애니메이션용)
         self.hp_animation_speed = 5.0  # HP 감소 속도
         self.hp_shake_time = 0  # HP바 흔들림 시간
         self.hp_shake_duration = 0.5  # 흔들림 지속시간
@@ -525,8 +525,6 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
-        draw_rectangle(*self.get_bb())
-        self.font.draw(self.x - 10, self.y + 50, f'X: {self.x:02f} Y: {self.y:02f}', (255, 255, 0))
         self.ui_draw()
 
     def ui_draw(self):

@@ -92,7 +92,6 @@ class BombsheeMissile:
         else:
             self.image.clip_draw(sx, sy, sw, sh, self.x, self.y)
 
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         if not self.is_alive:

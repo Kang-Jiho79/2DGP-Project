@@ -16,7 +16,7 @@ class Wall:
         self.bottom = bottom
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        pass
 
     def update(self):
         pass

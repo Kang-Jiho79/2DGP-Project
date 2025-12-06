@@ -102,7 +102,6 @@ class BouncingMissile:
                 self.x, self.y, draw_width, draw_height
             )
 
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         if not self.is_alive:

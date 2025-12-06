@@ -23,7 +23,7 @@ class UpgradeShop:
     def handle_click(self, x, y):
         left, bottom, right, top = self.upgrade_button
         if left <= x <= right and bottom <= y <= top:
-            if self.player.gold >= self.price:
+            if self.player.gold >= self.price and self.success_rate > 0:
                 self.player.gold -= self.price
                 import random
                 if random.randint(1, 100) <= self.success_rate:

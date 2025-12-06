@@ -66,7 +66,6 @@ class Attack:
             self.image.clip_composite_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                                            angle, '',
                                            self.effect_x, self.effect_y, width, height)
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         # 레벨당 충돌 박스 크기 증가량을 더 크게

@@ -461,7 +461,7 @@ class Boss:
         self.hp = 50 * level
         self.max_hp = 50 * level
         self.damage = 5
-        self.attack_cooldown = 2.0
+        self.attack_cooldown = 1.5
 
         # 위치/애니메이션 상태
         self.x, self.y = x, y

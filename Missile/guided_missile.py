@@ -97,7 +97,6 @@ class GuidedMissile:
             self.player_image.draw(self.x, self.y, 32, 32)
         else:
             self.mob_image.draw(self.x, self.y, 32, 32)
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         if not self.is_alive:
