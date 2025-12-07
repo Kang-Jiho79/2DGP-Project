@@ -137,6 +137,8 @@ class Death:
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.player.frame >= len(player_death_animation):
             game_world.remove_object(self.player)
+            import defeat_mode
+            game_framework.change_mode(defeat_mode)
     def draw(self):
         frame_data = player_death_animation[int(self.player.frame)]
         self.player.death_image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
@@ -357,7 +359,7 @@ class Player:
         self.stamina = 10
         self.max_stamina = 10
         self.damage = 5
-        self.gold = 10000
+        self.gold = 100
         self.sword_level = 1
         self.parring_speed = 1.0
 

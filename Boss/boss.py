@@ -415,6 +415,8 @@ class Death:
         self.boss.frame = (self.boss.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         if self.boss.frame >= len(death_animation):
             game_world.remove_object(self.boss)
+            import win_mode
+            game_framework.change_mode(win_mode)
 
     def draw(self):
         frame_data = death_animation[int(self.boss.frame) % len(death_animation)]
