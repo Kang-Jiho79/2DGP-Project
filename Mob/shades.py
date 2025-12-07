@@ -248,6 +248,7 @@ class Hit:
 
     def enter(self, event):
         self.mob.frame = 0
+        self.mob.sound.play_sfx("bulletman_hit", volume= 0.5)
 
     def exit(self, event):
         pass
@@ -341,6 +342,10 @@ class Shades:
         self.next_attack_type = None
         self.attack_time = time.time()
         self.behavior_tree = self._build_behavior_tree()
+
+        from sound_manager import SoundManager
+        self.sound = SoundManager()
+        self.sound.load_sfx("resource/sound/mob/bulletman_hit.wav", "bulletman_hit")
 
     def _build_behavior_tree(self):
         def cond_attack_ready(mob):

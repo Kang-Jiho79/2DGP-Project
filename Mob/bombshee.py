@@ -102,6 +102,7 @@ class Hit:
         self.mob = mob
     def enter(self, event):
         self.mob.frame = 0
+        self.mob.sound.play_sfx("bulletman_hit", volume= 0.5)
     def exit(self, event):
         pass
     def do(self):
@@ -150,6 +151,10 @@ class Bombshee:
             self.HIT: {Toidle_event: self.IDLE, Todeath_event: self.DEATH}
             }
         )
+
+        from sound_manager import SoundManager
+        self.sound = SoundManager()
+        self.sound.load_sfx("resource/sound/mob/bulletman_hit.wav", "bulletman_hit")
 
     def update(self):
         self.state_machine.update()
