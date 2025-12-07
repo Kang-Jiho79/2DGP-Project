@@ -1,5 +1,6 @@
 from pico2d import *
 from accessory import *
+from sound_manager import SoundManager
 
 class ItemShop:
     def __init__(self, player):
@@ -13,12 +14,14 @@ class ItemShop:
             {'rect': (760, 300, 1000, 400), 'name': 'Parring assistant Necklace', 'price': 200},
             {'rect': (760, 100, 1000, 230), 'name': 'Parring Damage Necklace', 'price': 250}
         ]
+        self.sound = SoundManager()
+        try:
+            self.sound.load_sfx("resource/sound/buy.mp3", 'buy_sound')
+        except Exception:
+            pass
 
     def draw(self):
         self.image.clip_composite_draw(0, 0, 1472, 704, 0, '', 640, 360, 800, 600)
-        for item in self.items:
-            left, bottom, right, top = item['rect']
-            draw_rectangle(left, bottom, right, top)
 
     def update(self):
         pass
@@ -30,6 +33,10 @@ class ItemShop:
                 if self.player.gold >= item['price']:
                     self.add_item(self.player, item)
                     print(f"Purchased {item['name']} for {item['price']} gold.")
+                    try:
+                        self.sound.play_sfx('buy_sound', volume=0.5)
+                    except Exception:
+                        pass
                 else:
                     print("Not enough gold to purchase this item.")
                 return

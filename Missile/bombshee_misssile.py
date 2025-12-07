@@ -19,7 +19,7 @@ bombshee_missile_animation = (
 
 class BombsheeMissile:
     image = None
-
+    sound_loaded = False
     def __init__(self, shooter, target_x, target_y, speed=1.0):
         if BombsheeMissile.image is None:
             BombsheeMissile.image = load_image('resource/missile/bombshee_missile.png')
@@ -50,9 +50,20 @@ class BombsheeMissile:
         self.angle = math.atan2(dy, dx)
 
         from sound_manager import SoundManager
+        if not BombsheeMissile.sound_loaded:
+            sound = SoundManager()
+            try:
+                sound.load_sfx("resource/sound/mob/bombshee_missile.wav", "bombshee_missile")
+                BombsheeMissile.sound_loaded = True
+            except Exception:
+                pass
+
+        # 사운드 재생만 수행
         self.sound = SoundManager()
-        self.sound.load_sfx('resource/sound/mob/bombshee_missile.wav', 'bombshee_missile')
-        self.sound.play_sfx('bombshee_missile', volume=0.3)
+        try:
+            self.sound.play_sfx('bombshee_missile', volume=0.3)
+        except Exception:
+            pass
 
     def update(self):
         if not self.is_alive:

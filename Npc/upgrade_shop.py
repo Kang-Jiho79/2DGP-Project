@@ -1,4 +1,5 @@
 from pico2d import *
+from sound_manager import SoundManager
 
 class UpgradeShop:
     def __init__(self, player):
@@ -8,11 +9,12 @@ class UpgradeShop:
         self.success_rate = 90 - 10 * self.player.sword_level
         self.upgrade_button = (550,280,640,450)
         self.font = load_font('ENCR10B.TTF', 20)
+        self.sound = SoundManager()
+        self.sound.load_sfx("resource/sound/success.wav", "upgrade_success")
+        self.sound.load_sfx("resource/sound/fail.wav", "upgrade_failure")
 
     def draw(self):
         self.image.clip_composite_draw(0, 0, 1472, 704, 0, '', 640, 360, 800, 600)
-        left, bottom, right, top = self.upgrade_button
-        draw_rectangle(left, bottom, right, top)
         self.font.draw(700, 400, f'Upgrade Sword : {self.player.sword_level + 1}', (0, 0, 0))
         self.font.draw(700, 350, f'Price: {self.price} Gold', (0, 0, 0))
         self.font.draw(700, 300, f'Success Rate: {self.success_rate} %', (0, 0, 0))
@@ -32,7 +34,9 @@ class UpgradeShop:
                     self.price = 100 + 50 * self.player.sword_level
                     self.success_rate = 90 - 10 * self.player.sword_level
                     print(f"Sword upgraded to level {self.player.sword_level}!")
+                    self.sound.play_sfx("upgrade_success", volume=0.5)
                 else:
+                    self.sound.play_sfx("upgrade_failure", volume=0.5)
                     print("Upgrade failed.")
             else:
                 print("Not enough gold to upgrade the sword.")

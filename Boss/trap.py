@@ -11,6 +11,8 @@ trap_animation = (
 
 
 class Trap:
+    image = None
+    sound_loaded = False
     def __init__(self, x, y, boss):
         self.x = x
         self.y = y
@@ -20,7 +22,20 @@ class Trap:
         self.lifetime = 10.0  # 10초 후 자동 제거
         self.elapsed_time = 0
 
-        self.image = load_image('resource/Boss/boss_trap.png')
+        if Trap.image is None:
+            Trap.image = load_image('resource/Boss/boss_trap.png')
+
+        from sound_manager import SoundManager
+        if not Trap.sound_loaded:
+            sound = SoundManager()
+            try:
+                sound.load_sfx("resource/sound/boss/boss_trap.wav", "trap")
+                Trap.sound_loaded = True
+            except Exception:
+                pass
+
+        # 사운드 재생만 수행
+        self.sound = SoundManager()
 
     def update(self):
         dt = game_framework.frame_time
@@ -56,6 +71,10 @@ class Trap:
     def handle_collision(self, group, other):
         if group == 'trap:player' and not self.activated:
             self.activated = True
+            try:
+                self.sound.play_sfx('trap', volume=0.3)
+            except Exception:
+                pass
             # 플레이어에게 데미지와 이동 불가 디버프 적용
             if hasattr(other, 'take_damage'):
                 if other.current_state == 'IDLE' or other.current_state == 'WALK' or other.current_state == 'ATTACK':
