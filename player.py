@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+from sound_manager import SoundManager
 from state_machine import StateMachine
 from attack import Attack
 from damage_text import DamageText
@@ -125,6 +126,11 @@ class Death:
     def enter(self, event):
         self.player.current_state = 'DEATH'
         self.player.frame = 0
+        # 죽음 효과음 재생
+        try:
+            self.player.sound.play_sfx("death")
+        except Exception:
+            pass
     def exit(self, event):
         pass
     def do(self):
@@ -220,6 +226,11 @@ class Roll:
             self.player.xdir = -1
             self.player.ydir = 0
         self.player.frame = 0
+        # 롤 효과음 재생
+        try:
+            self.player.sound.play_sfx("roll",volume=0.3)
+        except Exception:
+            pass
 
     def exit(self, event):
         pass
@@ -260,11 +271,14 @@ class Roll:
 class Walk:
     def __init__(self, player):
         self.player = player
+        self.last_step_time = 0
+        self.step_interval = 0.6  # 0.6초마다 발걸음 소리
 
     def enter(self, event):
         self.player.current_state = 'WALK'
         self.player.stamina_time = get_time()
         self.player.frame = 0
+        self.last_step_time = 0
 
     def exit(self, event):
         if a_key_down_with_stamina(event, self.player):
@@ -273,7 +287,13 @@ class Walk:
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % len(
             player_walk_animation[self.player.face_dir])
-
+        current_time = get_time()
+        if current_time - self.last_step_time >= self.step_interval:
+            try:
+                self.player.sound.play_sfx("walk", volume=0.1)
+                self.last_step_time = current_time
+            except Exception:
+                pass
         # 처음 1.0초 대기 후 애니메이션 주기마다 회복
         if get_time() - self.player.stamina_time > 1.0:
             animation_duration = len(player_walk_animation[self.player.face_dir]) / (
@@ -391,6 +411,14 @@ class Player:
         self.coin_image = load_image('resource/player/coin.png')
         self.F_image = load_image('resource/player/F_key.png')
 
+        self.sound = SoundManager()
+        self.sound.load_sfx("resource/sound/player/player_walk.mp3", "walk")
+        self.sound.load_sfx("resource/sound/player/player_hit.wav", "hit")
+        self.sound.load_sfx("resource/sound/player/player_attack.mp3", "attack")
+        self.sound.load_sfx("resource/sound/player/player_roll.wav", "roll")
+        self.sound.load_sfx("resource/sound/player/player_parring.mp3", "parring")
+        self.sound.load_sfx("resource/sound/player/player_death.wav", "death")
+
         self.current_state = 'IDLE'
         self.IDLE = Idle(self)
         self.DEATH = Death(self)
@@ -444,7 +472,7 @@ class Player:
                 game_world.add_object(bouncing_missile, 1)
                 game_world.add_collision_pair('player_missile:mob', bouncing_missile, None)
                 game_world.add_collision_pair('object:wall', bouncing_missile, None)
-
+            self.sound.play_sfx("parring", volume=0.5)
             self.deflected_missile_info = None
 
     def update_ui_animation(self):
@@ -578,6 +606,7 @@ class Player:
             attack = Attack(self.x, self.y, self.face_dir, self)
             game_world.add_object(attack, 1)
             game_world.add_collision_pair('attack:mob', attack, None)
+            self.sound.play_sfx("attack", volume=0.5)
 
     def end_attack(self):
         self.attacking = False
@@ -700,6 +729,7 @@ class Player:
         self.hp -= damage
         self.hp_shake_time = self.hp_shake_duration
         self.state_machine.handle_state_event(('TOHIT', None))
+        self.sound.play_sfx("hit", volume=0.5)
 
     def apply_slow_debuff(self, duration, slow_ratio):
         self.speed_debuff_active = True
