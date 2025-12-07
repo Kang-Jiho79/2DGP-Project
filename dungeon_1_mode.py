@@ -15,6 +15,7 @@ import game_world
 from dungeon_gate import DungeonGate
 from villiage_gate import VillageGate
 import common
+from sound_manager import SoundManager
 
 walls_info = (
     (0,720, 1280,590),
@@ -29,7 +30,7 @@ def init(p = None):
     if common.player is None:
         from player import Player
         common.player = Player()
-    game_world.add_object(common.player, 1)
+    game_world.add_object(common.player, 2)
     game_world.add_collision_pair("player:object", common.player,None)
     game_world.add_collision_pair("player:mob_missile", common.player,None)
     game_world.add_collision_pair("object:wall", common.player, None)
@@ -48,7 +49,7 @@ def init(p = None):
         GreenBook(get_canvas_width()/2, get_canvas_height()*2/3, common.player.cleared_dungeon + 1)
             ]
 
-    game_world.add_objects(mobs, 1)
+    game_world.add_objects(mobs, 2)
     for mob in mobs:
         game_world.add_collision_pair("attack:mob", None, mob)
         game_world.add_collision_pair("player_missile:mob", None, mob)
@@ -59,6 +60,10 @@ def init(p = None):
         wall = Wall(*wall_info)
         game_world.add_object(wall, 1)
         game_world.add_collision_pair("object:wall", None, wall)
+
+    sm = SoundManager()
+    sm.play_music("resource/sound/bgm/dungeon_bgm.mp3")
+    sm.set_music_volume(0.1)
 
 def handle_events():
     event_list = get_events()

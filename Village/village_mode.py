@@ -7,6 +7,7 @@ import game_world
 from Npc.upgrade_npc import UpgradeNPC
 from Village.village import Village
 from dungeon_gate import DungeonGate
+from sound_manager import SoundManager
 from wall import Wall
 import common
 
@@ -50,6 +51,10 @@ def init():
         wall = Wall(*wall_info)
         game_world.add_object(wall, 1)
         game_world.add_collision_pair("object:wall", None, wall)
+    sm = SoundManager()
+    sm.play_music("resource/sound/bgm/village_bgm.mp3")
+    sm.set_music_volume(0.1)
+
 
 def handle_events():
     event_list = get_events()
