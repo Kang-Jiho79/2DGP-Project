@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../Professor/2025-2DGP/.idea/2025-2DGP.iml" filepath="$PROJECT_DIR$/../../Professor/2025-2DGP/.idea/2025-2DGP.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/2DGP-Project.iml" filepath="$PROJECT_DIR$/.idea/2DGP-Project.iml" />
       <module fileurl="file://$PROJECT_DIR$/../2DGP-DRILL-12/.idea/Lecture16_AI.iml" filepath="$PROJECT_DIR$/../2DGP-DRILL-12/.idea/Lecture16_AI.iml" />
     </modules>

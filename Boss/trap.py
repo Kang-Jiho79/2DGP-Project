@@ -63,7 +63,6 @@ class Trap:
         frame_data = trap_animation[int(self.frame)]
         self.image.clip_draw(frame_data[0], frame_data[1], frame_data[2], frame_data[3],
                              self.x, self.y, frame_data[2] * 2, frame_data[3] * 2)
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 20, self.y - 15, self.x + 20, self.y + 15
