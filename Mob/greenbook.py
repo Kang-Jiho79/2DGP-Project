@@ -196,7 +196,11 @@ class GreenBook:
 
     def handle_collision(self, group, other):
         if group == 'attack:mob':
-            damage = other.player.damage
+            if other.player.parring_damage_boost:
+                damage = other.player.damage * 2
+                other.player.parring_damage_boost = False
+            else:
+                damage = other.player.damage
             self.take_damage(damage)
         if group == 'player_missile:mob':
             damage = other.shooter.damage / 2

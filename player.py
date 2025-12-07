@@ -357,7 +357,7 @@ class Player:
         self.stamina = 10
         self.max_stamina = 10
         self.damage = 5
-        self.gold = 100
+        self.gold = 10000
         self.sword_level = 1
         self.parring_speed = 1.0
 
@@ -395,6 +395,9 @@ class Player:
         }
         self.attacking = False
         self.deflected_missile_info = None
+
+        self.has_parring_damage_boost = False
+        self.parring_damage_boost = False
 
         self.font = load_font('ENCR10B.TTF', 30)
 
@@ -473,6 +476,8 @@ class Player:
                 game_world.add_collision_pair('player_missile:mob', bouncing_missile, None)
                 game_world.add_collision_pair('object:wall', bouncing_missile, None)
             self.sound.play_sfx("parring", volume=0.5)
+            if self.has_parring_damage_boost:
+                self.parring_damage_boost = True
             self.deflected_missile_info = None
 
     def update_ui_animation(self):

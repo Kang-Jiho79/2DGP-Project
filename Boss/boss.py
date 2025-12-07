@@ -297,6 +297,7 @@ class CheeseAttack:
         self.boss.frame = 0
         self.last_missile_time = 0
         self.missile_interval = 0.05
+        self.boss.sound.play_sfx("boss_cheese_attack", volume=0.5)
 
     def exit(self, event):
         pass
@@ -381,6 +382,7 @@ class Hit:
 
     def enter(self, event):
         self.boss.frame = 0
+        self.boss.sound.play_sfx("boss_hit", volume=0.5)
 
     def exit(self, event):
         pass
@@ -429,6 +431,7 @@ class SetTrap:
         self.boss.xdir = 0
         self.boss.ydir = 0
         self.trap_created = False
+        self.boss.sound.play_sfx("boss_set_trap", volume=0.5)
 
     def exit(self, event):
         pass
@@ -549,6 +552,12 @@ class Boss:
         self.attack_time = time.time()
         self._build_behavior_tree()
 
+        from sound_manager import SoundManager
+        self.sound = SoundManager()
+        self.sound.load_sfx("resource/sound/boss/boss_hit.wav", "boss_hit")
+        self.sound.load_sfx("resource/sound/boss/boss_set_trap.wav", "boss_set_trap")
+        self.sound.load_sfx("resource/sound/boss/boss_cheese_attack.wav", "boss_cheese_attack")
+
     def cond_attack_ready(self):
         ready = (time.time() - self.attack_time) > self.attack_cooldown
         return BehaviorTree.SUCCESS if ready else BehaviorTree.FAIL
@@ -660,7 +669,11 @@ class Boss:
                     self.state_machine.handle_state_event(('TOROLL', None))
                     return  # 데미지를 받지 않고 종료
             if group == 'attack:mob':
-                damage = other.player.damage
+                if other.player.parring_damage_boost:
+                    damage = other.player.damage * 2
+                    other.player.parring_damage_boost = False
+                else:
+                    damage = other.player.damage
             elif group == 'player_missile:mob':
                 damage = other.shooter.damage
             self.take_damage(damage)

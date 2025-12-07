@@ -63,6 +63,9 @@ class ParringDamageNecklace(Accessory):
 
     def equip(self, player):
         player.parring_speed += self.effect_value
+        player.has_parring_damage_boost = True
 
     def unequip(self, player):
         player.parring_speed -= self.effect_value
+        player.has_parring_damage_boost = False
+        player.parring_damage_boost = False

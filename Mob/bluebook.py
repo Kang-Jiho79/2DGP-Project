@@ -197,7 +197,11 @@ class BlueBook:
     def handle_collision(self, group, other):
         print(f"Collision detected: {group}, HP: {self.hp}, State: {type(self.state_machine.cur_state).__name__}")
         if group == 'attack:mob':
-            damage = other.player.damage
+            if other.player.parring_damage_boost:
+                damage = other.player.damage * 2
+                other.player.parring_damage_boost = False
+            else:
+                damage = other.player.damage
             self.take_damage(damage)
         if group == 'player_missile:mob':
             damage = other.shooter.damage / 2
