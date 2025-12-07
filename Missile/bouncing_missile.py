@@ -20,6 +20,7 @@ class BouncingMissile:
     player_image = None
     BOUNCE_MARGIN = 1.0
     BOUNCE_COOLDOWN = 0.05  # 초
+    sound_loaded = False
 
     def __init__(self, shooter, x, y, velocity_x, velocity_y, playered=False, original_mob=None, size_multiplier=1.6):
         if BouncingMissile.mob_image is None:
@@ -42,6 +43,23 @@ class BouncingMissile:
 
         self.collision_cooldown = 0.0
         self.bounce_count = 0  # 추가: 튕긴 횟수
+
+        from sound_manager import SoundManager
+        if not BouncingMissile.sound_loaded:
+            sound = SoundManager()
+            try:
+                sound.load_sfx('resource/sound/mob/missile.wav', 'missile')
+                sound.load_sfx("resource/sound/mob/bouncing_missile.wav", "bouncing_missile")
+                BouncingMissile.sound_loaded = True
+            except Exception:
+                pass
+
+        # 사운드 재생만 수행
+        self.sound = SoundManager()
+        try:
+            self.sound.play_sfx('missile', volume=0.3)
+        except Exception:
+            pass
 
     def get_frame_from_angle(self, angle_rad):
         angle_deg = math.degrees(angle_rad) % 360
@@ -159,6 +177,8 @@ class BouncingMissile:
             if self.bounce_count >= 3:
                 self._remove_missile()
                 return
+
+            self.sound.play_sfx('bouncing_missile', volume=0.3)
 
             angle = math.atan2(self.velocity_y, self.velocity_x)
             self.frame, self.flip_horizontal = self.get_frame_from_angle(angle)

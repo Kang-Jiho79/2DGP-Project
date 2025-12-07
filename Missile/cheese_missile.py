@@ -5,12 +5,14 @@ import game_world
 
 
 class CheeseMissile:
+    image = None
     def __init__(self, x, y, target, speed):
         self.x = x
         self.y = y
         self.target = target  # 보스
         self.speed = speed
-        self.image = load_image('resource/boss/boss_cheese_missile.png')
+        if CheeseMissile.image is None:
+             CheeseMissile.image = load_image('resource/boss/boss_cheese_missile.png')
         self.angle = 0  # 회전 각도
 
     def update(self):

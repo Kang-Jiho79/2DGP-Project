@@ -13,6 +13,7 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 class GuidedMissile:
     mob_image = None
     player_image = None
+    sound_loaded = False
 
     def __init__(self, shooter, speed=1.0, tracking_strength=0.5, lifetime=3.0, playered=False, original_mob=None):
         if GuidedMissile.mob_image is None:
@@ -33,6 +34,22 @@ class GuidedMissile:
         # 초기 방향 (아래쪽으로)
         self.dir_x = 0
         self.dir_y = -1
+
+        from sound_manager import SoundManager
+        if not GuidedMissile.sound_loaded:
+            sound = SoundManager()
+            try:
+                sound.load_sfx('resource/sound/mob/guided_missile.wav', 'guided_missile')
+                GuidedMissile.sound_loaded = True
+            except Exception:
+                pass
+
+        # 사운드 재생만 수행
+        self.sound = SoundManager()
+        try:
+            self.sound.play_sfx('guided_missile', volume=0.3)
+        except Exception:
+            pass
 
     def get_target_position(self):
         """playered가 True면 original_mob, 아니면 플레이어 위치 반환"""

@@ -12,6 +12,7 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 class Missile:
     mob_image = None
     player_image = None
+    sound_loaded = False
     def __init__(self, shooter, target_x, target_y, speed=1.0, playered=False, original_mob=None):
         if Missile.mob_image is None:
              Missile.mob_image = load_image('resource/missile/missile.png')
@@ -40,6 +41,21 @@ class Missile:
 
         # 회전 각도 계산 (라디안)
         self.angle = math.atan2(dy, dx)
+        from sound_manager import SoundManager
+        if not Missile.sound_loaded:
+            sound = SoundManager()
+            try:
+                sound.load_sfx('resource/sound/mob/missile.wav', 'missile')
+                Missile.sound_loaded = True
+            except Exception:
+                pass
+
+        # 사운드 재생만 수행
+        self.sound = SoundManager()
+        try:
+            self.sound.play_sfx('missile', volume=0.3)
+        except Exception:
+            pass
 
     def update(self):
         if not self.is_alive:

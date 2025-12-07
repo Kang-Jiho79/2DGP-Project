@@ -49,6 +49,11 @@ class BombsheeMissile:
         # 회전 각도 계산 (라디안)
         self.angle = math.atan2(dy, dx)
 
+        from sound_manager import SoundManager
+        self.sound = SoundManager()
+        self.sound.load_sfx('resource/sound/mob/bombshee_missile.wav', 'bombshee_missile')
+        self.sound.play_sfx('bombshee_missile', volume=0.3)
+
     def update(self):
         if not self.is_alive:
             return

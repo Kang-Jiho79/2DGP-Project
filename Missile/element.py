@@ -10,6 +10,8 @@ import game_world
 
 
 class Element:
+    image = None
+    sound_loaded = False
     def __init__(self, x, y, direction, boss):
         self.x = x
         self.y = y
@@ -33,7 +35,25 @@ class Element:
         self.explosion_delay = random.uniform(1.0, 3.0)  # 랜덤 폭발 시간
         self.is_exploding = False
 
-        self.image = load_image('resource/boss/boss_element.png')
+        if Element.image is None:
+            Element.image = load_image('resource/boss/boss_element.png')
+
+        from sound_manager import SoundManager
+        if not Element.sound_loaded:
+            sound = SoundManager()
+            try:
+                sound.load_sfx('resource/sound/boss/element_shot.wav', 'element_shot')
+                sound.load_sfx('resource/sound/boss/element.mp3', 'element')
+                Element.sound_loaded = True
+            except Exception:
+                pass
+
+        # 사운드 재생만 수행
+        self.sound = SoundManager()
+        try:
+            self.sound.play_sfx('element_shot', volume=0.3)
+        except Exception:
+            pass
 
     def update(self):
         dt = game_framework.frame_time
@@ -53,6 +73,7 @@ class Element:
             # 정지 상태에서 폭발 대기
             self.explosion_timer += dt
             if self.explosion_timer >= self.explosion_delay:
+                self.sound.play_sfx('element', volume=0.1)
                 self.is_exploding = True
 
         # 폭발 애니메이션
