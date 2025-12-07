@@ -43,7 +43,7 @@ class Element:
             sound = SoundManager()
             try:
                 sound.load_sfx('resource/sound/boss/element_shot.wav', 'element_shot')
-                sound.load_sfx('resource/sound/boss/element.mp3', 'element')
+                sound.load_sfx('resource/sound/boss/element.wav', 'element')
                 Element.sound_loaded = True
             except Exception:
                 pass

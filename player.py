@@ -412,7 +412,7 @@ class Player:
         self.F_image = load_image('resource/player/F_key.png')
 
         self.sound = SoundManager()
-        self.sound.load_sfx("resource/sound/player/player_walk.mp3", "walk")
+        self.sound.load_sfx("resource/sound/player/player_walk.wav", "walk")
         self.sound.load_sfx("resource/sound/player/player_hit.wav", "hit")
         self.sound.load_sfx("resource/sound/player/player_attack.mp3", "attack")
         self.sound.load_sfx("resource/sound/player/player_roll.wav", "roll")
