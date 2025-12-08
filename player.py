@@ -358,9 +358,9 @@ class Player:
         self.max_hp = 10
         self.stamina = 10
         self.max_stamina = 10
-        self.damage = 50
+        self.damage = 5
         self.gold = 100
-        self.sword_level = 10
+        self.sword_level = 1
         self.parring_speed = 1.0
 
         self.current_hp = 10  # 현재 표시되는 HP (애니메이션용)
@@ -374,7 +374,7 @@ class Player:
 
         self.accessory_count = 0
         self.equipped_accessories = [None,None]
-        self.cleared_dungeon = 3
+        self.cleared_dungeon = 0
 
         self.near_thing = False
         self.current_thing = None
@@ -544,15 +544,6 @@ class Player:
                 elif self.current_thing.__class__.__name__ == 'VillageGate':
                     from Village import village_mode
                     game_framework.change_mode(village_mode)
-            elif event.key == SDLK_q:
-                # 모든 악세사리 해제
-                self.hp = 5
-                for i in range(2):
-                    if self.equipped_accessories[i] is not None:
-                        accessory = self.unequip_accessory(i)
-                        if accessory:
-                            print(f"{accessory.__class__.__name__} 해제됨")
-                print("모든 악세사리가 해제되었습니다!")
         elif event.type == SDL_KEYUP:
             if event.key in self.keys_pressed:
                 self.keys_pressed[event.key] = False
